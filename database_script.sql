@@ -66,7 +66,7 @@ CREATE TABLE final_statement (
                                  issue_date datetime NOT NULL ON UPDATE NOW(),
                                  person_id int NOT NULL,
                                  business_id int NOT NULL,
-                                 location_addr int NOT NULL,
+                                 location_addr int NOT NULL, -- set it to NULL
                                  advance_payment numeric(10, 2) DEFAULT NULL,
                                  discount float default NULL,
                                  total_expense numeric(10, 2) NOT NULL,
