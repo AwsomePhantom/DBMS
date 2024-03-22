@@ -25,12 +25,12 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <input name="username" class="form-control" type="text" placeholder="Username">
+                    <input name="username" class="form-control" type="text" placeholder="Username" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col col-sm">
-                    <input name="password" class="form-control" type="password" placeholder="Password">
+                    <input name="password" class="form-control" type="password" placeholder="Password" required>
                 </div>
             </div>
             <div class="row">
