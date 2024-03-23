@@ -1,19 +1,54 @@
 <?php
 
 class Person {
-    public $name, $lastname, $birthdate, $gender;
-    function __construct($name, $lastname, $birthdate, $gender) {
+    public string $name, $lastname, $birthdate, $gender, $notes;
+    public array $phone = array(), $address = array();
+    function __construct($name, $lastname, $birthdate, $gender, $phone, $address) {
         $this->name = $name;
-        $this->$lastname = $lastname;
+        $this->lastname = $lastname;
         $this->birthdate = $birthdate;
         $this->gender = $gender;
+        if(is_array($phone)) {
+            foreach($phone as $x) {
+                $this->phone[] = $x;
+            }
+        }
+        else {
+            $this->phone[] = $phone;
+        }
+        if(is_array($address)) {
+            foreach($address as $x) {
+                $this->address[] = $x;
+            }
+        }
+        else {
+            $this->address[] = $address;
+        }
     }
 
+    function person_array() : array {
+        return array(
+            ':name' => $this->name,
+            ':lastname' => $this->lastname,
+            ':birthdate' => $this->birthdate,
+            ':gender' => $this->gender
+        );
+    }
+
+    function contacts_array() {
+
+    }
+    function address_array()
+    {
+
+    }
     function copy(Person $p) : void {
         $this->name = $p->name;
         $this->lastname = $p->lastname;
         $this->birthdate = $p->birthdate;
         $this->gender = $p->gender;
+        $this->phone = $p->phone;
+        $this->address = $p->address;
     }
 }
 
