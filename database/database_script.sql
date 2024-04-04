@@ -20,7 +20,7 @@ CREATE TABLE person (
 
 -- business (Derived) > person (Base)
 CREATE TABLE business (
-                          id int NOT NULL PRIMARY KEY, -- use it as a unique identifier randomly generated
+                          id int NOT NULL PRIMARY KEY AUTO_INCREMENT, -- use it as a unique identifier randomly generated
                           person_id int NOT NULL,
                           company_name varchar(255) NOT NULL,
                           company_type varchar(255) DEFAULT NULL, -- painting, chassis, ...
@@ -36,23 +36,24 @@ CREATE TABLE business (
 -- list of addresses of registered users, multivalued weak entity set
 CREATE TABLE contacts (
                           id int PRIMARY KEY AUTO_INCREMENT,
-                          person_id int NOT NULL,
+                          person_id int DEFAULT NULL,
                           phone VARCHAR(15) NOT NULL,
+                          business_account bool default false,
                           FOREIGN KEY (person_id) REFERENCES person(id)
                           -- the email address is set only in the user_account table
 );
 
 -- multivalued weak entity set
 CREATE TABLE address (
-                         id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                         id int PRIMARY KEY AUTO_INCREMENT, -- use stronger primary key instead of autoincrement for multi-user
                          person_id int NOT NULL,
-                         -- country_id varchar(255) DEFAULT NULL,
-                         -- city_id varchar(255) DEFAULT NULL,     -- major cities' name
-                         -- district varchar(255) DEFAULT NULL,    -- county name
-                         -- street varchar(255) DEFAULT NULL,
-                         -- holding int DEFAULT NULL,
-                         address varchar(255),
-                         note longtext DEFAULT NULL,     -- extra details
+                         country_code varchar(255) DEFAULT NULL,
+                         city varchar(255) DEFAULT NULL,     -- major cities' name
+                         district varchar(255) DEFAULT NULL,    -- county name
+                         street varchar(255) DEFAULT NULL, -- address
+                         holding int DEFAULT NULL,
+                         notes longtext DEFAULT NULL,     -- extra details
+                         business_account bool default false,
                          FOREIGN KEY (person_id) REFERENCES person(id)
 );
 
@@ -161,3 +162,24 @@ CREATE TABLE post_answer (
 
 -- ------------------- Web related ----------------------------
 
+
+-- ------------------- Triggers --------------------------------
+
+-- not working, avoid
+DELIMITER $$
+CREATE TRIGGER generate_uuid
+    AFTER INSERT
+    ON business FOR EACH ROW
+BEGIN
+    UPDATE business SET uuid = (SELECT CONCAT(
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1),
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1),
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1),
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1),
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1),
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1),
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1),
+                                               SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand()*36+1, 1)
+                                       ) as generatedString) WHERE id = LAST_INSERT_ID();
+END $$
+DELIMITER ;
