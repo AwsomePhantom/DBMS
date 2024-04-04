@@ -13,18 +13,6 @@
     <!-- Bootstrap 5 Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
     <style>
-    $white: #ffffff;
-
-    $theme-colors: (
-        "light":      #d0edea,
-        "dark":       #241709,
-        "primary":    #046d70,
-        "secondary":  #8c6126,
-        "info":       #eea90b,
-        "success":    #03af4e,
-        "warning":    #efca03,
-        "danger":     #f90130,
-    );
         body {
             font-family: "Rubik", sans-serif;
         }

@@ -15,6 +15,7 @@
     </style>
 </head>
 <body>
+<div class="container-fluid w-100">
 <nav id="menu" class="navbar navbar-expand-md bg-dark-subtle mb-5 px-2 shadow">
     <a href="#" class="navbar-brand">Website</a>
 
@@ -32,6 +33,7 @@
     </div>
 
 </nav>
+</div>
 
 <div class="container-sm" id="user_frame">
 
@@ -40,12 +42,15 @@
     function loadDoc() {
         let frame = document.getElementById('user_frame');
         const xhttp = new XMLHttpRequest();
+        xhttp.open('GET', 'home.php', true);
+        xhttp.send();
+
+
         xhttp.onload = function() {
             document.getElementById('user_frame').innerHTML = this.responseText;
         }
 
-        xhttp.open('GET', 'login.php', true);
-        xhttp.send();
+
     }
 
 </script>
