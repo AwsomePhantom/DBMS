@@ -3,8 +3,8 @@
 
 <h2>Todo:</h2>
 <ol>
-    <li>Design PHP class for database handling</li>
-    <li>Design PHP class for user data structure</li>
+    <li>Design PHP classes for database handling</li>
+    <li>Design PHP classes for user data structures</li>
     <li>Build admin panel to analyse the data</li>
     <li>Design necessary interactive pages</li>
     <li>Build necessary PHP class tools to perform advance queries</li>
