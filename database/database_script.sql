@@ -46,14 +46,25 @@ CREATE TABLE contacts (
 CREATE TABLE address (
                          id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
                          person_id int NOT NULL,
-                         -- country_id varchar(255) DEFAULT NULL,
-                         -- city_id varchar(255) DEFAULT NULL,     -- major cities' name
-                         -- district varchar(255) DEFAULT NULL,    -- county name
-                         -- street varchar(255) DEFAULT NULL,
-                         -- holding int DEFAULT NULL,
-                         address varchar(255),
-                         note longtext DEFAULT NULL,     -- extra details
+                         country_code varchar(255) DEFAULT NULL,
+                         city varchar(255) DEFAULT NULL,     -- major cities' name
+                         district varchar(255) DEFAULT NULL,    -- county name
+                         street varchar(255) DEFAULT NULL, -- address
+                         holding int DEFAULT NULL,
+                         notes longtext DEFAULT NULL,     -- extra details
                          FOREIGN KEY (person_id) REFERENCES person(id)
+);
+
+CREATE TABLE business_address (
+                         id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                         business_id int NOT NULL,
+                         country_id varchar(255) DEFAULT NULL,
+                         city_id varchar(255) DEFAULT NULL,     -- major cities' name
+                         district varchar(255) DEFAULT NULL,    -- county name
+                         street varchar(255) DEFAULT NULL, -- address
+                         holding int DEFAULT NULL,
+                         notes longtext DEFAULT NULL,     -- extra details
+                         FOREIGN KEY (business_id) REFERENCES business(id)
 );
 
 

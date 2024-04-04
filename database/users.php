@@ -1,5 +1,5 @@
 <?php
-
+/*
 class Person {
     public string $name, $lastname, $birthdate, $gender, $notes;
     public array $phone = array(), $address = array();
@@ -106,3 +106,4 @@ class User {
         return ($this->entity instanceof Business);
     }
 }
+*/
