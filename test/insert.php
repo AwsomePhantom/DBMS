@@ -25,7 +25,7 @@
             $a = $_POST['customerId'];
             $b = $_POST['phone'];
 
-            $sql = 'INSERT INTO customer_contacts VALUES (null, ?, ?)';
+            $sql = 'INSERT INTO customers_contacts VALUES (null, ?, ?)';
             $stmt = $pdo->prepare($sql);
             $res = $stmt->execute([
                 $a, $b
@@ -41,7 +41,7 @@
             isset($_POST['deleteButton'])) {
                 $row = $_POST['deleteButton'];
 
-                $sql = 'DELETE FROM customer_contacts WHERE id = ?';
+                $sql = 'DELETE FROM customers_contacts WHERE id = ?';
                 $stmt = $pdo->prepare($sql);
                 $res = $stmt->execute([$row]);
                 if(!$res) {
@@ -96,7 +96,7 @@
 <div class="container w-75 my-3">
     <form method="POST">
         <div class="input-group">
-            <input name="customerId" class="form-control" type="number" placeholder="customer ID: [1-9]+">
+            <input name="customerId" class="form-control" type="text" placeholder="customer ID: (ABC123)+">
             <input name="phone" class="form-control" type="text" placeholder="Phone number: [1-9]+">
             <input name="submit" class="btn btn-block btn-primary" type="submit" value="Enter">
         </div>
@@ -116,10 +116,10 @@
         <tbody>
         <?php
         try {
-            $sql = 'SELECT * FROM contacts';
+            $sql = 'SELECT * FROM customers_contacts';
             $resultSet = $pdo->query($sql);
             if($resultSet->rowCount() == 0) {
-                $pdo->query('ALTER TABLE contacts AUTO_INCREMENT = 1');
+                $pdo->query('ALTER TABLE customers_contacts AUTO_INCREMENT = 1');
             }
             while($x = $resultSet->fetch()) {
                 echo '<tr>';

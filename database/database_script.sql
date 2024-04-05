@@ -7,7 +7,7 @@ USE dbmsproject;
 
 
 -- Base class customer, list of customers who registered including users and businesses
-CREATE TABLE customer_info (
+CREATE TABLE customers_info (
                         id CHAR(8) PRIMARY KEY,
                         name varchar(255) DEFAULT NULL,
                         lastname varchar(255) DEFAULT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE customer_info (
 -- add company type table
 
 -- business (Derived) > customer (Base)
-CREATE TABLE business_info (
+CREATE TABLE businesses_info (
                           id CHAR(8) PRIMARY KEY, -- use it as a unique identifier randomly generated
                           owner_id char(8) NOT NULL,    -- customer table
                           company_name varchar(255) NOT NULL,
@@ -30,57 +30,57 @@ CREATE TABLE business_info (
                           office_weekdays varchar(50),    -- {SUN, MON, TUE, WED, THU, FRI, SAT}
                           active boolean NOT NULL DEFAULT TRUE,       -- if the business account has been deactivated or not
                           registration_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                          FOREIGN KEY (owner_id) REFERENCES customer_info(id)
+                          FOREIGN KEY (owner_id) REFERENCES customers_info(id)
 );
 
 -- list of addresses of registered users, multivalued weak entity set
-CREATE TABLE customer_contacts (
+CREATE TABLE customers_contacts (
                           id int PRIMARY KEY AUTO_INCREMENT,
                           customer_id char(8) NOT NULL,
                           phone varchar(15) NOT NULL,
-                          FOREIGN KEY (customer_id) REFERENCES customer_info(id)
+                          FOREIGN KEY (customer_id) REFERENCES customers_info(id)
                           -- the email address is set only in the user_account table
 );
 
 -- list of addresses of registered users, multivalued weak entity set
-CREATE TABLE business_contacts (
+CREATE TABLE businesses_contacts (
                           id int PRIMARY KEY AUTO_INCREMENT,
                           business_id char(8) NOT NULL,
                           phone VARCHAR(15) NOT NULL,
-                          FOREIGN KEY (business_id) REFERENCES business_info(id)
+                          FOREIGN KEY (business_id) REFERENCES businesses_info(id)
     -- the email address is set only in the user_account table
 );
 
 -- multivalued weak entity set
-CREATE TABLE customer_address (
+CREATE TABLE customers_addresses (
                          id int PRIMARY KEY AUTO_INCREMENT, -- use stronger primary key instead of autoincrement for multi-user
                          customer_id char(8) NOT NULL,
-                         country_code varchar(255) DEFAULT NULL,
+                         country_code varchar(5) DEFAULT NULL,
                          city varchar(255) DEFAULT NULL,     -- major cities' name
                          district varchar(255) DEFAULT NULL,    -- county name
                          street varchar(255) DEFAULT NULL, -- address
                          holding int DEFAULT NULL,
                          notes longtext DEFAULT NULL,     -- extra details
-                         FOREIGN KEY (customer_id) REFERENCES customer_info(id)
+                         FOREIGN KEY (customer_id) REFERENCES customers_info(id)
 );
 
-CREATE TABLE business_address (
+CREATE TABLE businesses_addresses (
                                     id int PRIMARY KEY AUTO_INCREMENT, -- use stronger primary key instead of autoincrement for multi-user
                                     business_id char(8) NOT NULL,
-                                    country_code varchar(255) DEFAULT NULL,
+                                    country_code varchar(5) DEFAULT NULL,
                                     city varchar(255) DEFAULT NULL,     -- major cities' name
                                     district varchar(255) DEFAULT NULL,    -- county name
                                     street varchar(255) DEFAULT NULL, -- address
                                     holding int DEFAULT NULL,
                                     notes longtext DEFAULT NULL,     -- extra details
-                                    FOREIGN KEY (business_id) REFERENCES business_info(id)
+                                    FOREIGN KEY (business_id) REFERENCES businesses_info(id)
 );
 
 
 -- ------------------- Accounting Section -----------------------
 
 -- create at the end of the intervention to close transactions
-CREATE TABLE financial_statement (
+CREATE TABLE financial_statements (
                                  id int PRIMARY KEY AUTO_INCREMENT,
                                  start_date datetime NOT NULL,
                                  end_date datetime NOT NULL,
@@ -95,12 +95,12 @@ CREATE TABLE financial_statement (
                                  total_expense numeric(10, 2) NOT NULL,
                                  total_revenue numeric(10, 2) NOT NULL,
                                  net_income numeric(10, 2) NOT NULL,
-                                 CONSTRAINT statement_customer FOREIGN KEY(customer_id) REFERENCES customer_info(id),
-                                 CONSTRAINT statement_business FOREIGN KEY(business_id) REFERENCES business_info(id)
+                                 CONSTRAINT statement_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id),
+                                 CONSTRAINT statement_business FOREIGN KEY(business_id) REFERENCES businesses_info(id)
 );
 
 -- Base class account, single elementary entries and jobs, on new entries update history_revenue
-CREATE TABLE financial_account (
+CREATE TABLE financial_accounts (
                          id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
                          date datetime NOT NULL,
 
@@ -116,34 +116,33 @@ CREATE TABLE financial_account (
 
                          notes longtext DEFAULT NULL,
                          sub_total numeric(10, 2),
-                         CONSTRAINT account_client FOREIGN KEY(customer_id) REFERENCES customer_info(id),
-                         CONSTRAINT account_business FOREIGN KEY(business_id) REFERENCES business_info(id)
+                         CONSTRAINT account_client FOREIGN KEY(customer_id) REFERENCES customers_info(id),
+                         CONSTRAINT account_business FOREIGN KEY(business_id) REFERENCES businesses_info(id)
 );
 
 -- ---------------------- Social network class related -------------------------------------
 
-CREATE TABLE user_account (
+CREATE TABLE user_accounts (
                               id char(8) PRIMARY KEY,
-                              username varchar(255),
+                              username varchar(255) UNIQUE,
                               password varchar(255) NOT NULL,
                               customer_id char(8) NOT NULL,
                               business_id char(8) DEFAULT FALSE, -- add check if business id exists
 
-
                               last_modified timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                               last_logged timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                               registration_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                              CONSTRAINT user_customer FOREIGN KEY(customer_id) REFERENCES customer_info(id)
+                              CONSTRAINT user_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id)
 );
 
 CREATE TABLE followers (
                               user_a char(8) NOT NULL,
                               user_b char(8) NOT NULL,
-                              CONSTRAINT followers_user_a FOREIGN KEY (user_a) REFERENCES user_account(id),
-                              CONSTRAINT followers_user_b FOREIGN KEY (user_a) REFERENCES user_account(id)
+                              CONSTRAINT followers_user_a FOREIGN KEY (user_a) REFERENCES user_accounts(id),
+                              CONSTRAINT followers_user_b FOREIGN KEY (user_a) REFERENCES user_accounts(id)
 );
 
-CREATE TABLE incident_location (
+CREATE TABLE incident_locations (
                                 id int PRIMARY KEY AUTO_INCREMENT,
                                 user_id char(8) NOT NULL,
                                 GPSX numeric(10, 7),
@@ -154,7 +153,7 @@ CREATE TABLE incident_location (
                                 street varchar(255) DEFAULT NULL,
                                 note longtext DEFAULT NULL,     -- extra details
                                 datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                FOREIGN KEY (user_id) REFERENCES user_account(id)
+                                FOREIGN KEY (user_id) REFERENCES user_accounts(id)
 );
 
 -- social network post
@@ -165,7 +164,7 @@ CREATE TABLE post_issues (
                             post_content LONGTEXT,
                             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                             last_seen TIMESTAMP DEFAULT NULL,
-                            CONSTRAINT post_user FOREIGN KEY (user_id) REFERENCES user_account(id)
+                            CONSTRAINT post_user FOREIGN KEY (user_id) REFERENCES user_accounts(id)
 );
 
 -- social post answers
@@ -176,7 +175,7 @@ CREATE TABLE post_answers (
                              content LONGTEXT,
                              datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                              CONSTRAINT answer_post FOREIGN KEY (post_id) REFERENCES post_issues(id),
-                             CONSTRAINT answer_user FOREIGN KEY (user_id) REFERENCES user_account(id)
+                             CONSTRAINT answer_user FOREIGN KEY (user_id) REFERENCES user_accounts(id)
 );
 
 -- ------------------- Web related ----------------------------
@@ -184,3 +183,14 @@ CREATE TABLE post_answers (
 
 -- ------------------- Triggers --------------------------------
 
+
+-- insert some data
+
+INSERT INTO customers_info VALUES ('AAAAAAAA', 'rabinul', 'islam', '1992-11-10', 'M');
+INSERT INTO customers_info VALUES ('ABABABAB', 'tamim', 'player', '1945-04-05', 'M');
+INSERT INTO customers_info VALUES ('CACACACA', 'shakil', 'sheraton', '1985-06-07', 'M');
+
+INSERT INTO customers_contacts (customer_id, phone)
+VALUES ('AAAAAAAA', '888-444-6552');
+INSERT INTO customers_addresses (customer_id, country_code, city, district, street, holding, notes)
+VALUES ('AAAAAAAA', 'AJB', 'DOHA', 'KERALA', 'Street Fleet', 18, 'Near the local pharmacy');

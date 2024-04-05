@@ -77,7 +77,7 @@ On successful registration, ask for business account
             </fieldset>
 
             <fieldset>
-                <legend>customeral Info</legend>
+                <legend>Customer Info</legend>
                 <div class="row mb-3">
                     <div class="col">
                         <label for="firstNameField">First Name</label>
