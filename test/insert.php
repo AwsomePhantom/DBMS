@@ -19,13 +19,13 @@
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
 
         if($_SERVER['REQUEST_METHOD'] == 'POST' &&
-            isset($_POST['personId']) &&
+            isset($_POST['customerId']) &&
             isset($_POST['phone']) &&
             isset($_POST['submit'])) {
-            $a = $_POST['personId'];
+            $a = $_POST['customerId'];
             $b = $_POST['phone'];
 
-            $sql = 'INSERT INTO contacts VALUES (null, ?, ?, null)';
+            $sql = 'INSERT INTO customer_contacts VALUES (null, ?, ?)';
             $stmt = $pdo->prepare($sql);
             $res = $stmt->execute([
                 $a, $b
@@ -41,7 +41,7 @@
             isset($_POST['deleteButton'])) {
                 $row = $_POST['deleteButton'];
 
-                $sql = 'DELETE FROM contacts WHERE id = ?';
+                $sql = 'DELETE FROM customer_contacts WHERE id = ?';
                 $stmt = $pdo->prepare($sql);
                 $res = $stmt->execute([$row]);
                 if(!$res) {
@@ -96,7 +96,7 @@
 <div class="container w-75 my-3">
     <form method="POST">
         <div class="input-group">
-            <input name="personId" class="form-control" type="number" placeholder="Person ID: [1-9]+">
+            <input name="customerId" class="form-control" type="number" placeholder="customer ID: [1-9]+">
             <input name="phone" class="form-control" type="text" placeholder="Phone number: [1-9]+">
             <input name="submit" class="btn btn-block btn-primary" type="submit" value="Enter">
         </div>
@@ -108,7 +108,7 @@
         <thead>
         <tr>
             <td>Entry ID</td>
-            <td>Person ID</td>
+            <td>customer ID</td>
             <td>Phone Number</td>
             <td>Options</td>
         </tr>
@@ -124,7 +124,7 @@
             while($x = $resultSet->fetch()) {
                 echo '<tr>';
                 echo "<td>{$x['id']}</td>";
-                echo "<td>{$x['person_id']}</td>";
+                echo "<td>{$x['customer_id']}</td>";
                 echo "<td>{$x['phone']}</td>";
                 echo "<td><button form=\"deleteForm\" name=\"deleteButton\" class=\"btn btn-sm btn-secondary\" type=\"submit\" value=\"{$x['id']}\">Delete</button></td>";
                 echo '</tr>';

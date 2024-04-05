@@ -1,6 +1,6 @@
 <?php
 /*
-class Person {
+class customer {
     public string $name, $lastname, $birthdate, $gender, $notes;
     public array $phone = array(), $address = array();
     function __construct($name, $lastname, $birthdate, $gender, $phone, $address) {
@@ -26,7 +26,7 @@ class Person {
         }
     }
 
-    function person_array() : array {
+    function customer_array() : array {
         return array(
             ':name' => $this->name,
             ':lastname' => $this->lastname,
@@ -42,7 +42,7 @@ class Person {
     {
 
     }
-    function copy(Person $p) : void {
+    function copy(customer $p) : void {
         $this->name = $p->name;
         $this->lastname = $p->lastname;
         $this->birthdate = $p->birthdate;
@@ -52,7 +52,7 @@ class Person {
     }
 }
 
-class Business extends Person {
+class Business extends customer {
     public $UID, $company, $active;
     public $officehours = array(
       "open" => null,
@@ -61,12 +61,12 @@ class Business extends Person {
       array("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
     );
 
-    function __construct($person, $UID, $company, $officehours, $active) {
-        if(!($person instanceof Person)) {
+    function __construct($customer, $UID, $company, $officehours, $active) {
+        if(!($customer instanceof customer)) {
             debug("b not an instance Business object. Line: " . __LINE__);
             return;
         }
-        parent::copy($person);
+        parent::copy($customer);
         $this->UID = $UID;
         $this->company = $company;
         $this->$officehours = clone $officehours;

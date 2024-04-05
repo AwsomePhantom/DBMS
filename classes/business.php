@@ -3,7 +3,7 @@
     namespace classes;
     class business {
         public int $id;
-        public Person $person;
+        public customer $customer;
         public string $company_name, $company_type, $licence_number;
         public DateTime $start, $end, $registration_date;
         public contacts $contacts;
@@ -13,7 +13,7 @@
 
         /**
          * @param int $id
-         * @param Person $person
+         * @param customer $customer
          * @param string $company_name
          * @param string $company_type
          * @param string $licence_number
@@ -25,9 +25,9 @@
          * @param string $weekdays
          * @param bool $active
          */
-        public function __construct(int $id, Person $person, string $company_name, string $company_type, string $licence_number, DateTime $start, DateTime $end, DateTime $registration_date, contacts $contacts, address $address, string $weekdays, bool $active) {
+        public function __construct(int $id, customer $customer, string $company_name, string $company_type, string $licence_number, DateTime $start, DateTime $end, DateTime $registration_date, contacts $contacts, address $address, string $weekdays, bool $active) {
             $this->id = $id;
-            $this->person = $person;
+            $this->customer = $customer;
             $this->company_name = $company_name;
             $this->company_type = $company_type;
             $this->licence_number = $licence_number;
