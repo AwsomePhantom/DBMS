@@ -30,7 +30,7 @@
                     Create
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#" class="dropdown-item">Person Account</a></li>
+                    <li><a href="#" class="dropdown-item">customer Account</a></li>
                     <li><a href="#" class="dropdown-item">Business Account</a></li>
                     <li><a href="#" class="dropdown-item">User Account</a></li>
 
@@ -44,7 +44,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="#" class="dropdown-item">Contacts</a></li>
                     <li><a href="#" class="dropdown-item">Address</a></li>
-                    <li><a href="#" class="dropdown-item">Persons</a></li>
+                    <li><a href="#" class="dropdown-item">customers</a></li>
                     <li><a href="#" class="dropdown-item">Businesses</a></li>
                     <li><a href="#" class="dropdown-item">Users</a></li>
 
