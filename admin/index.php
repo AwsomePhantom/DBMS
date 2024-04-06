@@ -9,12 +9,12 @@
     <style>
         body {
             margin: 0;
-            background: linear-gradient(45deg, darkslategray, darkslategrey);
         }
+
     </style>
 </head>
-<body>
-<nav class="navbar navbar-expand-md bg-white px-2">
+<body class="bg-dark-subtle">
+<nav class="navbar navbar-expand-md bg-info px-2">
     <a href="#" class="navbar-brand">Website</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-area" aria-expanded="false">
         <span class="navbar-toggler-icon"></span>
