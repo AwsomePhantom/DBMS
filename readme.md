@@ -13,7 +13,7 @@
 </ol>
 
 <h4><i>Schema Diagram</i></h4>
-<img alt="Schema Diagram made using dbdiagram.io" src="https://raw.githubusercontent.com/AwsomePhantom/DBMS/e9b1407b0c54c91c862c718bfc0debb37237f425/DBMSProject%20Schema%20Diagram.svg">
+<img alt="Schema Diagram made using dbdiagram.io" src="https://raw.githubusercontent.com/AwsomePhantom/DBMS/3d53052c3b1fb9a2fb31b6a4f248562357c77cfa/Schema_diagram.svg">
 
 <footer>
 <p style="text-align: center">Database Management System Laboratory Project</p>
