@@ -6,25 +6,13 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Account</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <!-- Bootstrap 5 Icons CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap')
-        body {
-            font-family: "Rubik", sans-serif;
-        }
-        legend {
-            font-weight: lighter;
-        }
-    </style>
+    <?php echo file_get_contents($_SERVER['DOCUMENT_ROOT'].'/forms/forms_bootstrap.html'); ?>
 </head>
 <!--
 On successful registration, ask for business account
 
     List of variables:
-        usernameField
+        usernameFieldz
         passwordField
         repeatPasswordField
         emailField
@@ -42,8 +30,14 @@ On successful registration, ask for business account
         holdingNumberField
         noteField
 -->
-<body>
-<div class="container-fluid">
+<body class="bg-body">
+
+
+<?php echo file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/home_components/menu.php'); ?>
+
+<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm" style="padding-top: 70px">
+    <div class="card-header"><h3>Customer Account Registration</h3></div>
+    <div class="card-body p-5">
     <form>
             <fieldset>
                 <legend>User Account Info</legend>
@@ -166,16 +160,23 @@ On successful registration, ask for business account
         </fieldset>
         <hr>
         <div class="row mb-3">
-            <div class="col-5 text-start">
-                <button class="btn btn-lg btn-secondary" type="button"><i class="bi bi-shuffle"> Sample Data</i></button>
+            <div class="col-6 text-start">
+                <button class="btn btn-lg btn-dark" type="button"><i class="bi bi-shuffle"> Sample Data</i></button>
             </div>
-            <div class="col text-end">
+            <div class="col-6 d-flex justify-content-end">
                 <button class="btn btn-lg btn-primary" type="button"><i class="bi bi-arrow-right-circle-fill"> Proceed</i></button>
             </div>
         </div>
     </form>
+    </div>
 </div>
 
+<?php echo file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/home_components/footer.php'); ?>
 
+<script>
+    document.getElementById('top').scrollIntoView({behavior: 'smooth'});
+    var x = document.getElementById('registerToolbarLink');
+    //x.removeAttribute('data-bs-toggle');
+</script>
 </body>
 </html>

@@ -8,18 +8,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Business Account</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Bootstrap 5 Icons CDN -->
+    <link rel="stylesheet" href="../precompiled/superhero/bootstrap-color.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
-    <style>
-        body {
-            font-family: "Rubik", sans-serif;
-        }
-        legend {
-            font-weight: lighter;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <!--
     List of variables:
@@ -101,7 +94,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-3 mx-1">
                 <label for="noteField" class="form-label">Additional information</label>
                 <textarea id="noteField" name="noteField" class="form-control"  rows="3" placeholder="Notes"></textarea>
             </div>
@@ -112,7 +105,7 @@
             <div class="row mb-3">
                 <div class="col">
                     <label>Office Weekdays</label>
-                    <div style="word-spacing: 3px">
+                    <div class="pl-4" style="word-spacing: 10px">
                         <input class="form-check-input" type="checkbox" value="MON" id="mondayCheckBox" checked>
                         <label class="form-check-label" for="mondayCheckBox">MON&nbsp</label>
                             <input class="form-check-input" type="checkbox" value="TUE" id="tuesdayCheckBox" checked>
@@ -163,10 +156,10 @@
 
         <hr>
         <div class="row mb-3 align-items-center">
-            <div class="col text-start">
+            <div class="col-6 text-start">
                 <button class="btn btn-lg btn-secondary" type="button"><i class="bi bi-shuffle"> Sample Data</i></button>
             </div>
-            <div class="col text-end">
+            <div class="col-6 d-flex justify-content-end">
                 <button class="btn btn-lg btn-primary" type="button"><i class="bi bi-arrow-right-circle-fill"> Proceed</i></button>
             </div>
         </div>

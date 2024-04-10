@@ -11,6 +11,7 @@
     <!-- Bootstrap 5 Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap')
         body {
@@ -18,9 +19,7 @@
             background-color: #f5f5f5;
             height: 100%;
         }
-        legend {
-            font-weight: lighter;
-        }
+
         body {
             display: -ms-flexbox;
             display: -webkit-box;
@@ -98,10 +97,12 @@
                 </div>
             </div>
         </div>
-        <div class="mb-3">
-            <div class="row mb-3">
+        <div class="row mb-3 m-1">
                 <input tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
-                <input tabindex="5" id="registerButton" class="btn btn-lg btn-secondary" value="Register">
+        </div>
+        <hr>
+        <div class="row text-center">
+            <h6>Not a member yet? <a class="link-primary" href="#">Sign up</a></h6>
         </div>
     </form>
 </div>
