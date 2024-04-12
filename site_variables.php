@@ -19,6 +19,9 @@ define('ABSOLUTE_PATHS', array(
     "FOOTER_PAGE"                   => $_SERVER['DOCUMENT_ROOT'] . '/home_components/footer.php',
     "CUSTOMER_REGISTRATION_FORM"    => $_SERVER['DOCUMENT_ROOT'] . '/forms/registration.php',
     "BUSINESS_REGISTRATION_FORM"    => $_SERVER['DOCUMENT_ROOT'] . '/forms/registrationBusiness.php',
+    "LOGIN_PAGE"                    => $_SERVER['DOCUMENT_ROOT'] . '/forms/login.php',
+    "LOADING_PAGE"                  => $_SERVER['DOCUMENT_ROOT'] . '/home_components/loading.php',
+    "SUCCESSFUL_REGISTRATION"       => $_SERVER['DOCUMENT_ROOT'] . '/forms/successful_registration.php',
     "LOCAL_STYLESHEET"              => $_SERVER['DOCUMENT_ROOT'] . '/styles/styles.css',
     "FULL_BOOTSTRAP"                => $boostrap_include
 ));

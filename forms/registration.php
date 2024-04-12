@@ -45,22 +45,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $unique_id = CONNECTION->generateID();
                 $user = new user($unique_id, $_POST['usernameField'], $person, null, null, null, null);
                 $res = CONNECTION->create_user($user, $_POST['repeatPasswordField']);
+                sleep(1);
+                if($res) {
+                    header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
+                }
 
             }
             catch (PDOException $e) {
                 throw new PDOException($e->getMessage(), (int)$e->getCode());
             }
-            unset($_POST);
-            header("Location: " . REGISTRATION_POST_URI);
-        if ($res) {
-            echo "<h1>User created</h1>";
-        } else {
-            die("Error creating user");
-        }
+
+            if(!$res) die("registration error");
     }
-
-
-
 }
 
 ?>

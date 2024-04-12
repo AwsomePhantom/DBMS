@@ -227,6 +227,7 @@
 			$sql = 'INSERT INTO customers_contacts (customer_id, phone) VALUES (?, ?);';
 			$stmt = $this->pdo->prepare($sql);
 			foreach($c->contacts->phones as $x) {
+                if(empty($x)) continue;
 				// stmt->execute() returns back a bool
 				$res = $stmt->execute([
 				  $c->id,
@@ -372,11 +373,11 @@
 			if($stmt) {
 				$contacts = new contacts($customer_id, []);
 				while($row = $stmt->fetch()) {
-					$contacts->phones[] = $row[2];
+                    if(!empty($row[2])) $contacts->phones[] = $row[2];
 				}
 				return $contacts;
 			}
-			return false;
+			return null;
 		}
 
         /**
@@ -395,7 +396,7 @@
 				}
 				return $contacts;
 			}
-			return false;
+			return null;
 		}
 
         /**
@@ -540,7 +541,7 @@
                 'WHERE id = ?;';
             $exists = 1;
             while ($exists > 0) {    // check if random id already exists
-                $unique_id = substr(md5(uniqid(mt_rand(), true)), 0, 8);       // assign a new random id
+                $unique_id = substr(md5(uniqid(mt_rand(), true)), 0, 12);       // assign a new random id
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute([$unique_id]);
                 $exists = $stmt->rowCount();
