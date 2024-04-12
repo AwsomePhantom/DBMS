@@ -1,3 +1,69 @@
+<?php
+require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php');
+require_once ($_SERVER['DOCUMENT_ROOT'] . '/database/connection.php');
+
+    use classes\contacts;
+    use classes\address;
+    use classes\customer;
+    use classes\user;
+
+define("REGISTRATION_POST_URI", getURI());
+
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if( isset($_POST['usernameField']) &&
+        isset($_POST['passwordField']) &&
+        isset($_POST['repeatPasswordField']) &&
+        isset($_POST['emailField']) &&
+        isset($_POST['firstNameField']) &&
+        isset($_POST['lastNameField']) &&
+        isset($_POST['birthDateField']) &&
+        isset($_POST['genderRadio']) &&
+        isset($_POST['numberField1']) &&
+        isset($_POST['numberField2']) &&
+        isset($_POST['countryField']) &&
+        isset($_POST['cityField']) &&
+        isset($_POST['stateField']) &&  // district
+        isset($_POST['zipCodeField']) &&
+        isset($_POST['addressField']) &&    // street
+        isset($_POST['holdingNumberField']) &&
+        isset($_POST['notesField'])) {
+            try {
+                $res = CONNECTION->is_username_available($_POST['usernameField']);
+                if (!$res) {
+                    throw new Exception("Username not available");
+                }
+
+                if ($_POST['passwordField'] !== $_POST['repeatPasswordField']) {
+                    throw new Exception("Passwords do not match");
+                }
+
+                $unique_id = CONNECTION->generateID();
+                $phones = new contacts($unique_id, [$_POST['numberField1'], $_POST['numberField2']]);
+                $house_address = new address($unique_id, $_POST['countryField'], $_POST['cityField'], $_POST['stateField'], $_POST['zipCodeField'], $_POST['addressField'], $_POST['holdingNumberField'], $_POST['notesField']);
+
+                $person = new customer($unique_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
+                $unique_id = CONNECTION->generateID();
+                $user = new user($unique_id, $_POST['usernameField'], $person, null, null, null, null);
+                $res = CONNECTION->create_user($user, $_POST['repeatPasswordField']);
+
+            }
+            catch (PDOException $e) {
+                throw new PDOException($e->getMessage(), (int)$e->getCode());
+            }
+            unset($_POST);
+            header("Location: " . REGISTRATION_POST_URI);
+        if ($res) {
+            echo "<h1>User created</h1>";
+        } else {
+            die("Error creating user");
+        }
+    }
+
+
+
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -6,13 +72,13 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Account</title>
-    <?php echo file_get_contents($_SERVER['DOCUMENT_ROOT'].'/forms/forms_bootstrap.html'); ?>
+    <?php echo ABSOLUTE_PATHS['FULL_BOOTSTRAP']; ?>
 </head>
 <!--
 On successful registration, ask for business account
 
     List of variables:
-        usernameFieldz
+        usernameField
         passwordField
         repeatPasswordField
         emailField
@@ -24,21 +90,24 @@ On successful registration, ask for business account
         numberField2
         countryField
         cityField
-        stateField
+        stateField      -> district
         zipCodeField
-        addressField
+        addressField    -> street
         holdingNumberField
-        noteField
+        notesField
 -->
 <body class="bg-body">
 
 
-<?php echo file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/home_components/menu.php'); ?>
+<?php
+include($_SERVER['DOCUMENT_ROOT'] . '/home_components/loading.php');
+include(ABSOLUTE_PATHS['MENU_PAGE']);
+?>
 
-<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm" style="padding-top: 70px">
+<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-bold" style="padding-top: 70px;">
     <div class="card-header"><h3>Customer Account Registration</h3></div>
     <div class="card-body p-5">
-    <form>
+    <form method="POST">
             <fieldset>
                 <legend>User Account Info</legend>
                 <div class="row mb-3">
@@ -60,7 +129,7 @@ On successful registration, ask for business account
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col">
+                    <div class="col-6">
                         <label for="emailField">Email Address</label>
                         <div class="input-group mb-3">
                             <input id="emailField" name="emailField" type="text" class="form-control" placeholder="user@domain.com" aria-label="Username" aria-describedby="basic-addon1">
@@ -91,13 +160,13 @@ On successful registration, ask for business account
                     <div class="col">
                         <label>Gender</label>
                         <div class="form-check">
-                            <input id="genderRadio" name="genderRadio" class="form-check-input" type="radio" checked>
+                            <input id="genderRadio" name="genderRadio" class="form-check-input" type="radio" value="M" checked>
                             <label class="form-check-label" for="genderRadio">
                                 Male
                             </label>
                         </div>
                         <div class="form-check">
-                            <input id="genderRadio2" name="genderRadio" class="form-check-input" type="radio">
+                            <input id="genderRadio2" name="genderRadio" class="form-check-input" value="F" type="radio">
                             <label class="form-check-label" for="genderRadio2">
                                 Female
                             </label>
@@ -152,9 +221,9 @@ On successful registration, ask for business account
                 </div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-3 mx-1">
                 <label for="noteField" class="form-label">Additional information</label>
-                <textarea id="noteField" name="noteField" class="form-control"  rows="3" placeholder="Notes"></textarea>
+                <textarea id="noteField" name="notesField" class="form-control"  rows="3" placeholder="Notes"></textarea>
             </div>
 
         </fieldset>
@@ -164,19 +233,17 @@ On successful registration, ask for business account
                 <button class="btn btn-lg btn-dark" type="button"><i class="bi bi-shuffle"> Sample Data</i></button>
             </div>
             <div class="col-6 d-flex justify-content-end">
-                <button class="btn btn-lg btn-primary" type="button"><i class="bi bi-arrow-right-circle-fill"> Proceed</i></button>
+                <button class="btn btn-lg btn-primary" type="submit"><i class="bi bi-arrow-right-circle-fill"> Proceed</i></button>
             </div>
         </div>
     </form>
     </div>
 </div>
 
-<?php echo file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/home_components/footer.php'); ?>
-
+<?php include_once(ABSOLUTE_PATHS['FOOTER_PAGE']); ?>
 <script>
+    document.getElementById('loader').classList.add('fadeout');
     document.getElementById('top').scrollIntoView({behavior: 'smooth'});
-    var x = document.getElementById('registerToolbarLink');
-    //x.removeAttribute('data-bs-toggle');
 </script>
 </body>
 </html>

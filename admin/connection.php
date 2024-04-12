@@ -1,5 +1,6 @@
 <?php
 //require_once $_SERVER['DOCUMENT_ROOT'] . '/users.php'; // add user, business class definition
+/*
 require_once '../users.php';
 echo 'user.php added.<br>';
 
@@ -48,4 +49,4 @@ class Connection {
     function __destruct() {
         $conn = null;
     }
-}
+}*/

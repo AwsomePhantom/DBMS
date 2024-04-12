@@ -1,4 +1,4 @@
-
+<?php require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php'); ?>
 <nav class="container-fluid m-0 p-0">
     <ul class="nav flex-row justify-content-end" id="baseToolBar">
         <li><h5><a href="#" id="registerToolbarLink" class="nav-link" data-bs-toggle="modal" data-bs-target="#registerModal"><i class="fa-solid fa-user-plus"></i> Create an account</a></h5></li>
@@ -21,7 +21,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto" style="min-width: 790px;">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="../"><i class="fa-solid fa-house"></i> Home</a>
+                    <a class="nav-link active" aria-current="page" href="<?php echo relativePath(ABSOLUTE_PATHS['HOME_PAGE']); ?>"><i class="fa-solid fa-house"></i> Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#"><i class="fa-solid fa-circle-info"></i> About</a>
@@ -61,7 +61,7 @@
 
             <!-- modal dialog for login -->
             <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content shadow-lg">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">Login</h5>
@@ -120,13 +120,12 @@
                             </ul>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Consumer Account</button>
-                            <button type="button" class="btn btn-secondary">Business Account</button>
+                            <button type="button" class="btn btn-primary" onclick="location.href='<?php echo relativePath(ABSOLUTE_PATHS['CUSTOMER_REGISTRATION_FORM']); ?>';">Consumer Account</button>
+                            <button type="button" class="btn btn-secondary" onclick="location.href='<?php echo relativePath(ABSOLUTE_PATHS['BUSINESS_REGISTRATION_FORM']); ?>';">Business Account</button>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </nav>

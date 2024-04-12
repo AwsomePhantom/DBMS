@@ -58,6 +58,7 @@ CREATE TABLE customers_addresses (
                          country_code varchar(5) DEFAULT NULL,
                          city varchar(255) DEFAULT NULL,     -- major cities' name
                          district varchar(255) DEFAULT NULL,    -- county name
+                         zipcode varchar(10) DEFAULT NULL,
                          street varchar(255) DEFAULT NULL, -- address
                          holding int DEFAULT NULL,
                          notes longtext DEFAULT NULL,     -- extra details
@@ -70,6 +71,7 @@ CREATE TABLE businesses_addresses (
                                     country_code varchar(5) DEFAULT NULL,
                                     city varchar(255) DEFAULT NULL,     -- major cities' name
                                     district varchar(255) DEFAULT NULL,    -- county name
+                                    zipcode varchar(10) DEFAULT NULL,
                                     street varchar(255) DEFAULT NULL, -- address
                                     holding int DEFAULT NULL,
                                     notes longtext DEFAULT NULL,     -- extra details

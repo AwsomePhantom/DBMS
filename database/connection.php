@@ -15,25 +15,26 @@
 	$ROOT_DIR =  $_SERVER['DOCUMENT_ROOT'];
 	require_once ($ROOT_DIR.'/database/variables.php');
 
-	$conn = new connection();
-	$conn->connect();
+	const CONNECTION = new connection();
+	CONNECTION->connect();
 /*
 	// Sample code for user registration
-	$unique_id = $conn->generateID();
+
+	$unique_id = CONNECTION->generateID();
 	$phones = new contacts(null, ['888-444-5555', '112-354-9477']);
 	$phones_company = new contacts(null, ['0694-447-9994', '0466-9974-4444']);
-	$house_address = new address(null, 'AJB', 'DOHA', 'Kerala', 'Crooker\'s Steet', '48', 'Near the plaza');
-	$office_address = new address(null, 'AJB', 'DOHA', 'Village', 'Flat Steet', '20', 'On the top of the hill, beside the supermarket');
+	$house_address = new address(null, 'AJB', 'DOHA', 'Kerala', '1204', 'Crooker\'s Steet', '48', 'Near the plaza');
+	$office_address = new address(null, 'AJB', 'DOHA', 'Village', '1204', 'Flat Steet', '20', 'On the top of the hill, beside the supermarket');
 
 	$person = new customer($unique_id, 'rabinul', 'islam', '1992-11-10', 'M', $phones, $house_address);
-	$unique_id = $conn->generateID();
+	$unique_id = CONNECTION->generateID();
 	$company = new business($unique_id, $person, 'Fast Tyres', 'Auto Mechanic', 'VXPT-CBBPO-AV1566',
 		$phones_company, $office_address, new DateTime('08:30:00'), new DateTime('20:00:00'),
 		'SUN,MON,TUE,WED,THU,FRI', null, true);
-	$unique_id = $conn->generateID();
+	$unique_id = CONNECTION->generateID();
 	$user = new user($unique_id, 'rabinul', $person, $company, null, null, null);
 
-	$result = $conn->create_user($user, '1234');
+	$result = CONNECTION->create_user($user, '1234');
 	if(!$result) {
 		echo 'Failed to create new user.<br>';
 	}
@@ -42,44 +43,19 @@
 	}
 */
 
-	define("URI", "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-	function resetPost() {
-		unset($_POST);
-		header("Location: " . URI);
-	}
+    function getURI() : string {
+        $ssl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' || $_SERVER['SERVER_PORT'] == 433);
+        $out = $ssl ? "https://" : "http://";
+        $out .= $_SERVER['HTTP_HOST'];
+        $out .= $_SERVER['REQUEST_URI'];
+        // https are null because a configuration in httpd
+        return $out;
+    }
 
-	$testLogin = file_get_contents($root_dir . '/test/testLogin.html');
-	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		if(isset($_POST['user']) && isset($_POST['pass'])) {
-			$user = $_POST['user'];
-			$pass = $_POST['pass'];
-			try {
-				$user = $conn->login($user, $pass);
-				if(!$user) {
-                    echo '<h4>Login failed</h4>';
-                }
-                else {
-                    echo '<h4>Welcome back, ' . strtoupper($user->customer->name) . ' ' . strtoupper($user->customer->lastname) . '</h4><br>';
-                    echo "C_ID: " . $user->customer->id . '<br>';
-                    echo "B_ID: " . $user->business->id . '<br>';
-                }
-			}
-			catch (PDOException $e) {
-				throw new PDOException($e->getMessage(), $e->getCode());
-			}
-			catch (Exception $e) {
-				echo 'Error: ' . $e->getMessage() . '<br>';
-			}
-		}
-	}
-
-	echo $testLogin;    // publish the web page
-
-
-
-
-	/* Main MYSQL connection and query class */
-	// add to the user class query functionalities for navigation
+	/**
+     * Main MYSQL connection and query class
+	 * todo: add to the user class query functionalities for, or add it to user object passing pdo as param
+     */
 	class connection {
 
         /**
@@ -260,13 +236,14 @@
 			if(!$res) return false;
 
 			$addr = $c->address;
-			$sql = 'INSERT INTO customers_addresses (customer_id, country_code, city, district, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?)';
+			$sql = 'INSERT INTO customers_addresses (customer_id, country_code, city, district, zipcode, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?, ?)';
 			$stmt = $this->pdo->prepare($sql);
 			$res = $stmt->execute([
 				$c->id,
 				$addr->country_code,
 				$addr->city,
 				$addr->district,
+                $addr->zipCode,
 				$addr->street,
 				$addr->holding,
 				$addr->notes
@@ -314,13 +291,14 @@
 			if(!$res) return false;
 
 			$addr = $b->address;
-			$sql = 'INSERT INTO businesses_addresses (business_id, country_code, city, district, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?)';
+			$sql = 'INSERT INTO businesses_addresses (business_id, country_code, city, district, zipcode, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?, ?)';
 			$stmt = $this->pdo->prepare($sql);
 			$res = $stmt->execute([
 				$b->id,
 				$addr->country_code,
 				$addr->city,
 				$addr->district,
+                $addr->zipCode,
 				$addr->street,
 				$addr->holding,
 				$addr->notes
@@ -329,6 +307,24 @@
 			if(!$res) return false;
 			return true;
 		}
+
+        /**
+         * Check whether the username is available on the server
+         * @param string $username
+         * @return bool
+         */
+        function is_username_available(string $username) : bool {
+            if(empty($username) || $username === ' ') return false;
+            $sql = "SELECT username FROM user_accounts WHERE username = \"{$username}\" LIMIT 1";
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_NUM);
+            $stmt = $this->pdo->query($sql);
+            if($stmt && $stmt->rowCount() > 0) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
 
         /**
          * Return an address object associated with the customer_id
@@ -341,7 +337,8 @@
 			$stmt = $this->pdo->query($sql);
 			if($stmt) {
 				$row = $stmt->fetch();
-				return new address($row[0], $row[2], $row[3], $row[4], $row[5], $row[6], $row[7]);
+                // first param of address is customer id, no need to load address id
+				return new address($row[1], $row[2], $row[3], $row[4], $row[5], $row[6], $row[7], $row[8]);
 			}
 			return false;
 		}
@@ -357,7 +354,8 @@
 			$stmt = $this->pdo->query($sql);
 			if($stmt) {
 				$row = $stmt->fetch();
-				return new address($row[0], $row[2], $row[3], $row[4], $row[5], $row[6], $row[7]);
+                // first param of address is customer id, no need to load address id
+                return new address($row[1], $row[2], $row[3], $row[4], $row[5], $row[6], $row[7], $row[8]);
 			}
 			return false;
 		}
