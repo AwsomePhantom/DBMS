@@ -39,7 +39,7 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
 ?>
 
 <div id="top" class="container bg-body my-5 mx-auto p-0 lato-bold" style="padding-top: 70px">
-    <div class="card bg-body-tertiary mb-3 p-2 border-yellow align-middle" style="border-color:lightsalmon;">
+    <div class="card bg-body-tertiary mb-3 p-2 border-primary align-middle" style="border-color:lightsalmon;">
         <span class="h4">Please fill the form</span>
     </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -72,7 +72,7 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col">
+                        <div class="col-6">
                             <label for="repeatPasswordField">Repeat Password</label>
                             <input id="repeatPasswordField" name="repeatPasswordField" type="password" class="form-control" placeholder="Password">
                         </div>
@@ -151,7 +151,7 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
                             <input id="cityField" name="cityField" type="text" class="form-control">
                         </div>
                         <div class="col">
-                            <label for="stateField">State</label>
+                            <label for="stateField">State / District</label>
                             <input id="stateField" name="stateField" type="text" class="form-control">
                         </div>
                     </div>

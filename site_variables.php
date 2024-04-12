@@ -2,9 +2,19 @@
 
 const RELATIVE_ROOT = "/github";
 
+const USER_THEMES = array(
+    // 10 PER ROW
+    'abaculus', 'backstay', 'bubblegum', 'business-tycoon', 'cable', 'cerulean', 'charming', 'cosmo', 'cyborg', 'dalton',
+    'darkly', 'daydream', 'ectype', 'executive-suite', 'ferula', 'flatly', 'good-news', 'growth', 'harbor', 'hello-world',
+    'journal', 'litera', 'lumen', 'lux', 'materia', 'minty', 'neon-glow', 'pleasant', 'pulse', 'retro',
+    'sandstone', 'simplex', 'sketchy', 'slate', 'solar', 'spacelab', 'superhero', 'united', 'vibrant-sea', 'wizardry',
+    'yeti');
+
+$GLOBALS['USER_THEME'] = USER_THEMES[31];
+
 $relative_root = RELATIVE_ROOT;
 $boostrap_include = <<< ENDL_
-<link rel="stylesheet" href="{$relative_root}/precompiled/simplex/bootstrap-color.min.css">
+<link rel="stylesheet" href="{$relative_root}/precompiled/{$GLOBALS['USER_THEME']}/bootstrap-color.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

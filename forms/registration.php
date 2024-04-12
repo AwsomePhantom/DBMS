@@ -118,7 +118,7 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col">
+                    <div class="col-6">
                         <label for="repeatPasswordField">Repeat Password</label>
                         <input id="repeatPasswordField" name="repeatPasswordField" type="password" class="form-control" placeholder="Password">
                     </div>
@@ -197,7 +197,7 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
                     <input id="cityField" name="cityField" type="text" class="form-control">
                 </div>
                 <div class="col">
-                    <label for="stateField">State</label>
+                    <label for="stateField">State / District</label>
                     <input id="stateField" name="stateField" type="text" class="form-control">
                 </div>
             </div>
