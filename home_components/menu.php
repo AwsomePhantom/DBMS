@@ -1,4 +1,13 @@
-<?php require_once (ROOT_DIR . '/site_variables.php'); ?>
+<?php
+if(!isset($GLOBALS['WEBSITE_VARS'])) {
+    require_once ('../site_variables.php');
+    $GLOBALS['WEBSITE_VARS'] = true;
+}
+if(!isset($GLOBALS['CONNECTION_VARS'])) {
+    require_once ('../database/connection.php');
+    $GLOBALS['CONNECTION_VARS'] = true;
+}
+?>
 <nav class="container-fluid m-0 p-0">
     <ul class="nav flex-row justify-content-end" id="baseToolBar">
         <li><h5><a href="#" id="registerToolbarLink" class="nav-link" data-bs-toggle="modal" data-bs-target="#registerModal" onclick="toggleMenu();"><i class="fa-solid fa-user-plus"></i> Create an account</a></h5></li>

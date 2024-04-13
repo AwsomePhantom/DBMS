@@ -1,10 +1,9 @@
 <?php
-	$root_dir = $_SERVER['DOCUMENT_ROOT'];
-	require_once $root_dir . '/classes/contacts.php';
-	require_once $root_dir . '/classes/address.php';
-	require_once $root_dir . '/classes/customer.php';
-	require_once $root_dir . '/classes/business.php';
-	require_once $root_dir . '/classes/user.php';
+	require_once ROOT_DIR . '/classes/contacts.php';
+	require_once ROOT_DIR . '/classes/address.php';
+	require_once ROOT_DIR . '/classes/customer.php';
+	require_once ROOT_DIR . '/classes/business.php';
+	require_once ROOT_DIR . '/classes/user.php';
 
 	use classes\contacts;
 	use classes\address;
@@ -12,8 +11,7 @@
 	use classes\business;
 	use classes\user;
 
-	$ROOT_DIR =  $_SERVER['DOCUMENT_ROOT'];
-	require_once ($ROOT_DIR.'/database/variables.php');
+	require_once (ROOT_DIR . '/database/variables.php');
 
 	const CONNECTION = new connection();
 	CONNECTION->connect();
