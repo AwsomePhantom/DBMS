@@ -1,4 +1,4 @@
-<?php require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php'); ?>
+<?php require_once (ROOT_DIR . '/site_variables.php'); ?>
 <nav class="container-fluid m-0 p-0">
     <ul class="nav flex-row justify-content-end" id="baseToolBar">
         <li><h5><a href="#" id="registerToolbarLink" class="nav-link" data-bs-toggle="modal" data-bs-target="#registerModal" onclick="toggleMenu();"><i class="fa-solid fa-user-plus"></i> Create an account</a></h5></li>

@@ -43,6 +43,10 @@
 	}
 */
 
+/**
+ * Get the current browser URI http or https
+ * @return string
+ */
     function getURI() : string {
         $ssl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' || $_SERVER['SERVER_PORT'] == 433);
         $out = $ssl ? "https://" : "http://";
