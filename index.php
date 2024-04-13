@@ -1,4 +1,5 @@
-<?php require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php'); ?>
+<?php
+require_once ('site_variables.php'); ?>
 
 <!DOCTYPE HTML>
 <html lang="en">
@@ -8,12 +9,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Index Document</title>
     <?php echo ABSOLUTE_PATHS['FULL_BOOTSTRAP']; ?>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
 </head>
 <body class="bg-body-secondary">
 
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/home_components/loading.php');
+include(ABSOLUTE_PATHS['LOADING_PAGE']);
 include(ABSOLUTE_PATHS['MENU_PAGE']);
 
 ?>
@@ -22,7 +22,7 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
     <?php include_once(ABSOLUTE_PATHS['ARTICLES_PAGE']); ?>
 </div>
 
-<?php echo include_once(ABSOLUTE_PATHS['FOOTER_PAGE']); ?>
+<?php include_once(ABSOLUTE_PATHS['FOOTER_PAGE']); ?>
 <script>
     document.getElementById('loader').classList.add('fadeout');
 </script>

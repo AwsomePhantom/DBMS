@@ -1,5 +1,3 @@
-import * as country_list from '../database/countries.json';
-import * as city_list from '../database/cities.json';
 
 function toggleMenu() {
     let size = getViewport();
@@ -13,16 +11,13 @@ function toggleMenu() {
 
 function getViewport () {
     // https://stackoverflow.com/a/8876069
-    const width = Math.max(
-        document.documentElement.clientWidth,
-        window.innerWidth || 0
-    )
-    if (width <= 576) return 'xs'
-    if (width <= 768) return 'sm'
-    if (width <= 992) return 'md'
-    if (width <= 1200) return 'lg'
-    if (width <= 1400) return 'xl'
-    return 'xxl';
+    const width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        if (width <= 576) return 'xs';
+        if (width <= 768) return 'sm';
+        if (width <= 992) return 'md';
+        if (width <= 1200) return 'lg';
+        if (width <= 1400) return 'xl';
+        return 'xxl';
 }
 
 function populateCountries() {
@@ -71,4 +66,3 @@ function populateCountries() {
     });*/
 }
 
-export {populateCountries};

@@ -1,4 +1,4 @@
-<?php require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php'); ?>
+<?php require_once ('../site_variables.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +34,7 @@
 -->
 <body class="bg-body">
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/home_components/loading.php');
+include(ABSOLUTE_PATHS['LOADING_PAGE']);
 include(ABSOLUTE_PATHS['MENU_PAGE']);
 ?>
 

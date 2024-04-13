@@ -1,6 +1,6 @@
 <?php
-require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php');
-require_once ($_SERVER['DOCUMENT_ROOT'] . '/database/connection.php');
+require_once ('../site_variables.php');
+require_once (ROOT_DIR . '/database/connection.php');
 
     use classes\contacts;
     use classes\address;
@@ -96,7 +96,7 @@ On successful registration, ask for business account
 
 
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/home_components/loading.php');
+include(ABSOLUTE_PATHS['LOADING_PAGE']);
 include(ABSOLUTE_PATHS['MENU_PAGE']);
 ?>
 
