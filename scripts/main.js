@@ -1,15 +1,8 @@
-
-function toggleTheme() {
-    if(document.documentElement.getAttribute('data-bs-theme') === 'dark') {
-        document.documentElement.setAttribute('data-bs-theme', 'light')
-    }
-    else {
-        document.documentElement.setAttribute('data-bs-theme', 'dark')
-    }
-}
+import * as country_list from '../database/countries.json';
+import * as city_list from '../database/cities.json';
 
 function toggleMenu() {
-    var size = getViewport();
+    let size = getViewport();
     if(size === 'xs' || size === 'sm' || size === 'md') {
         const menuToggle = document.getElementById('navbarSupportedContent');
         if(menuToggle.classList.contains('collapse')) {
@@ -29,5 +22,53 @@ function getViewport () {
     if (width <= 992) return 'md'
     if (width <= 1200) return 'lg'
     if (width <= 1400) return 'xl'
-    return 'xxl'
+    return 'xxl';
 }
+
+function populateCountries() {
+
+/*
+    const countryField = document.querySelector('#countryField');
+    const cityField = document.querySelector('#cityField');
+
+    fetch('../database/countries.json')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.code;
+                option.text = item.name;
+
+                countryField.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching JSON:', error);
+        });
+
+    countryField.addEventListener('change', function() {
+        let child = cityField.lastElementChild;
+        while (child) {
+            cityField.removeChild(child);
+            child = cityField.lastElementChild;
+        }
+
+        fetch('../database/cities.json')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.text = item.name;
+
+                    cityField.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching JSON:', error);
+            });
+
+    });*/
+}
+
+export {populateCountries};

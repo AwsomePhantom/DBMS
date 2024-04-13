@@ -190,11 +190,18 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
             <div class="row mb-3">
                 <div class="col">
                     <label for="countryField">Country</label>
-                    <input id="countryField" name="countryField" type="text" class="form-control">
+                    <!-- <input id="countryField" name="countryField" type="text" class="form-control"> -->
+                    <select id="countryField" class="form-select form-select-lg mb-3" aria-label="Countries">
+                        <option selected>Select a country</option>
+
+                    </select>
                 </div>
                 <div class="col">
                     <label for="cityField">City</label>
-                    <input id="cityField" name="cityField" type="text" class="form-control">
+                    <!-- <input id="cityField" name="cityField" type="text" class="form-control"> -->
+                    <select id="cityField" class="form-select form-select-lg mb-3" aria-label="Cities">
+                        <option selected>Select a city</option>
+                    </select>
                 </div>
                 <div class="col">
                     <label for="stateField">State / District</label>

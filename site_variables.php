@@ -1,6 +1,6 @@
 <?php
 
-const RELATIVE_ROOT = "/github";
+$relative_root = relativePath($_SERVER['DOCUMENT_ROOT']);
 
 const USER_THEMES = array(
     // 10 PER ROW
@@ -12,7 +12,7 @@ const USER_THEMES = array(
 
 $GLOBALS['USER_THEME'] = USER_THEMES[31];
 
-$relative_root = RELATIVE_ROOT;
+
 $boostrap_include = <<< ENDL_
 <link rel="stylesheet" href="{$relative_root}/precompiled/{$GLOBALS['USER_THEME']}/bootstrap-color.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
@@ -43,6 +43,8 @@ if(!file_exists(ABSOLUTE_PATHS['FOOTER_PAGE'])) die("Footer file not found.");
 if(!file_exists(ABSOLUTE_PATHS['LOCAL_STYLESHEET'])) die("Stylesheet file not found.");
 
 function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string {
+    if($absolutePath === $_SERVER['DOCUMENT_ROOT']) return "";                  // The path given and the server root are the same
+
     $a = explode($separator, $absolutePath);
     $b = explode($separator, $_SERVER['REQUEST_URI']);
     $fileName = end($a);
@@ -52,9 +54,11 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     $b = array_slice($b, 0, count($b) - 1);                         // Remove last element from URI representing the webpage file
 
-    if($a === $_SERVER['DOCUMENT_ROOT']) return $fileName;                      // The given path and the document root are the same, the relative path is the filename
+
     if(file_exists($absolutePath)) $a = array_slice($a, 0, count($a) - 1);     // If absolutePath is a file, remove filename from the path to compare directories
     else if(!is_dir($absolutePath)) return "";                                  // The absolute path given is nor a file's address, nor a correct directory path
+    if(implode($separator, $a) === $_SERVER['DOCUMENT_ROOT']) return $fileName; // The given path and the document root are the same, the relative path is the filename
+
 
     if(count($b) == 0) {                                                        // The request URI is from the first page, so there are no subfolders
         $c = explode($separator, $_SERVER['DOCUMENT_ROOT']);

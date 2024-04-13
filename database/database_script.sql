@@ -1,20 +1,41 @@
+START TRANSACTION;
 
 DROP DATABASE IF EXISTS dbmsproject;
 CREATE DATABASE dbmsproject;
 USE dbmsproject;
+
+-- --------------------- Geolocation --------------------------------------
+
+CREATE TABLE countries (
+                           code char(3) PRIMARY KEY,
+                           name varchar(52) NOT NULL,
+                           continent enum('Asia','Europe','North America','Africa','Oceania','Antarctica','South America') NOT NULL DEFAULT 'Asia',
+                           region varchar(26) NOT NULL,
+                           capital_city_code int(11) DEFAULT NULL,
+                           code2 char(2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE cities (
+                        id int PRIMARY KEY AUTO_INCREMENT,
+                        name varchar(35) NOT NULL,
+                        country_code char(3) NOT NULL,
+                        district varchar(20) NOT NULL,
+                        CONSTRAINT cities_country_code FOREIGN KEY (country_code) REFERENCES countries(code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 -- --------------------- Basic Attributes --------------------------------------
 
 
 -- Base class customer, list of customers who registered including users and businesses
 CREATE TABLE customers_info (
-                        id char(12) PRIMARY KEY,
-                        name varchar(255) DEFAULT NULL,
-                        lastname varchar(255) DEFAULT NULL,
-                        birthdate date DEFAULT NULL,
-                        gender character DEFAULT NULL
-                        -- contacts and addresses are multivalued and have customer_id on their table
-);
+                           id char(12) PRIMARY KEY,
+                           name varchar(255) DEFAULT NULL,
+                           lastname varchar(255) DEFAULT NULL,
+                           birthdate date DEFAULT NULL,
+                           gender character DEFAULT NULL
+                           -- contacts and addresses are multivalued and have customer_id on their table
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- add company type table
 
@@ -31,7 +52,7 @@ CREATE TABLE businesses_info (
                           active boolean NOT NULL DEFAULT TRUE,       -- if the business account has been deactivated or not
                           registration_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           FOREIGN KEY (owner_id) REFERENCES customers_info(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- list of addresses of registered users, multivalued weak entity set
 CREATE TABLE customers_contacts (
@@ -40,7 +61,7 @@ CREATE TABLE customers_contacts (
                           phone varchar(15) NOT NULL,
                           FOREIGN KEY (customer_id) REFERENCES customers_info(id)
                           -- the email address is set only in the user_account table
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- list of addresses of registered users, multivalued weak entity set
 CREATE TABLE businesses_contacts (
@@ -49,34 +70,39 @@ CREATE TABLE businesses_contacts (
                           phone VARCHAR(15) NOT NULL,
                           FOREIGN KEY (business_id) REFERENCES businesses_info(id)
     -- the email address is set only in the user_account table
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- multivalued weak entity set
 CREATE TABLE customers_addresses (
                          id int PRIMARY KEY AUTO_INCREMENT, -- auto generated id
                          customer_id char(12) NOT NULL,
-                         country_code varchar(5) DEFAULT NULL,
-                         city varchar(255) DEFAULT NULL,     -- major cities' name
-                         district varchar(255) DEFAULT NULL,    -- county name
+                         country_code char(3) NOT NULL,
+                         city_id int NOT NULL,     -- major cities' name
+                         district varchar(20) NOT NULL,    -- county name
                          zipcode varchar(10) DEFAULT NULL,
                          street varchar(255) DEFAULT NULL, -- address
                          holding varchar(10) DEFAULT NULL,
                          notes longtext DEFAULT NULL,     -- extra details
-                         FOREIGN KEY (customer_id) REFERENCES customers_info(id)
-);
+                         FOREIGN KEY (customer_id) REFERENCES customers_info(id),
+                         FOREIGN KEY (country_code) REFERENCES countries(code),
+                         FOREIGN KEY (city_id) REFERENCES cities(id)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE businesses_addresses (
                                     id int PRIMARY KEY AUTO_INCREMENT, -- auto generated id
                                     business_id char(12) NOT NULL,
-                                    country_code varchar(5) DEFAULT NULL,
-                                    city varchar(255) DEFAULT NULL,     -- major cities' name
-                                    district varchar(255) DEFAULT NULL,    -- county name
+                                    country_code char(3) DEFAULT NULL,
+                                    city_id int NOT NULL,     -- major cities' name
+                                    district varchar(20) DEFAULT NULL,    -- county name
                                     zipcode varchar(10) DEFAULT NULL,
                                     street varchar(255) DEFAULT NULL, -- address
                                     holding varchar(10) DEFAULT NULL,
                                     notes longtext DEFAULT NULL,     -- extra details
-                                    FOREIGN KEY (business_id) REFERENCES businesses_info(id)
-);
+                                    FOREIGN KEY (business_id) REFERENCES businesses_info(id),
+                                    FOREIGN KEY (country_code) REFERENCES countries(code),
+                                    FOREIGN KEY (city_id) REFERENCES cities(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- ------------------- Accounting Section -----------------------
@@ -99,7 +125,7 @@ CREATE TABLE financial_statements (
                                  net_income numeric(10, 2) NOT NULL,
                                  CONSTRAINT statement_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id),
                                  CONSTRAINT statement_business FOREIGN KEY(business_id) REFERENCES businesses_info(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Base class account, single elementary entries and jobs, on new entries update history_revenue
 CREATE TABLE financial_accounts (
@@ -120,7 +146,7 @@ CREATE TABLE financial_accounts (
                          sub_total numeric(10, 2),
                          CONSTRAINT account_client FOREIGN KEY(customer_id) REFERENCES customers_info(id),
                          CONSTRAINT account_business FOREIGN KEY(business_id) REFERENCES businesses_info(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------- Social network class related -------------------------------------
 
@@ -135,14 +161,14 @@ CREATE TABLE user_accounts (
                               last_logged timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                               registration_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                               CONSTRAINT user_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE followers (
                               user_a char(12) NOT NULL,
                               user_b char(12) NOT NULL,
                               CONSTRAINT followers_user_a FOREIGN KEY (user_a) REFERENCES user_accounts(id),
                               CONSTRAINT followers_user_b FOREIGN KEY (user_a) REFERENCES user_accounts(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE incident_locations (
                                 id int PRIMARY KEY AUTO_INCREMENT,  -- auto generated id
@@ -156,7 +182,7 @@ CREATE TABLE incident_locations (
                                 note longtext DEFAULT NULL,     -- extra details
                                 datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                 FOREIGN KEY (user_id) REFERENCES user_accounts(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- social network post
 CREATE TABLE post_issues (
@@ -167,7 +193,7 @@ CREATE TABLE post_issues (
                             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                             last_seen TIMESTAMP DEFAULT NULL,
                             CONSTRAINT post_user FOREIGN KEY (user_id) REFERENCES user_accounts(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- social post answers
 CREATE TABLE post_answers (
@@ -178,21 +204,12 @@ CREATE TABLE post_answers (
                              datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                              CONSTRAINT answer_post FOREIGN KEY (post_id) REFERENCES post_issues(id),
                              CONSTRAINT answer_user FOREIGN KEY (user_id) REFERENCES user_accounts(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ------------------- Web related ----------------------------
 
 
 -- ------------------- Triggers --------------------------------
 
+COMMIT;
 
--- insert some data
-
-INSERT INTO customers_info VALUES ('AAAAAAAAAAAA', 'rabinul', 'islam', '1992-11-10', 'M');
-INSERT INTO customers_info VALUES ('ABABABABABAB', 'tamim', 'player', '1945-04-05', 'M');
-INSERT INTO customers_info VALUES ('CACACACACACA', 'shakil', 'sheraton', '1985-06-07', 'M');
-
-INSERT INTO customers_contacts (customer_id, phone)
-VALUES ('AAAAAAAAAAAA', '888-444-6552');
-INSERT INTO customers_addresses (customer_id, country_code, city, district, street, holding, notes)
-VALUES ('AAAAAAAAAAAA', 'AJB', 'DOHA', 'KERALA', 'Street Fleet', 18, 'Near the local pharmacy');

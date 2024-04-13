@@ -67,7 +67,7 @@
 			$opts = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_BOTH];
 			try {
 				$this->pdo = new PDO($str, CONN_INFO['USERNAME'], CONN_INFO['PASSWORD']);
-				echo 'DB connected.<br>';
+				echo '<script>console.log(\'DB connected\');</script>';
 			}
 			catch (PDOException $e) {
 				throw new PDOException($e->getMessage(), $e->getCode());
@@ -237,12 +237,12 @@
 			if(!$res) return false;
 
 			$addr = $c->address;
-			$sql = 'INSERT INTO customers_addresses (customer_id, country_code, city, district, zipcode, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?, ?)';
+			$sql = 'INSERT INTO customers_addresses (customer_id, country_code, city_id, district, zipcode, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?, ?)';
 			$stmt = $this->pdo->prepare($sql);
 			$res = $stmt->execute([
 				$c->id,
 				$addr->country_code,
-				$addr->city,
+				$addr->city_id,
 				$addr->district,
                 $addr->zipCode,
 				$addr->street,
@@ -292,12 +292,12 @@
 			if(!$res) return false;
 
 			$addr = $b->address;
-			$sql = 'INSERT INTO businesses_addresses (business_id, country_code, city, district, zipcode, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?, ?)';
+			$sql = 'INSERT INTO businesses_addresses (business_id, country_code, city_id, district, zipcode, street, holding, notes) VALUES (?, ?, ?, ?, ? ,?, ?, ?)';
 			$stmt = $this->pdo->prepare($sql);
 			$res = $stmt->execute([
 				$b->id,
 				$addr->country_code,
-				$addr->city,
+				$addr->city_id,
 				$addr->district,
                 $addr->zipCode,
 				$addr->street,
@@ -458,9 +458,9 @@
          * @return bool
          */
         function update_customer_address(string $customer_id, address $a) : bool {
-			$sql = 'UPDATE customers_addresses SET country_code = ?, city = ?, district = ?, street = ?, holding = ?, notes = ? WHERE customer_id = ?;';
+			$sql = 'UPDATE customers_addresses SET country_code = ?, city_id = ?, district = ?, street = ?, holding = ?, notes = ? WHERE customer_id = ?;';
 			$stmt = $this->pdo->prepare($sql);
-			return $stmt->execute([$a->country_code, $a->city, $a->district, $a->street, $a->holding, $a->notes, $customer_id]);
+			return $stmt->execute([$a->country_code, $a->city_id, $a->district, $a->street, $a->holding, $a->notes, $customer_id]);
 		}
 
 		// Clone customer and pass it by reference, once info updated assign it to the main object
@@ -473,9 +473,9 @@
          * @return bool
          */
         function update_business_address(string $business_id, address $a) : bool {
-			$sql = 'UPDATE businesses_addresses SET country_code = ?, city = ?, district = ?, street = ?, holding = ?, notes = ? WHERE business_id = ?;';
+			$sql = 'UPDATE businesses_addresses SET country_code = ?, city_id = ?, district = ?, street = ?, holding = ?, notes = ? WHERE business_id = ?;';
 			$stmt = $this->pdo->prepare($sql);
-			return $stmt->execute([$a->country_code, $a->city, $a->district, $a->street, $a->holding, $a->notes, $business_id]);
+			return $stmt->execute([$a->country_code, $a->city_id, $a->district, $a->street, $a->holding, $a->notes, $business_id]);
 		}
 
         /**
@@ -546,8 +546,26 @@
                 $stmt->execute([$unique_id]);
                 $exists = $stmt->rowCount();
             }
-
             return $unique_id;
+        }
+
+        function getCountries() : ?array {
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $sql = 'SELECT code, name FROM countries ORDER BY name ASC';
+            $stmt = $this->pdo->query($sql);
+            if(!$stmt) return null;
+
+            return $stmt->fetchAll();
+        }
+
+        function getCities(string $countryCode) : ?array {
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $sql = "SELECT id, name FROM cities WHERE country_code = ? ORDER BY name ASC";
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$countryCode]);
+            if(!$res || $stmt->rowCount() == 0) return null;
+
+            return $stmt->fetchAll();
         }
 
 		// destructor
