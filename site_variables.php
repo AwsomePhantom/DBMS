@@ -11,18 +11,9 @@ const USER_THEMES = array(
     'sandstone', 'simplex', 'sketchy', 'slate', 'solar', 'spacelab', 'superhero', 'united', 'vibrant-sea', 'wizardry',
     'yeti');
 
-$GLOBALS['USER_THEME'] = USER_THEMES[31];
+$GLOBALS['USER_THEME'] = USER_THEMES[31];                           // Global user theme name form array
 
-$boostrap_include = <<< ENDL_
-<link rel="stylesheet" href="{$relative_root}/precompiled/{$GLOBALS['USER_THEME']}/bootstrap-color.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" href="{$relative_root}/styles/styles.css">
-<script src="{$relative_root}/scripts/main.js"></script>
-ENDL_;
-
-define('ABSOLUTE_PATHS', array(
+const ABSOLUTE_PATHS = array(
     "HOME_PAGE"                     => ROOT_DIR . '/index.php',
     "MENU_PAGE"                     => ROOT_DIR . '/home_components/menu.php',
     "ARTICLES_PAGE"                 => ROOT_DIR . '/home_components/articles.php',
@@ -32,9 +23,8 @@ define('ABSOLUTE_PATHS', array(
     "LOGIN_PAGE"                    => ROOT_DIR . '/forms/login.php',
     "LOADING_PAGE"                  => ROOT_DIR . '/home_components/loading.php',
     "SUCCESSFUL_REGISTRATION"       => ROOT_DIR . '/forms/successful_registration.php',
-    "LOCAL_STYLESHEET"              => ROOT_DIR . '/styles/styles.css',
-    "FULL_BOOTSTRAP"                => $boostrap_include
-));
+    "LOCAL_STYLESHEET"              => ROOT_DIR . '/styles/styles.css'
+);
 
 if(!file_exists(ABSOLUTE_PATHS['HOME_PAGE'])) die("Menu file not found.");
 if(!file_exists(ABSOLUTE_PATHS['MENU_PAGE'])) die("Menu file not found.");
@@ -54,11 +44,9 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     $b = array_slice($b, 0, count($b) - 1);                         // Remove last element from URI representing the webpage file
 
-
-    if(file_exists($absolutePath)) {                                            // If absolutePath is a file, remove filename from the path to compare directories
+    if(is_file($absolutePath)) {                                                // If absolutePath is a file, remove filename from the path to compare directories
         $fileName = end($a);                                              // Store the filename
         $a = array_slice($a, 0, count($a) - 1);
-
     }
     else if(!is_dir($absolutePath)) {                                           // The absolute path given is not a file's address, nor a correct directory path
         return '';
@@ -82,19 +70,21 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
         }
 
         $a = array_slice($a, $index);                                           // Remove the common directories from the absolute path
+        if(empty($fileName)) return implode($separator, $a);
         return implode($separator, $a) . '/' . $fileName;                       // Return the relative path, not the ROOT DIRECTORY that is already excluded, so add a slash
     }
 
     /* URI is not top level, compare with the absolute path */
     // URI: [localhost]/one/two/three
     // Path: /var/www/htdocs/one/two/orange/one
-    // Trim up to /one/two/orange/one
+    // Trim up to /two/orange/one   -> remove also one
     for($i = 0; $i < count($a) && count($b) > 0; $i++) {                        // The request URI has subfolders
         if($b[0] === $a[$i]) {                                                  // Compare the top level of the URI with given path until similar level
-            $a = array_slice($a, $i);                                           // Exclude common directories path found up to the URI's top level
+            array_splice($a, 0, $i + 1);                      // Exclude common directories path found up to the URI's top level
             break;
         }
     }
+    array_splice($b, 0, 1);
 
     // URI: [localhost]/one/two
     // Path: /one/two
@@ -122,7 +112,8 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
     for($i = 0; $i < count($b); $i++) {
            $out .= '../';
     }
+
     $out .= implode($separator, $a);
-    $out .= '/' . $fileName;
-    return $out;
+    if(!str_ends_with($out, '/') && empty($fileName)) return $out .= '/';
+    else return $out .= '/' . $fileName;
 }
