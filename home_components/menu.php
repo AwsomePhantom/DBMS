@@ -1,10 +1,10 @@
 <?php
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
-    require_once ('../site_variables.php');
+    (require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php')) or die("Variables file not found");
     $GLOBALS['WEBSITE_VARS'] = true;
 }
 if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    require_once ('../database/connection.php');
+    (require_once (relativePath(ABSOLUTE_PATHS['CONNECTION']))) or die("Connection related file not found");
     $GLOBALS['CONNECTION_VARS'] = true;
 }
 ?>
@@ -30,7 +30,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto" style="min-width: 790px;">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="<?php echo relativePath(ABSOLUTE_PATHS['HOME_PAGE']); ?>"><i class="fa-solid fa-house"></i> Home</a>
+                    <a class="nav-link active" aria-current="page" href="<?php echo relativePath(ABSOLUTE_PATHS['HOME_PAGE']) ?>"><i class="fa-solid fa-house"></i> Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#"><i class="fa-solid fa-circle-info"></i> About</a>

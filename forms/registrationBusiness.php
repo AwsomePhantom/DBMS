@@ -1,13 +1,12 @@
 <?php
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
-    require_once ('../site_variables.php');
+    (require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php')) or die("Variables file not found");
     $GLOBALS['WEBSITE_VARS'] = true;
 }
 if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    require_once ('../database/connection.php');
+    (require_once (relativePath(ABSOLUTE_PATHS['CONNECTION']))) or die("Connection related file not found");
     $GLOBALS['CONNECTION_VARS'] = true;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,12 +16,12 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Business Account</title>
-    <link rel="stylesheet" href="../precompiled/<?php echo $GLOBALS['USER_THEME']; ?>/bootstrap-color.min.css">
+    <link rel="stylesheet" href="<?php echo relativePath(ROOT_DIR . '/precompiled') . $GLOBALS['USER_THEME']; ?>/bootstrap-color.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="../styles/styles.css">
-    <script src="../scripts/main.js"></script>
+    <link rel="stylesheet" href="<?php echo relativePath(ABSOLUTE_PATHS['LOCAL_STYLESHEET']); ?>">
+    <script src="<?php echo relativePath(ABSOLUTE_PATHS['LOCAL_SCRIPTS']); ?>"></script>
 </head>
 <!--
     List of variables:
@@ -49,8 +48,8 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
 -->
 <body class="bg-body">
 <?php
-include(ABSOLUTE_PATHS['LOADING_PAGE']);
-include(ABSOLUTE_PATHS['MENU_PAGE']);
+(include_once('../home_components/loading.php')) or die("Failed to load component");
+(include_once('../home_components/menu.php'))  or die("Failed to load component");
 ?>
 
 <div id="top" class="container bg-body my-5 mx-auto p-0 lato-bold" style="padding-top: 70px">
@@ -340,7 +339,7 @@ include(ABSOLUTE_PATHS['MENU_PAGE']);
     </div>
 </div>
 
-<?php include ABSOLUTE_PATHS['FOOTER_PAGE']; ?>
+<?php (include_once(relativePath(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
 <script>
     document.getElementById('loader').classList.add('fadeout');
     document.getElementById('top').scrollIntoView({behavior: 'smooth'});
