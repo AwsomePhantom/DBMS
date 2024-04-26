@@ -4,7 +4,7 @@
     use DateTime;
 
     class business {
-        public string $id;     // At the moment of creation pass null, it will be created inside the register function
+        public string $id;
         public customer $customer;
         public string $company_name, $company_type, $licence_number;
         public DateTime $start, $end;

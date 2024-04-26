@@ -155,7 +155,7 @@ CREATE TABLE user_accounts (
                               username varchar(255) UNIQUE,
                               password varchar(255) NOT NULL,
                               customer_id char(12) NOT NULL,
-                              business_id char(12) DEFAULT FALSE, -- add check if business id exists
+                              business_id char(12) DEFAULT NULL, -- add check if business id exists
 
                               last_modified timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                               last_logged timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

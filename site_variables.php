@@ -25,7 +25,9 @@ const ABSOLUTE_PATHS = array(
     "SUCCESSFUL_REGISTRATION"       => ROOT_DIR . '/forms/successful_registration.php',
     "LOCAL_STYLESHEET"              => ROOT_DIR . '/styles/styles.css',
     "LOCAL_SCRIPTS"                 => ROOT_DIR . '/scripts/main.js',
-    "CONNECTION"                    => ROOT_DIR . '/database/connection.php'
+    "CONNECTION"                    => ROOT_DIR . '/database/connection.php',
+    "COUNTRIES"                     => ROOT_DIR . '/data/countries.php',
+    "DASHBOARD"                     => ROOT_DIR . '/dashboard/index.php'
 );
 
 if(!file_exists(ABSOLUTE_PATHS['HOME_PAGE'])) die("Menu file not found.");

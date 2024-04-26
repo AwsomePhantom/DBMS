@@ -23,8 +23,8 @@
          */
         public function __construct(string $owner_id, string $country_code, int $city_id, string $district, string $zipCode, string $street, string $holding, string $notes) {
             $this->owner_id = $owner_id;
-            $this->country_code = $country_code;
-            $this->city_id = $city_id;
+            $this->country_code = substr($country_code, 0, 3);
+            $this->city_id = (int)$city_id;
             $this->district = $district;
             $this->zipCode = $zipCode;
             $this->street = $street;

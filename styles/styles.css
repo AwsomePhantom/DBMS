@@ -106,6 +106,7 @@ legend {
     //background-repeat: no-repeat;
     //background-size: cover;
     //background-position: center right;
+
 }
 
 #baseToolBar {
@@ -151,3 +152,7 @@ legend {
     z-index: 1100 !important;
 }
 
+#one-tab, #two-tab, #three-tab {
+    width: 100%;
+    font-size: 18px;
+}

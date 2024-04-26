@@ -1,3 +1,75 @@
+<?php
+    if(!isset($GLOBALS['WEBSITE_VARS'])) {
+        (require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php')) or die("Variables file not found");
+        $GLOBALS['WEBSITE_VARS'] = true;
+    }
+    if(!isset($GLOBALS['CONNECTION_VARS'])) {
+        (require_once (relativePath(ABSOLUTE_PATHS['CONNECTION']))) or die("Connection related file not found");
+        $GLOBALS['CONNECTION_VARS'] = true;
+    }
+
+    if(isset($_COOKIE['USER_AUTH'])) {
+        header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
+        //echo "<script>window.location.href = '" . relativePath(ABSOLUTE_PATHS['DASHBOARD']) . "';</script>";
+
+    }
+
+    $uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if(isset($_POST['usernameField']) && isset($_POST['passwordField'])) {
+            try {
+                //$userObj = CONNECTION->login($_POST['usernameField'], $_POST['passwordField']);
+                $str = 'mysql:host='.CONN_INFO['HOST'].';dbname='.CONN_INFO['DBNAME'].';charset=utf8mb4;';
+                $opts = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_BOTH];
+                $pdo = new PDO($str, CONN_INFO['USERNAME'], CONN_INFO['PASSWORD']);
+                $sql = "SELECT * FROM user_accounts WHERE username = ? AND password = ? LIMIT 1";
+                $stmt = $pdo->prepare($sql);
+                $res = $stmt->execute([
+                    $_POST['usernameField'],
+                    $_POST['passwordField']
+                ]);
+                if($stmt->rowCount() <= 0) {
+                    echo "No user found!";
+                    echo "<h1>Login failed</h1>";
+                    foreach($_POST as $X) {
+                        unset($x);
+                    }
+                    return;
+                }
+
+                $row = $stmt->fetch();
+                $user_id = $row['id'];
+                $username = $row['username'];
+                $customer_id = $row['customer_id'];
+
+                $sql = 'SELECT * FROM customers_info WHERE id = ?';
+                $stmt = $pdo->prepare($sql);
+                $res = $stmt->execute([$customer_id]);;
+                $row = $stmt->fetch();
+                $customer = new \classes\customer($customer_id, $row['name'], $row['lastname'], new DateTime($row['birthdate']), $row['gender'], CONNECTION->get_customer_contacts($customer_id), CONNECTION->get_customer_address($customer_id));
+                $userObj = new \classes\user($user_id, $username, $customer, null, null, null, null);
+                echo "<script>console.log(\"Login successful\")</script>";
+
+                if(isset($_POST['rememberUser'])) {
+                    $expiry = time() + (3600 * 24 * 30); // 30 days
+                    setcookie('USER_AUTH', serialize($userObj), $expiry, '/');
+                }
+                else {
+                    setcookie('USER_AUTH', serialize($userObj), time() + 3600, '/');
+                }
+
+                //header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
+                echo "<script>window.location.href = '" . relativePath(ABSOLUTE_PATHS['DASHBOARD']) . "';</script>";
+
+
+
+            } catch (Exception $e) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            }
+        }
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -78,27 +150,27 @@
 -->
 <body>
 <div class="container-fluid">
-    <form class="form-signin">
+    <form method="POST" class="form-signin">
         <legend class="mb-3 text-center"><strong>Login</strong></legend>
             <div class="form-floating">
-                <input tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
+                <input name="usernameField" tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
                 <label for="usernameField">Username</label>
             </div>
         <div class="form-floating mb-3">
-            <input tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
+            <input name="passwordField" tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
             <label for="passwordField">Password</label>
         </div>
 
         <div class="row mb-3">
             <div class="col">
                 <div class="form-check form-switch">
-                    <input tabindex="3" class="form-check-input" type="checkbox" role="switch" id="stayLoggedSwitch">
+                    <input name="rememberUser" value="true" tabindex="3" class="form-check-input" type="checkbox" role="switch" id="stayLoggedSwitch">
                     <label class="form-check-label" for="stayLoggedSwitch">Stay logged in</label>
                 </div>
             </div>
         </div>
         <div class="row mb-3 m-1">
-                <input tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
+                <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
         </div>
         <hr>
         <div class="row text-center">

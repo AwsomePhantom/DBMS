@@ -69,18 +69,20 @@
 			$opts = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_BOTH];
 			try {
 				$this->pdo = new PDO($str, CONN_INFO['USERNAME'], CONN_INFO['PASSWORD']);
-				echo '<script>console.log(\'DB connected\');</script>';
+				// connected
 			}
 			catch (PDOException $e) {
 				throw new PDOException($e->getMessage(), $e->getCode());
 			}
 		}
 
-		/**
-         * Function used to login into the webpage
-		 * @throws Exception
-         * @return user
-		 */
+        /**
+         * Function used to log in into the webpage
+         * @param string $username
+         * @param string $password
+         * @return user|null
+         * @throws Exception
+         */
 		function login(string $username, string $password) : ?user {
 			$this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
@@ -121,7 +123,7 @@
 
             // Find business's entry if any associated with
 			$company = null;
-			if($business_id != null) {
+			if($business_id !== null || $business_id != '0') {
 				$sql = 'SELECT * from businesses_info WHERE id = ? LIMIT 1';
 				$stmt = $this->pdo->prepare($sql);
                 $stmt->execute([$business_id]);
@@ -158,6 +160,22 @@
 			);
 		}
 
+        /**
+         * Begin transaction
+         * @return void
+         */
+        function begin() : void {
+            $this->pdo->beginTransaction();
+        }
+
+        /**
+         * Commit transaction
+         * @return void
+         */
+        function commit() : void {
+            $this->pdo->commit();
+        }
+
 
         /**
          * Create a new user account
@@ -167,7 +185,6 @@
          */
         function create_user(user $user, string $password) : bool {
 			// Username is unique, check names in the form before creating the object
-			$this->pdo->beginTransaction();
 
 			if($user->business) {
 				$res = $this->register_customer($user->customer);   // insert customer details into the db
@@ -199,7 +216,6 @@
 				]);
 			}
 			if(!$res) return false;
-			$this->pdo->commit();
 			return true;
 		}
 
@@ -244,7 +260,7 @@
 			$res = $stmt->execute([
 				$c->id,
 				$addr->country_code,
-				$addr->city_id,
+                $addr->city_id,
 				$addr->district,
                 $addr->zipCode,
 				$addr->street,
@@ -400,6 +416,19 @@
 			}
 			return null;
 		}
+
+        /**
+         * Change customer account to business user by updating the user account info
+         * The business account must be already registered. user parameter comprehend new
+         * business class' object
+         * @param user $user
+         * @return bool
+         */
+        function addBusinessToUser(user $user) : bool {
+            $sql = 'UPDATE TABLE user_accounts SET business_id = ? WHERE id = ?;';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$user->business->id, $user->id]);
+        }
 
         /**
          * If password is set updates the user account password,

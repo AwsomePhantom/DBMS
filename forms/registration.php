@@ -45,23 +45,33 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $unique_id = CONNECTION->generateID();
                 $phones = new contacts($unique_id, [$_POST['numberField1'], $_POST['numberField2']]);
-                $house_address = new address($unique_id, $_POST['countryField'], $_POST['cityField'], $_POST['stateField'], $_POST['zipCodeField'], $_POST['addressField'], $_POST['holdingNumberField'], $_POST['notesField']);
+                $house_address = new address($unique_id, $_POST['countryField'], (int)$_POST['cityField'], $_POST['stateField'], $_POST['zipCodeField'], $_POST['addressField'], $_POST['holdingNumberField'], $_POST['notesField']);
 
                 $person = new customer($unique_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
                 $unique_id = CONNECTION->generateID();
                 $user = new user($unique_id, $_POST['usernameField'], $person, null, null, null, null);
+
+                CONNECTION->begin();
+                //$res = CONNECTION->register_customer($person); // inside create_user
+                //if(!$res) throw new Exception("Customer Registration failed");
                 $res = CONNECTION->create_user($user, $_POST['repeatPasswordField']);
                 sleep(1);
                 if($res) {
+                    CONNECTION->commit();
+                    sleep(5);
                     header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
+                }
+                else {
+                    throw new Exception("User Registration failed");
+                    echo "Registration failed";
+                    sleep(5);
+                    header("Location: " . REGISTRATION_POST_URI);
                 }
 
             }
             catch (PDOException $e) {
                 throw new PDOException($e->getMessage(), (int)$e->getCode());
             }
-
-            if(!$res) die("registration error");
     }
 }
 ?>
@@ -201,16 +211,23 @@ On successful registration, ask for business account
                 <div class="col">
                     <label for="countryField">Country</label>
                     <!-- <input id="countryField" name="countryField" type="text" class="form-control"> -->
-                    <select id="countryField" class="form-select form-select-lg mb-3" aria-label="Countries">
+                    <select id="countryField" name="countryField" class="form-control form-select form-select-lg mb-3" aria-label="Countries">
                         <option selected>Select a country</option>
+                        <?php
+                                $countries = CONNECTION->getCountries();
+                                foreach ($countries as $country) {
+                                    echo "<option value=\"{$country['code']}\">{$country['name']}</option>";
+                                }
+                        ?>
 
                     </select>
                 </div>
                 <div class="col">
                     <label for="cityField">City</label>
                     <!-- <input id="cityField" name="cityField" type="text" class="form-control"> -->
-                    <select id="cityField" class="form-select form-select-lg mb-3" aria-label="Cities">
+                    <select id="cityField" name="cityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities">
                         <option selected>Select a city</option>
+                        <option value="" selected>Select a country first</option>
                     </select>
                 </div>
                 <div class="col">
@@ -256,6 +273,36 @@ On successful registration, ask for business account
 <script>
     document.getElementById('loader').classList.add('fadeout');
     document.getElementById('top').scrollIntoView({behavior: 'smooth'});
+
+    const countries = document.getElementById('countryField');
+    const cities = document.getElementById('cityField');
+    countries.addEventListener('change', function () {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                try {
+                    let array = JSON.parse(this.responseText);
+                    while(cities.children.length > 0) {
+                        cities.removeChild(cities.lastChild);
+                    }
+
+                    for (let x of array) {
+                        let option = document.createElement("option");
+                        option.value = x['id'];
+                        option.text = x['name'];
+                        cities.appendChild(option);
+                    }
+                }
+                catch (exp) {
+                    console.log(exp);
+                }
+            }
+        }
+        let countryCode = countries.value;
+        xmlhttp.open("GET", '<?php echo relativePath(ABSOLUTE_PATHS['COUNTRIES']); ?>' + '?countryCode=' + countryCode, true);
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send();
+    });
 </script>
 </body>
 </html>
