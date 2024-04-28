@@ -32,7 +32,7 @@ if(isset($_SERVER['POST'])) {
         <h2 class="card-title">Registration</h2>
         <p class="card-text">This is a card text</p>
         <div class="row">
-            <h4>customeral details</h4>
+            <h4>Personal details</h4>
         </div>
         <div class="row p-2">
             <div class="col-md-4">

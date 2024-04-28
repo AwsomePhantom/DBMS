@@ -1,6 +1,6 @@
 <?php
 if(isset($_COOKIE['USER_INFO'])) {
-    header('Location: articles.php');
+    header('Location: home.php');
 }
 ?>
 <!DOCTYPE html>

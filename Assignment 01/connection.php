@@ -43,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             setcookie('USER_INFO', json_encode($USER_INFO), time() + 3600, '/');
             echo "Login successful.<br>";
             sleep(3);
-            header('Location: articles.php');
+            header('Location: home.php');
         }
         else {
             echo "Username/Password mismatch!<br><a href='#' onclick='history.back()'>Go back</a>";
