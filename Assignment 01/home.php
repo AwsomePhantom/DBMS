@@ -8,7 +8,7 @@ $log = null;
 $USER_INFO = json_decode($_COOKIE['USER_INFO'], true);
 
 if(!isset($_COOKIE['USER_INFO'])) {
-    header('Location: index.php');
+    header('Location: menu.php');
 }
 else {
     $name = $USER_INFO[0];
@@ -18,7 +18,7 @@ else {
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(isset($_POST['logoutButton'])) {
         setcookie('USER_INFO', '', time() - 3600, '/');
-        header('Location: index.php');
+        header('Location: menu.php');
     }
     if(isset($_POST['modifyButton']) && isset($_COOKIE['USER_INFO'])) {
         $name = $_POST['nameField'];

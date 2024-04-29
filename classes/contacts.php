@@ -2,23 +2,19 @@
 
     namespace classes;
 
+    // In PHP classes for both customers and businesses are the same,
+    // in SQL they have separate tables
     class contacts {
-        public int $id;
+        public ?string $owner_id;
         public array $phones = [];
 
         /**
-         * @param int $id
+         * @param string|null $owner_id
          * @param array $phones
          */
-        public function __construct(int $id, String ...$phones) {
-            $this->id = $id;
-            if(is_array($phones)) {
-                foreach ($phones as $x) {
-                    $this->phones[] = $x;
-                }
-            }
-            else {
-                $this->phones[] = $phones;
-            }
+        public function __construct(?string $owner_id, array $phones) {
+            $this->$owner_id = $owner_id;
+            $this->phones = $phones;
         }
+
     }

@@ -1,41 +1,61 @@
 <?php
+    define("URI", "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+    function resetPost() {
+        unset($_POST);
+        header("Location: " . URI);
+    }
+    function setLog($str) {
+        global $log;
+        $log = 'Log message: ' . $str;
+    }
+
+
     static $pdo;
+    static $log = 'Log Message: none';
+
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=dbmsproject;charset=utf8mb4', 'root', 'root',
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
 
         if($_SERVER['REQUEST_METHOD'] == 'POST' &&
-            isset($_POST['personId']) &&
+            isset($_POST['customerId']) &&
             isset($_POST['phone']) &&
             isset($_POST['submit'])) {
-
-            $a = $_POST['personId'];
+            $a = $_POST['customerId'];
             $b = $_POST['phone'];
 
-            unset($_POST['personId']);
-            unset($_POST['phone']);
-
-            $sql = 'INSERT INTO contacts VALUES (null, ?, ?)';
+            $sql = 'INSERT INTO customers_contacts VALUES (null, ?, ?)';
             $stmt = $pdo->prepare($sql);
             $res = $stmt->execute([
-                [$a, $b]
+                $a, $b
             ]);
             if(!$res) {
-                echo 'failed to insert values<br>';
+                setLog('Failed to insert value. ' . $stmt->errorInfo());
             }
+            else setLog(null);
+            resetPost();
         }
 
         if($_SERVER['REQUEST_METHOD'] == 'POST' &&
             isset($_POST['deleteButton'])) {
                 $row = $_POST['deleteButton'];
-                $sql = 'DELETE FROM contacts WHERE id = ?';
+
+                $sql = 'DELETE FROM customers_contacts WHERE id = ?';
                 $stmt = $pdo->prepare($sql);
-                $res = $stmt->execute($row);
-            }
+                $res = $stmt->execute([$row]);
+                if(!$res) {
+                    setLog($stmt->errorInfo());
+                }
+                else setLog(null);
+                resetPost();
+        }
+
     }
     catch (PDOException $e) {
-        echo "Error: {$e->getMessage()}<br>{$e->getCode()}";
+        $log = 'Log Message: ';
+        $log .= "Error: {$e->getMessage()}<br>{$e->getCode()}";
+        resetPost();
     }
 ?>
 
@@ -72,22 +92,23 @@
 
 </head>
 <body>
+
 <div class="container w-75 my-3">
-    <form name="form">
+    <form method="POST">
         <div class="input-group">
-            <input name="personId" class="form-control" type="number" placeholder="103">
-            <input name="phone" class="form-control" type="text" placeholder="Phone number">
+            <input name="customerId" class="form-control" type="text" placeholder="customer ID: (ABC123)+">
+            <input name="phone" class="form-control" type="text" placeholder="Phone number: [1-9]+">
             <input name="submit" class="btn btn-block btn-primary" type="submit" value="Enter">
         </div>
     </form>
 </div>
 <div class="container-fluid">
-    <form name="deleteForm" method="post"></form>
+    <form method="POST" id="deleteForm"></form>
     <table class="table table-striped">
         <thead>
         <tr>
             <td>Entry ID</td>
-            <td>Person ID</td>
+            <td>customer ID</td>
             <td>Phone Number</td>
             <td>Options</td>
         </tr>
@@ -95,25 +116,30 @@
         <tbody>
         <?php
         try {
-            $sql = 'SELECT * FROM contacts';
+            $sql = 'SELECT * FROM customers_contacts';
             $resultSet = $pdo->query($sql);
-            $count = 1;
+            if($resultSet->rowCount() == 0) {
+                $pdo->query('ALTER TABLE customers_contacts AUTO_INCREMENT = 1');
+            }
             while($x = $resultSet->fetch()) {
                 echo '<tr>';
-                echo "<td row=\"{$count}\">{$x['id']}</td>";
-                echo "<td>{$x['person_id']}</td>";
+                echo "<td>{$x['id']}</td>";
+                echo "<td>{$x['customer_id']}</td>";
                 echo "<td>{$x['phone']}</td>";
-                echo "<td><button form=\"deleteForm\" name=\"deleteButton\" class=\"btn btn-sm btn-secondary\" type=\"submit\" value=\"{$count}\">Delete</button></td>";
+                echo "<td><button form=\"deleteForm\" name=\"deleteButton\" class=\"btn btn-sm btn-secondary\" type=\"submit\" value=\"{$x['id']}\">Delete</button></td>";
                 echo '</tr>';
-                $count++;
             }
         }
         catch (PDOException $e) {
-            echo "Error: {$e->getMessage()}<br>{$e->getCode()}";
+            $log = 'Log message: ';
+            $log .= 'Code ' . $e->getCode() . '&#9;' . $e->getMessage();
         }
         ?>
         </tbody>
     </table>
 </div>
+<footer class="container-fluid bg-dark-subtle" style="bottom: 0;position: absolute">
+    <small><?php echo $log . '<br>'; ?></small>
+</footer>
 </body>
 </html>
