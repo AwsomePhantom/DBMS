@@ -1,10 +1,13 @@
 <?php
+$arr = explode(DIRECTORY_SEPARATOR, __DIR__);
+$arr = array_slice($arr, 0, count($arr) - 1);
+define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
     if(!isset($GLOBALS['WEBSITE_VARS'])) {
-        (require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php')) or die("Variables file not found");
+        (require_once (ROOT_DIR . '/site_variables.php')) or die("Variables file not found");
         $GLOBALS['WEBSITE_VARS'] = true;
     }
     if(!isset($GLOBALS['CONNECTION_VARS'])) {
-        (require_once (relativePath(ABSOLUTE_PATHS['CONNECTION']))) or die("Connection related file not found");
+        (require_once (ROOT_DIR . '/database/connection.php')) or die("Connection related file not found");
         $GLOBALS['CONNECTION_VARS'] = true;
     }
 

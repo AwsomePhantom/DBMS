@@ -41,7 +41,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     $path = explode($separator, $absolutePath);
     $uri = explode($separator, $_SERVER['REQUEST_URI']);
-    $root = explode($separator, ROOT_DIR);
+    $root = explode($separator, $_SERVER['DOCUMENT_ROOT']);
     $fileName = null;
 
     array_splice($path, 0, 1);      // remove first empty element
@@ -58,6 +58,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
         array_pop($path);
     }
 
+
     // Cut until ROOT_DIR of the website
     $index = -1;            // computer folders and absolute paths have always common prefix
     for($i = 0; $i < count($path); $i++) {
@@ -69,7 +70,20 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
     array_splice($path, 0, $i - 1);     // URI and Path at the same level
     if(serialize($path) === serialize($uri)) return $fileName;      // Same sub level
 
-    // Condition given path is equal to the URI's top level has been checked at the first line
+    // Equalise path and uri level and check if same page as level
+    $index = -1;
+    for($i = 0; $i < count($path) && $i < count($uri); $i++) {
+        if($uri[0] === $path[$i]) {
+            $index = $i;
+            break;
+        }
+    }
+    if($index > 0) {
+        array_splice($path, 0, $i);
+    }
+    if(implode($separator, $path) === implode($separator, $uri)) return '';
+
+
     // Path and URI are at different level
     $index = -1;
     for($i = 0; $i < count($path) && $i < count($uri); $i++) {      // Remove common subfolders of the URI from the path

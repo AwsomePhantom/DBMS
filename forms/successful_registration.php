@@ -1,6 +1,10 @@
 <?php
+session_start();
+$arr = explode(DIRECTORY_SEPARATOR, __DIR__);
+$arr = array_slice($arr, 0, count($arr) - 1);
+define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
-    (require_once ($_SERVER['DOCUMENT_ROOT'] . '/site_variables.php')) or die("Variables file not found");
+    (require_once (ROOT_DIR . '/site_variables.php')) or die("Variables file not found");
     $GLOBALS['WEBSITE_VARS'] = true;
 }
 ?>
