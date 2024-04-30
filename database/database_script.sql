@@ -198,7 +198,7 @@ CREATE TABLE post_issues (
                             post_title LONGTEXT NOT NULL,
                             post_content LONGTEXT,
                             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            last_seen TIMESTAMP DEFAULT NULL,
+                            last_seen TIMESTAMP NULL DEFAULT NULL,
                             CONSTRAINT post_user FOREIGN KEY (user_id) REFERENCES user_accounts(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

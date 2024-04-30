@@ -4,8 +4,8 @@ USE dbmsproject;
 START TRANSACTION;
 
 SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE cities;
-TRUNCATE TABLE countries;
+-- TRUNCATE TABLE cities;
+-- TRUNCATE TABLE countries;
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO countries (code, name, continent, region, capital_city_code, code2) VALUES
