@@ -163,6 +163,13 @@ CREATE TABLE user_accounts (
                               CONSTRAINT user_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Active user logged in
+CREATE TABLE active_session (
+                                id char(20) PRIMARY KEY,
+                                username varchar(255) NOT NULL,
+                                start TIMESTAMP DEFAULT NOW()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE followers (
                               user_a char(12) NOT NULL,
                               user_b char(12) NOT NULL,

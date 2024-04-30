@@ -1,10 +1,14 @@
 <?php
-session_abort();
-$arr = explode(DIRECTORY_SEPARATOR, __DIR__);
-$arr = array_slice($arr, 0, count($arr) - 1);
-define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
+session_start();
+
+if(!defined('ROOT_DIR')) {
+    $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
+    $arr = array_slice($arr, 0, count($arr) - 1);
+    define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
+}
+
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
-    (require_once (ROOT_DIR . '/site_variables.php')) or die("Variables file not found");
+    (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
     $GLOBALS['WEBSITE_VARS'] = true;
 }
 if(!isset($GLOBALS['CONNECTION_VARS'])) {
@@ -20,6 +24,7 @@ use classes\user;
 
 $registering_user = null;
 $alertMessage = 'Hello, World';
+$script = null;
 
 define("REGISTRATION_POST_URI", getURI());
 
@@ -61,23 +66,23 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $person = new customer($owners_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
             $user_id = CONNECTION->generateID();
             global $registering_user;
-            $registering_user = new user($user_id, $_POST['usernameField'], $person, null, null, null, null);
+            $registering_user = new user(null, $user_id, $_POST['usernameField'], $person, null, null, null, null);
 
             CONNECTION->begin();    // begin transaction here
 
             $res = CONNECTION->create_user($registering_user, $_POST['repeatPasswordField']);
-            sleep(1);
-            echo 'Successful registration';
-            $_SESSION['REGISTERING_USER_INFO'] = array('customer_id' => $person->id, 'user_id' => $registering_user->id, 'username' => $registering_user->username);
+            echo 'Successful registration'; ////////////////////
+            $_SESSION['REGISTERING_USER'] = serialize($registering_user);
             foreach($_POST as $x) {     // unset POST VARS
                 unset($x);
             }
+
         }
         catch (PDOException $e) {
             throw new PDOException($e->getMessage(), (int)$e->getCode());
         }
     }
-    else if($_POST['businessInfoSubmitButton'] === 'true' &&
+    else if(isset($_SESSION['REGISTERING_USER_INFO']) &&
             isset($_POST['companyNameField']) &&
             isset($_POST['companyTypeField']) &&
             isset($_POST['licenceNumberField']) &&
@@ -90,10 +95,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             isset($_POST['businessAddressField']) &&    // street
             isset($_POST['businessHoldingNumberField']) &&
             isset($_POST['businessNotesField'])) {
-        print_r($_SESSION);
+
         $registering_user = unserialize($_SESSION['REGISTERING_USER']);
-            if($registering_user === null) {
-                throw new Exception("User class object null");
+            if(!($registering_user instanceof user)) {
+                throw new Exception("User class object corrupted");
             }
 
         $week = array('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN');
@@ -119,6 +124,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if($res) {
                 CONNECTION->commit();
+                unset($_SESSION['REGISTERING_USER']);
                 header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
             }
             else {

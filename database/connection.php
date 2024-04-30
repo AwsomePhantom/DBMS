@@ -78,6 +78,7 @@
 
         /**
          * Function used to log in into the webpage
+         * Registers into the database user token for the session
          * @param string $username
          * @param string $password
          * @return user|null
@@ -96,7 +97,7 @@
 			}
 			$user_row = $stmt->fetch();     // get user account's row
             $customer_id = $user_row['customer_id'];
-            $business_id = $user_row['business_id'];
+            $business_id = is_null($user_row['business_id']) ? null : $user_row['business_id'];
 
 			$this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_NUM);
 
@@ -120,10 +121,11 @@
 				$this->get_customer_address($customer_id));         // gender
 
 			$this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
+            var_dump($business_id);
+            echo ($business_id);
             // Find business's entry if any associated with
 			$company = null;
-			if($business_id !== null || $business_id != '0') {
+			if($business_id !== null) {
 				$sql = 'SELECT * from businesses_info WHERE id = ? LIMIT 1';
 				$stmt = $this->pdo->prepare($sql);
                 $stmt->execute([$business_id]);
@@ -148,8 +150,19 @@
                     $company_row['active']                          // business active
 				);
 			}
+            do {
+                $session_id = substr(md5(uniqid(mt_rand(), true)), 0, 20);
+                $sql = 'SELECT id FROM active_session WHERE id = ? LIMIT 1';
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute([$session_id]);
+            }
+            while($stmt->rowCount() > 0);
+            $sql = 'INSERT INTO active_session (id, username) VALUE (?, ?)';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$session_id, $username]);
 
 			return new user(
+                $session_id,
 				$user_row['id'],                                    // id
 				$user_row['username'],                              // username
 				$person,                                            // customer obj
@@ -159,6 +172,17 @@
 				new DateTime($user_row['registration_date'])        // registration date
 			);
 		}
+
+        /**
+         * Delete active sessions and user token from the database
+         * @param string $username
+         * @return void
+         */
+        function logout(string $username) : void {
+            $sql = 'DELETE FROM active_session WHERE username = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$username]);
+        }
 
         /**
          * Begin transaction

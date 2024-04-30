@@ -1,6 +1,8 @@
 <?php
 
-const ROOT_DIR = __DIR__;
+if(!defined('ROOT_DIR')) {
+    define("ROOT_DIR", __DIR__);
+}
 $relative_root = relativePath(ROOT_DIR);
 
 const USER_THEMES = array(
@@ -14,20 +16,20 @@ const USER_THEMES = array(
 $GLOBALS['USER_THEME'] = USER_THEMES[31];                           // Global user theme name form array
 
 const ABSOLUTE_PATHS = array(
-    "HOME_PAGE"                     => ROOT_DIR . '/index.php',
-    "MENU_PAGE"                     => ROOT_DIR . '/home_components/menu.php',
-    "ARTICLES_PAGE"                 => ROOT_DIR . '/home_components/articles.php',
-    "FOOTER_PAGE"                   => ROOT_DIR . '/home_components/footer.php',
-    "CUSTOMER_REGISTRATION_FORM"    => ROOT_DIR . '/forms/registration.php',
-    "BUSINESS_REGISTRATION_FORM"    => ROOT_DIR . '/forms/registrationBusiness.php',
-    "LOGIN_PAGE"                    => ROOT_DIR . '/forms/login.php',
-    "LOADING_PAGE"                  => ROOT_DIR . '/home_components/loading.php',
-    "SUCCESSFUL_REGISTRATION"       => ROOT_DIR . '/forms/successful_registration.php',
-    "LOCAL_STYLESHEET"              => ROOT_DIR . '/styles/styles.css',
-    "LOCAL_SCRIPTS"                 => ROOT_DIR . '/scripts/main.js',
-    "CONNECTION"                    => ROOT_DIR . '/database/connection.php',
-    "COUNTRIES"                     => ROOT_DIR . '/data/countries.php',
-    "DASHBOARD"                     => ROOT_DIR . '/dashboard/index.php'
+    "HOME_PAGE"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'index.php',
+    "MENU_PAGE"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'menu.php',
+    "ARTICLES_PAGE"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'articles.php',
+    "FOOTER_PAGE"                   => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'footer.php',
+    "CUSTOMER_REGISTRATION_FORM"    => ROOT_DIR . DIRECTORY_SEPARATOR . 'forms' . DIRECTORY_SEPARATOR . 'registration.php',
+    "BUSINESS_REGISTRATION_FORM"    => ROOT_DIR . DIRECTORY_SEPARATOR . 'forms' . DIRECTORY_SEPARATOR . 'registrationBusiness.php',
+    "LOGIN_PAGE"                    => ROOT_DIR . DIRECTORY_SEPARATOR . 'forms' . DIRECTORY_SEPARATOR . 'login.php',
+    "LOADING_PAGE"                  => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'loading.php',
+    "SUCCESSFUL_REGISTRATION"       => ROOT_DIR . DIRECTORY_SEPARATOR . 'forms' . DIRECTORY_SEPARATOR . 'successful_registration.php',
+    "LOCAL_STYLESHEET"              => ROOT_DIR . DIRECTORY_SEPARATOR . 'styles' . DIRECTORY_SEPARATOR . 'styles.css',
+    "LOCAL_SCRIPTS"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'main.js',
+    "CONNECTION"                    => ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php',
+    "COUNTRIES"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'countries.php',
+    "DASHBOARD"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'index.php'
 );
 
 if(!file_exists(ABSOLUTE_PATHS['HOME_PAGE'])) die("Menu file not found.");
@@ -61,7 +63,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     // Cut until ROOT_DIR of the website
     $index = -1;            // computer folders and absolute paths have always common prefix
-    for($i = 0; $i < count($path); $i++) {
+    for($i = 0; $i < count($path) && $i < count($root); $i++) {
         if($root[$i] !== $path[$i]) {
             $index = $i;
             break;
@@ -105,5 +107,8 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     if(!str_ends_with($out, $separator) && !empty($out)) $out .= $separator;
     if(!empty($fileName)) $out .= $fileName;
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        str_replace('/', '\\', $out);
+    }
     return $out;
 }

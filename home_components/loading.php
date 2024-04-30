@@ -1,5 +1,3 @@
-<?php include_once($_SERVER['DOCUMENT_ROOT'].'/site_variables.php');
-?>
 
 <div id="loader" class="bg-white">
     <div class="col-1">

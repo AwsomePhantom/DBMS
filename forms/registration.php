@@ -1,9 +1,13 @@
 <?php
-$arr = explode(DIRECTORY_SEPARATOR, __DIR__);
-$arr = array_slice($arr, 0, count($arr) - 1);
-define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
+session_start();
+if(!defined('ROOT_DIR')) {
+    $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
+    $arr = array_slice($arr, 0, count($arr) - 1);
+    define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
+}
+
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
-    (require_once (ROOT_DIR . '/site_variables.php')) or die("Variables file not found");
+    (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
     $GLOBALS['WEBSITE_VARS'] = true;
 }
 if(!isset($GLOBALS['CONNECTION_VARS'])) {
@@ -16,8 +20,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
     use classes\customer;
     use classes\user;
 
-define("REGISTRATION_POST_URI", getURI());
-
+define("REGISTRATION_POST_URI", getURI());  // to clean the url from variables
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if( isset($_POST['usernameField']) &&
         isset($_POST['passwordField']) &&
@@ -52,29 +55,27 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 $person = new customer($unique_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
                 $unique_id = CONNECTION->generateID();
-                $user = new user($unique_id, $_POST['usernameField'], $person, null, null, null, null);
+                $user = new user(null, $unique_id, $_POST['usernameField'], $person, null, null, null, null);
 
                 CONNECTION->begin();
-                //$res = CONNECTION->register_customer($person); // inside create_user
-                //if(!$res) throw new Exception("Customer Registration failed");
                 $res = CONNECTION->create_user($user, $_POST['repeatPasswordField']);
                 sleep(1);
                 if($res) {
                     CONNECTION->commit();
-                    sleep(5);
                     header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
                 }
                 else {
-                    throw new Exception("User Registration failed");
+                    //throw new Exception("User Registration failed");
                     echo "Registration failed";
-                    sleep(5);
-                    header("Location: " . REGISTRATION_POST_URI);
                 }
 
             }
             catch (PDOException $e) {
                 throw new PDOException($e->getMessage(), (int)$e->getCode());
             }
+        unset($_POST['passwordField']);
+        unset($_POST['repeatPasswordField']);
+        header("Location: " . REGISTRATION_POST_URI);
     }
 }
 ?>

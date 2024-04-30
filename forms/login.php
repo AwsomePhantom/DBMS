@@ -1,71 +1,39 @@
 <?php
-$arr = explode(DIRECTORY_SEPARATOR, __DIR__);
-$arr = array_slice($arr, 0, count($arr) - 1);
-define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
-    if(!isset($GLOBALS['WEBSITE_VARS'])) {
-        (require_once (ROOT_DIR . '/site_variables.php')) or die("Variables file not found");
-        $GLOBALS['WEBSITE_VARS'] = true;
-    }
-    if(!isset($GLOBALS['CONNECTION_VARS'])) {
-        (require_once (ROOT_DIR . '/database/connection.php')) or die("Connection related file not found");
-        $GLOBALS['CONNECTION_VARS'] = true;
-    }
+session_start();
 
-    if(isset($_COOKIE['USER_AUTH'])) {
+if(!defined('ROOT_DIR')) {
+    $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
+    $arr = array_slice($arr, 0, count($arr) - 1);
+    define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
+}
+
+if(!isset($GLOBALS['WEBSITE_VARS'])) {
+    (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
+    $GLOBALS['WEBSITE_VARS'] = true;
+}
+if(!isset($GLOBALS['CONNECTION_VARS'])) {
+    (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php')) or die("Connection related file not found");
+    $GLOBALS['CONNECTION_VARS'] = true;
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+    if(isset($_COOKIE['USER_TOKEN'])) {
         header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
-        //echo "<script>window.location.href = '" . relativePath(ABSOLUTE_PATHS['DASHBOARD']) . "';</script>";
-
     }
 
-    $uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
         if(isset($_POST['usernameField']) && isset($_POST['passwordField'])) {
             try {
-                //$userObj = CONNECTION->login($_POST['usernameField'], $_POST['passwordField']);
-                $str = 'mysql:host='.CONN_INFO['HOST'].';dbname='.CONN_INFO['DBNAME'].';charset=utf8mb4;';
-                $opts = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_BOTH];
-                $pdo = new PDO($str, CONN_INFO['USERNAME'], CONN_INFO['PASSWORD']);
-                $sql = "SELECT * FROM user_accounts WHERE username = ? AND password = ? LIMIT 1";
-                $stmt = $pdo->prepare($sql);
-                $res = $stmt->execute([
-                    $_POST['usernameField'],
-                    $_POST['passwordField']
-                ]);
-                if($stmt->rowCount() <= 0) {
-                    echo "No user found!";
-                    echo "<h1>Login failed</h1>";
-                    foreach($_POST as $X) {
-                        unset($x);
-                    }
-                    return;
-                }
-
-                $row = $stmt->fetch();
-                $user_id = $row['id'];
-                $username = $row['username'];
-                $customer_id = $row['customer_id'];
-
-                $sql = 'SELECT * FROM customers_info WHERE id = ?';
-                $stmt = $pdo->prepare($sql);
-                $res = $stmt->execute([$customer_id]);;
-                $row = $stmt->fetch();
-                $customer = new \classes\customer($customer_id, $row['name'], $row['lastname'], new DateTime($row['birthdate']), $row['gender'], CONNECTION->get_customer_contacts($customer_id), CONNECTION->get_customer_address($customer_id));
-                $userObj = new \classes\user($user_id, $username, $customer, null, null, null, null);
-                echo "<script>console.log(\"Login successful\")</script>";
-
-                if(isset($_POST['rememberUser'])) {
-                    $expiry = time() + (3600 * 24 * 30); // 30 days
-                    setcookie('USER_AUTH', serialize($userObj), $expiry, '/');
+                $user_obj = CONNECTION->login($_POST['usernameField'], $_POST['passwordField']);
+                if($user_obj != null) {
+                    $_SESSION['USER_OBJ'] = serialize($user_obj);
+                    setcookie('USER_TOKEN', (string)$user_obj->session_id, time() + (86400 * 30), DIRECTORY_SEPARATOR);
+                    header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
                 }
                 else {
-                    setcookie('USER_AUTH', serialize($userObj), time() + 3600, '/');
+                    $errorMsg = "Invalid username or password";
+                    unset($_POST['usernameField']);
+                    unset($_POST['passwordField']);
                 }
-
-                //header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
-                echo "<script>window.location.href = '" . relativePath(ABSOLUTE_PATHS['DASHBOARD']) . "';</script>";
-
-
-
             } catch (Exception $e) {
                 throw new Exception($e->getMessage(), $e->getCode());
             }
@@ -154,6 +122,7 @@ define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
 <body>
 <div class="container-fluid">
     <form method="POST" class="form-signin">
+        <input type="hidden" name="request_method" value="POST">
         <legend class="mb-3 text-center"><strong>Login</strong></legend>
             <div class="form-floating">
                 <input name="usernameField" tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
@@ -162,6 +131,12 @@ define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
         <div class="form-floating mb-3">
             <input name="passwordField" tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
             <label for="passwordField">Password</label>
+        </div>
+
+        <div class="row mb-3">
+            <div class="text-muted bg-warning-subtle card">
+                <?php if(isset($errorMsg)) echo $errorMsg; ?>
+            </div>
         </div>
 
         <div class="row mb-3">

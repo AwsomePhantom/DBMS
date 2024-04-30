@@ -1,6 +1,8 @@
 <?php
 session_start();
-const ROOT_DIR = __DIR__;
+if(!defined('ROOT_DIR')) {
+    define("ROOT_DIR", __DIR__);
+}
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . '/site_variables.php')) or die("Variables file not found");
     $GLOBALS['WEBSITE_VARS'] = true;
