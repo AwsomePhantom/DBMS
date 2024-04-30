@@ -34,8 +34,8 @@
         }
 
         function __toString() : string {
-            $out = "<table class='table'><thead><th><td>ID</td><td>Username</td><td>Name</td><td>Business Type</td></th></thead>" .
-            "<tbody><tr><td>{$this->id}</td><td>{$this->username}</td><td>{$this->customer->name} {$this->customer->lastname}</td><td>". ($this->business != null) ? "business" : "customer" . "</td></tr></tbody></table>";
+            $out = "<table class='table'><thead><th><td>ID</td><td>Username</td><td>Name</td><td>Account Type</td></th></thead>" .
+            "<tbody><tr><td>{$this->id}</td><td>{$this->username}</td><td>{$this->customer->name} {$this->customer->lastname}</td><td>". (($this->business !== null) ? "business" : "customer") . "</td></tr></tbody></table>";
             return $out;
         }
 

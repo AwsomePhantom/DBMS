@@ -29,16 +29,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
         setcookie('USER_TOKEN', '', time() - (3600 * 24 * 30), '/');
-        unset($_SESSION['USER_OBJ']);
-        header('Location: ' . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
+        session_unset();
+        session_destroy();
+        header('Location: ' . relativePath(ABSOLUTE_PATHS['HOME_PAGE']));
     }
 }
 
 if(isset($_COOKIE['USER_TOKEN'])) {
     $user_obj = unserialize($_SESSION['USER_OBJ']);
-    if(!($user_obj) instanceof user || $user_obj->user_token != $_COOKIE['USER_TOKEN']) {
+    if(!($user_obj instanceof user) || $user_obj->session_id !== $_COOKIE['USER_TOKEN']) {
         setcookie('USER_TOKEN', '', time() - (3600 * 24 * 30), '/');
-        unset($_SESSION['USER_OBJ']);
+        session_unset();
+        session_destroy();
         header('Location: ' . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
     }
     else {
@@ -46,6 +48,8 @@ if(isset($_COOKIE['USER_TOKEN'])) {
     }
 }
 else {
+    session_unset();
+    session_destroy();
     header("Location: " . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
 }
 
@@ -60,7 +64,7 @@ else {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="<?php echo b5_theme_link(); ?>">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4!== $separatorLISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/styles/styles.css">

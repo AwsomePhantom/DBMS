@@ -92,7 +92,7 @@
 			$stmt = $this->pdo->prepare($sql);
 			$result = $stmt->execute([$username, $password]);
 			if($stmt->rowCount() == 0) {
-                echo "<script>console.log(\"No username/password found\")</script>";
+                //echo "<script>console.log(\"No username/password found\")</script>";
 				return null;
 			}
 			$user_row = $stmt->fetch();     // get user account's row
@@ -121,8 +121,7 @@
 				$this->get_customer_address($customer_id));         // gender
 
 			$this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            var_dump($business_id);
-            echo ($business_id);
+
             // Find business's entry if any associated with
 			$company = null;
 			if($business_id !== null) {
@@ -146,8 +145,8 @@
 					new DateTime($company_row['office_hour_start']),// office_hour_start
 					new DateTime($company_row['office_hour_end']),  // office_hour_end
 					$company_row['office_weekdays'],                // weekdays
-					new DateTime($company_row['registration_date']),// registration date
-                    $company_row['active']                          // business active
+                    $company_row['active'],                         // business active
+					new DateTime($company_row['registration_date']) // registration date
 				);
 			}
             do {
@@ -254,8 +253,7 @@
 			// Register customer
 			// Register phone numbers
 			// Register addresses
-
-			$sql = 'INSERT INTO customers_info (id, name, lastname, birthdate, gender) VALUES (?, ?, ?, ?, ?)';
+            $sql = 'INSERT INTO customers_info (id, name, lastname, birthdate, gender) VALUES (?, ?, ?, ?, ?)';
 			$stmt = $this->pdo->prepare($sql);
 			$res = $stmt->execute([
 				$c->id,
@@ -307,8 +305,7 @@
 			// Register addresses
 
 			// Insert first business, address and contacts are weak entities that are dependent on business_id
-
-			$sql = 'INSERT INTO businesses_info(id, owner_id, company_name, company_type, licence_number, office_hour_start, office_hour_end, office_weekdays) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+			$sql = 'INSERT INTO businesses_info(id, owner_id, company_name, company_type, licence_number, office_hour_start, office_hour_end, office_weekdays, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 			$stmt = $this->pdo->prepare($sql);
 			$res = $stmt->execute([
 				$b->id,
@@ -318,7 +315,8 @@
 				$b->licence_number,
 				$b->start->format('H:i:s'),
 				$b->end->format('H:i:s'),
-				$b->weekdays
+				$b->weekdays,
+                (int)$b->active
 			]);
 			if(!$res) return false;
 
@@ -449,7 +447,7 @@
          * @return bool
          */
         function addBusinessToUser(user $user) : bool {
-            $sql = 'UPDATE TABLE user_accounts SET business_id = ? WHERE id = ?;';
+            $sql = 'UPDATE user_accounts SET business_id = ? WHERE id = ?;';
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([$user->business->id, $user->id]);
         }

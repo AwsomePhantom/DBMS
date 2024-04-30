@@ -48,7 +48,7 @@ CREATE TABLE businesses_info (
                           licence_number varchar(255) NOT NULL,    -- VAT licence
                           office_hour_start time NOT NULL,
                           office_hour_end time NOT NULL,
-                          office_weekdays varchar(50),    -- {SUN, MON, TUE, WED, THU, FRI, SAT}
+                          office_weekdays varchar(26),    -- {SUN, MON, TUE, WED, THU, FRI, SAT}
                           active boolean NOT NULL DEFAULT TRUE,       -- if the business account has been deactivated or not
                           registration_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           FOREIGN KEY (owner_id) REFERENCES customers_info(id)

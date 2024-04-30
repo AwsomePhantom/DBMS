@@ -13,6 +13,26 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php')) or die("Connection related file not found");
     $GLOBALS['CONNECTION_VARS'] = true;
 }
+
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if(isset($_POST['usernameField']) && isset($_POST['passwordField'])) {
+        try {
+            $user_obj = CONNECTION->login($_POST['usernameField'], $_POST['passwordField']);
+            if($user_obj !== null) {
+                $_SESSION['USER_OBJ'] = serialize($user_obj);
+                setcookie('USER_TOKEN', (string)$user_obj->session_id, time() + (3600 * 24), '/');
+                header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
+            }
+            else {
+                $errorMsg = "Invalid username or password";
+                unset($_POST['usernameField']);
+                unset($_POST['passwordField']);
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+}
 ?>
 <nav class="container-fluid m-0 p-0">
     <ul class="nav flex-row justify-content-end" id="baseToolBar">
@@ -86,14 +106,21 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
                         </div>
                         <div class="modal-body">
                             <div class="container-fluid">
-                                <form class="form-signin">
+                                <form method="POST" class="form-signin">
+                                    <input type="hidden" name="request_method" value="POST">
                                     <div class="form-floating">
-                                        <input tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
+                                        <input tabindex="1" type="text" class="form-control" name="usernameField" placeholder="Username" autofocus>
                                         <label for="usernameField">Username</label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
+                                        <input tabindex="2" type="password" class="form-control" name="passwordField" placeholder="Password">
                                         <label for="passwordField">Password</label>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="text-muted bg-warning-subtle card">
+                                            <?php if(isset($errorMsg)) echo $errorMsg; ?>
+                                        </div>
                                     </div>
 
                                     <div class="row mb-3">
@@ -105,7 +132,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
                                         </div>
                                     </div>
                                     <div class="row mb-3 m-1">
-                                        <input tabindex="4" type="button" id="loginButton" class="mb-1 btn btn-lg bg-primary" value="Login">
+                                        <input tabindex="4" type="submit" id="loginButton" class="mb-1 btn btn-lg bg-primary" value="Login">
                                     </div>
                                 </form>
                             </div>

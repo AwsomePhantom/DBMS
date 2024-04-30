@@ -28,7 +28,7 @@
          * @param string $weekdays
          * @param bool $active
          */
-        public function __construct(string $id, customer $customer, string $company_name, string $company_type, string $licence_number, contacts $contacts, address $address, DateTime $start, DateTime $end, string $weekdays, ?DateTime $registration_date, bool $active) {
+        public function __construct(string $id, customer $customer, string $company_name, string $company_type, string $licence_number, contacts $contacts, address $address, DateTime $start, DateTime $end, string $weekdays, bool $active, ?DateTime $registration_date) {
             $this->id = $id;
             $this->customer = $customer;
             $this->company_name = $company_name;

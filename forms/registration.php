@@ -42,40 +42,39 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             try {
                 $res = CONNECTION->is_username_available($_POST['usernameField']);
                 if (!$res) {
-                    throw new Exception("Username not available");
+                    $errorMsg = "<div class=\"m-3 p-3 card bg-danger\"><h3><strong>Username not available!</strong></h3></div>";
                 }
-
-                if ($_POST['passwordField'] !== $_POST['repeatPasswordField']) {
-                    throw new Exception("Passwords do not match");
-                }
-
-                $unique_id = CONNECTION->generateID();
-                $phones = new contacts($unique_id, [$_POST['numberField1'], $_POST['numberField2']]);
-                $house_address = new address($unique_id, $_POST['countryField'], (int)$_POST['cityField'], $_POST['stateField'], $_POST['zipCodeField'], $_POST['addressField'], $_POST['holdingNumberField'], $_POST['notesField']);
-
-                $person = new customer($unique_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
-                $unique_id = CONNECTION->generateID();
-                $user = new user(null, $unique_id, $_POST['usernameField'], $person, null, null, null, null);
-
-                CONNECTION->begin();
-                $res = CONNECTION->create_user($user, $_POST['repeatPasswordField']);
-                sleep(1);
-                if($res) {
-                    CONNECTION->commit();
-                    header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
+                else if ($_POST['passwordField'] !== $_POST['repeatPasswordField']) {
+                    $errorMsg = "<div class=\"m-3 p-3 card bg-danger\"><h3><strong>Passwords do not match!</strong></h3></div>";
                 }
                 else {
-                    //throw new Exception("User Registration failed");
-                    echo "Registration failed";
-                }
+                    $unique_id = CONNECTION->generateID();
+                    $phones = new contacts($unique_id, [$_POST['numberField1'], $_POST['numberField2']]);
+                    $house_address = new address($unique_id, $_POST['countryField'], (int)$_POST['cityField'], $_POST['stateField'], $_POST['zipCodeField'], $_POST['addressField'], $_POST['holdingNumberField'], $_POST['notesField']);
 
+                    $person = new customer($unique_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
+                    $unique_id = CONNECTION->generateID();
+                    $user = new user(null, $unique_id, $_POST['usernameField'], $person, null, null, null, null);
+
+                    CONNECTION->begin();
+                    $res = CONNECTION->create_user($user, $_POST['repeatPasswordField']);
+                    sleep(1);
+                    if($res) {
+                        CONNECTION->commit();
+                        header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
+                    }
+                    else {
+                        //throw new Exception("User Registration failed");
+                        echo "Registration failed";
+                    }
+                }
             }
             catch (PDOException $e) {
                 throw new PDOException($e->getMessage(), (int)$e->getCode());
             }
         unset($_POST['passwordField']);
         unset($_POST['repeatPasswordField']);
-        header("Location: " . REGISTRATION_POST_URI);
+        //header("Location: " . REGISTRATION_POST_URI);
     }
 }
 ?>
@@ -88,7 +87,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Account</title>
     <link rel="stylesheet" href="<?php echo b5_theme_link(); ?>">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4!== $separatorLISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="<?php echo relativePath(ABSOLUTE_PATHS['GLOBAL_STYLESHEET']); ?>">
@@ -125,6 +124,7 @@ On successful registration, ask for business account
 ?>
 
 <div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-bold" style="padding-top: 70px;">
+    <?php if(isset($errorMsg)) echo $errorMsg; ?>
     <div class="card-header"><h3>Customer Account Registration</h3></div>
     <div class="card-body p-5">
     <form method="POST">
