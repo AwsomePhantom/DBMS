@@ -54,7 +54,12 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
     array_splice($path, 0, 1);      // remove first empty element
     array_splice($uri, 0, 1);       // remove first empty element
     array_splice($root, 0, 1);      // remove first empty element
-    array_pop($uri);                            // remove index.* file name from the URI
+	
+	$temp = $uri[count($uri) - 1];
+	$temp = explode('.', $temp);
+	if(count($temp) > 0)  {
+		array_pop($uri);                            // remove index.* file name from the URI, some browsers do not show index.* file
+	}
     while(count($path) > 0 && end($path) == '') {   // remove empty elements in the tail of the path
         array_pop($path);
     }
@@ -64,7 +69,6 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
         $fileName = end($path);
         array_pop($path);
     }
-
 
     // Cut until ROOT_DIR of the website
     $index = -1;            // computer folders and absolute paths have always common prefix
@@ -79,7 +83,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     // Equalise path and uri level and check if same page as level
     $index = -1;
-    for($i = 0; $i < count($path) && $i < count($uri); $i++) {
+    for($i = 0; $i < count($path); $i++) {	// case path = one/two/project/file.html and uri = one/two/prototype/file.html
         if($uri[0] === $path[$i]) {
             $index = $i;
             break;
@@ -87,6 +91,16 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
     }
     if($index > 0) {
         array_splice($path, 0, $i);
+    }
+	$index = -1;
+    for($i = 0; $i < count($uri); $i++) {	// case path = /project/file.html and uri = [localhost]/one/two/project/file.html
+        if($uri[$i] === $path[0]) {
+            $index = $i;
+            break;
+        }
+    }
+    if($index > 0) {
+        array_splice($uri, 0, $i);
     }
     if(implode($separator, $path) === implode($separator, $uri)) return '';
 
