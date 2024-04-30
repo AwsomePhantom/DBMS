@@ -10,7 +10,7 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
     $GLOBALS['WEBSITE_VARS'] = true;
 }
 if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    (require_once (ROOT_DIR . '/database/connection.php')) or die("Connection related file not found");
+    (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php')) or die("Connection related file not found");
     $GLOBALS['CONNECTION_VARS'] = true;
 }
 ?>

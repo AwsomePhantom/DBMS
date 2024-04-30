@@ -40,7 +40,7 @@ if(!file_exists(ABSOLUTE_PATHS['GLOBAL_STYLESHEET'])) die("Stylesheet file not f
 if(!file_exists(ABSOLUTE_PATHS['GLOBAL_SCRIPT'])) die("Stylesheet file not found.");
 
 function b5_theme_link() : string {
-    return  relativePath(ROOT_DIR . "/precompiled/" . $GLOBALS['USER_THEME'] . "/bootstrap-color.min.css");
+    return  relativePath(ROOT_DIR . DIRECTORY_SEPARATOR . "precompiled" . DIRECTORY_SEPARATOR . $GLOBALS['USER_THEME'] . DIRECTORY_SEPARATOR . "bootstrap-color.min.css");
 }
 
 function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string {
@@ -48,7 +48,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     $path = explode($separator, $absolutePath);
     $uri = explode('/', $_SERVER['REQUEST_URI']);
-    $root = explode($separator, $_SERVER['DOCUMENT_ROOT']);
+    $root = explode($separator, ROOT_DIR);
     $fileName = null;
 
     array_splice($path, 0, 1);      // remove first empty element
@@ -112,8 +112,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     if(!str_ends_with($out, $separator) && !empty($out)) $out .= $separator;
     if(!empty($fileName)) $out .= $fileName;
-    str_replace('\\', '/', $out);		// convert system style to URI style
-    return $out;
+    return str_replace('\\', '/', $out);
 }
 
 /**
@@ -124,7 +123,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 function relativePathSystem(string $path) : ?string {
     $out = relativePath($path);
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        str_replace('/', '\\', $out);
+        $out = str_replace('/', '\\', $out);
     }
     return $out;
 }
