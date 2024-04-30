@@ -49,12 +49,12 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login page</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <!-- Bootstrap 5 Icons CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="<?php echo b5_theme_link(); ?>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4!== $separatorLISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <script src="/scripts/main.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap')
         body {
@@ -120,41 +120,45 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
         registerButton
 -->
 <body>
-<div class="container-fluid">
-    <form method="POST" class="form-signin">
-        <input type="hidden" name="request_method" value="POST">
-        <legend class="mb-3 text-center"><strong>Login</strong></legend>
-            <div class="form-floating">
-                <input name="usernameField" tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
-                <label for="usernameField">Username</label>
-            </div>
-        <div class="form-floating mb-3">
-            <input name="passwordField" tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
-            <label for="passwordField">Password</label>
-        </div>
-
-        <div class="row mb-3">
-            <div class="text-muted bg-warning-subtle card">
-                <?php if(isset($errorMsg)) echo $errorMsg; ?>
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col">
-                <div class="form-check form-switch">
-                    <input name="rememberUser" value="true" tabindex="3" class="form-check-input" type="checkbox" role="switch" id="stayLoggedSwitch">
-                    <label class="form-check-label" for="stayLoggedSwitch">Stay logged in</label>
+<div class="container-fluid vh-100">
+    <div class="row" style="justify-content: center;">
+        <div class="card shadow-sm" style="width: 400px">
+            <form method="POST" class="form-signin">
+                <input type="hidden" name="request_method" value="POST">
+                <legend class="mb-3 text-center"><strong>Login</strong></legend>
+                    <div class="form-floating">
+                        <input name="usernameField" tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
+                        <label for="usernameField">Username</label>
+                    </div>
+                <div class="form-floating mb-3">
+                    <input name="passwordField" tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
+                    <label for="passwordField">Password</label>
                 </div>
-            </div>
+
+                <div class="row mb-3">
+                    <div class="text-muted bg-warning-subtle card">
+                        <?php if(isset($errorMsg)) echo $errorMsg; ?>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col">
+                        <div class="form-check form-switch">
+                            <input name="rememberUser" value="true" tabindex="3" class="form-check-input" type="checkbox" role="switch" id="stayLoggedSwitch">
+                            <label class="form-check-label" for="stayLoggedSwitch">Stay logged in</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3 m-1">
+                        <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <h6>Not a member yet? <a class="link-primary" href="#">Sign up</a></h6>
+                </div>
+            </form>
         </div>
-        <div class="row mb-3 m-1">
-                <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
-        </div>
-        <hr>
-        <div class="row text-center">
-            <h6>Not a member yet? <a class="link-primary" href="#">Sign up</a></h6>
-        </div>
-    </form>
+    </div>
 </div>
 
 
