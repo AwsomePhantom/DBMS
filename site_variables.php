@@ -40,14 +40,14 @@ if(!file_exists(ABSOLUTE_PATHS['GLOBAL_STYLESHEET'])) die("Stylesheet file not f
 if(!file_exists(ABSOLUTE_PATHS['GLOBAL_SCRIPT'])) die("Stylesheet file not found.");
 
 function b5_theme_link() : string {
-    return  relativePath(ROOT_DIR . DIRECTORY_SEPARATOR . "precompiled" . DIRECTORY_SEPARATOR . $GLOBALS['USER_THEME'] . DIRECTORY_SEPARATOR . "bootstrap-color.min.css");
+    return  relativePathSystem(ROOT_DIR . "/precompiled/" . $GLOBALS['USER_THEME'] . "/bootstrap-color.min.css");
 }
 
 function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string {
     if($absolutePath === ROOT_DIR) return '';
 
     $path = explode($separator, $absolutePath);
-    $uri = explode($separator, $_SERVER['REQUEST_URI']);
+    $uri = explode('/', $_SERVER['REQUEST_URI']);
     $root = explode($separator, $_SERVER['DOCUMENT_ROOT']);
     $fileName = null;
 
