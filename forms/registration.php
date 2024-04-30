@@ -120,8 +120,8 @@ On successful registration, ask for business account
 
 
 <?php
-(include_once(relativePath(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
-(include_once(relativePath(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
+(include_once(relativePathSystem(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
+(include_once(relativePathSystem(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
 ?>
 
 <div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-bold" style="padding-top: 70px;">
@@ -273,7 +273,7 @@ On successful registration, ask for business account
     </div>
 </div>
 
-<?php (include_once(relativePath(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
+<?php (include_once(relativePathSystem(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
 <script>
     document.getElementById('loader').classList.add('fadeout');
     document.getElementById('top').scrollIntoView({behavior: 'smooth'});

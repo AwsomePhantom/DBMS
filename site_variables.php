@@ -111,6 +111,16 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     if(!str_ends_with($out, $separator) && !empty($out)) $out .= $separator;
     if(!empty($fileName)) $out .= $fileName;
+    return $out;
+}
+
+/**
+ * Replaces DIRECTORY SEPARATOR '/' with '\' for WINDOWS
+ * @param string $path
+ * @return string|null
+ */
+function relativePathSystem(string $path) : ?string {
+    $out = relativePath($path);
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         str_replace('/', '\\', $out);
     }

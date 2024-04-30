@@ -191,8 +191,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 -->
 <body class="bg-body">
 <?php
-(include_once('../home_components/loading.php')) or die("Failed to load component");
-(include_once('../home_components/menu.php'))  or die("Failed to load component");
+(include_once(relativePathSystem(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
+(include_once(relativePathSystem(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
 ?>
 
 <div id="top" class="container my-5 mx-auto p-0 lato-bold" style="padding-top: 70px">
@@ -519,7 +519,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 </div>
 
-<?php (include_once(relativePath(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
+<?php (include_once(relativePathSystem(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
 <script>
     document.getElementById('loader').classList.add('fadeout');
     document.getElementById('top').scrollIntoView({behavior: 'smooth'});

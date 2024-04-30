@@ -30,18 +30,18 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
 <body class="bg-body-secondary">
 
 <?php
-(include_once(relativePath(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
-(include_once(relativePath(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
+(include_once(relativePathSystem(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
+(include_once(relativePathSystem(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
 
 ?>
 
 <div class="container bg-body my-5 mx-auto p-5 card" style="padding-top: 70px;">
-    <?php (include_once(relativePath(ABSOLUTE_PATHS['ARTICLES_PAGE']))) or die("Failed to load component"); ?>
+    <?php (include_once(relativePathSystem(ABSOLUTE_PATHS['ARTICLES_PAGE']))) or die("Failed to load component"); ?>
 </div>
 
 
 
-<?php (include_once(relativePath(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
+<?php (include_once(relativePathSystem(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
 <script>
     document.getElementById('loader').classList.add('fadeout');
 </script>
