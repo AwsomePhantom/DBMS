@@ -25,8 +25,8 @@ const ABSOLUTE_PATHS = array(
     "LOGIN_PAGE"                    => ROOT_DIR . DIRECTORY_SEPARATOR . 'forms' . DIRECTORY_SEPARATOR . 'login.php',
     "LOADING_PAGE"                  => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'loading.php',
     "SUCCESSFUL_REGISTRATION"       => ROOT_DIR . DIRECTORY_SEPARATOR . 'forms' . DIRECTORY_SEPARATOR . 'successful_registration.php',
-    "LOCAL_STYLESHEET"              => ROOT_DIR . DIRECTORY_SEPARATOR . 'styles' . DIRECTORY_SEPARATOR . 'styles.css',
-    "LOCAL_SCRIPTS"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'main.js',
+    "GLOBAL_STYLESHEET"             => ROOT_DIR . DIRECTORY_SEPARATOR . 'styles' . DIRECTORY_SEPARATOR . 'styles.css',
+    "GLOBAL_SCRIPT"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'main.js',
     "CONNECTION"                    => ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php',
     "COUNTRIES"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'countries.php',
     "DASHBOARD"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'index.php'
@@ -36,10 +36,11 @@ if(!file_exists(ABSOLUTE_PATHS['HOME_PAGE'])) die("Menu file not found.");
 if(!file_exists(ABSOLUTE_PATHS['MENU_PAGE'])) die("Menu file not found.");
 if(!file_exists(ABSOLUTE_PATHS['ARTICLES_PAGE'])) die("Articles page file not found.");
 if(!file_exists(ABSOLUTE_PATHS['FOOTER_PAGE'])) die("Footer file not found.");
-if(!file_exists(ABSOLUTE_PATHS['LOCAL_STYLESHEET'])) die("Stylesheet file not found.");
+if(!file_exists(ABSOLUTE_PATHS['GLOBAL_STYLESHEET'])) die("Stylesheet file not found.");
+if(!file_exists(ABSOLUTE_PATHS['GLOBAL_SCRIPT'])) die("Stylesheet file not found.");
 
 function b5_theme_link() : string {
-    return "/precompiled/" . $GLOBALS['USER_THEME'] . "/bootstrap-color.min.css";
+    return  relativePath(ROOT_DIR . DIRECTORY_SEPARATOR . "precompiled" . DIRECTORY_SEPARATOR . $GLOBALS['USER_THEME'] . DIRECTORY_SEPARATOR . "bootstrap-color.min.css");
 }
 
 function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string {
@@ -74,7 +75,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
         }
     }
     array_splice($path, 0, $i - 1);     // URI and Path at the same level
-    if(serialize($path) === serialize($uri)) return $fileName;      // Same sub level
+    if(implode($separator, $path) === implode($separator, $uri)) return $fileName;      // Same sub level
 
     // Equalise path and uri level and check if same page as level
     $index = -1;
@@ -111,6 +112,7 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
 
     if(!str_ends_with($out, $separator) && !empty($out)) $out .= $separator;
     if(!empty($fileName)) $out .= $fileName;
+    str_replace('\\', '/', $out);		// convert system style to URI style
     return $out;
 }
 
