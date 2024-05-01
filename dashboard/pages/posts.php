@@ -18,7 +18,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
 ?>
 
 <div id="posts">
-    <div class="card shadow-sm mb-3 mx-3">
+    <div class="card shadow-sm m-3 mx-3">
         <div class="card-header lato-bold">
             Selling Toyota Allion G Package 2011
             <p class="card-subtitle text-secondary mt-0">Author: Bob Ross</p>
@@ -53,7 +53,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
     </div>
 
     <div class="card shadow-sm mb-3 mx-3">
-        <div class="card-header">
+        <div class="card-header lato-bold">
             Repair for BMW 7 Series 2016
             <p class="card-subtitle text-secondary mt-0">Author: Bob Spark</p>
             <p class="card-subtitle text-secondary">Location: </p>

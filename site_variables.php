@@ -13,7 +13,7 @@ const USER_THEMES = array(
     'sandstone', 'simplex', 'sketchy', 'slate', 'solar', 'spacelab', 'superhero', 'united', 'vibrant-sea', 'wizardry',
     'yeti');
 
-$GLOBALS['USER_THEME'] = USER_THEMES[37];                           // Global user theme name form array default 35
+$GLOBALS['USER_THEME'] = USER_THEMES[37];                           // Global user theme name form array default 37
 
 const ABSOLUTE_PATHS = array(
     "HOME_PAGE"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'index.php',

@@ -42,8 +42,9 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
                         <ul class="navbar-nav" style="font-weight: 600;">
                             <li class="nav-item"><a class="nav-link active" href="#"><i class="bi bi-house"></i> Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-person-circle"></i> Profile</a></li>
-                            <li class="nav-item"><a class="nav-link" ><i class="bi bi-sliders"></i> Settings</a></li>
-                            <li class="nav-item"><a class="btn btn-dark" href="#sidebar" data-bs-toggle="collapse"><i class="bi bi-layout-sidebar-inset h5 text-white"></i> Sidebar</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-money-check-dollar"></i> Invoices</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-wrench"></i> Parts Store</a></li>
+                            <li class="nav-item"><a class="btn btn-dark" href="#sidebar" data-bs-toggle="collapse"><i class="bi bi-sliders"></i> Settings</a></li>
                             <li class="nav-item"><span class="bi bi-grip-vertical h3"></span></li>
                             <li class="nav-item" style="padding-left: 10px"><button name="logoutButton" class="btn btn-block btn-danger" type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button></li>
                         </ul>
@@ -56,7 +57,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
         <div id="sidebar" class="vh-100 mx-0 bg-dark collapse fade" style="z-index: 9999999; position: fixed; width:400px; box-shadow: 5px 0 20px gray">
             <div class="container-fluid">
                 <div class="row text-end text-white">
-                    <a class="my-3" data-bs-toggle="collapse" href="#sidebar"><i style="font-size:32px" class="fa-regular fa-circle-xmark"></i></a>
+                    <a class="my-3" data-bs-toggle="collapse" href="#sidebar"><i style="font-size:32px" class="fa-regular fa-circle-xmark text-warning"></i></a>
                 </div>
                 <div class="row">
                     <div class="navbar navbar-dark bg-dark flex-column">

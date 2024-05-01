@@ -84,6 +84,68 @@ $errorMsg = null;
                 </div>
                 <div class="card-body">
 
+                    <form method="POST">
+                        <div class="form-group border border-light p-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="searchField">Search Post
+                                        <input name="searchField" class="form-control" type="text">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button name="searchButton" class="btn btn-primary" type="submit">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <form method="POST">
+                        <div class="form-group border border-light p-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="searchGarageField">Search Garage By Work Nearby
+                                        <input name="searchGarageField" class="form-control" type="text">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <small class="text-muted">Enable device localisation or GPS</small><br>
+                                    <button name="searchGarageButton" class="btn btn-primary" type="submit">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <form method="POST">
+                        <div class="form-group border border-light p-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="cityField">City
+                                        <input name="cityField" class="form-control" type="text">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label for="dateField">From date
+                                        <input name="dateField" class="form-control" type="date">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <button name="applyFilterButton" class="btn btn-primary" type="submit">Apply Filter</button>
+                                    <button name="cancelFilter" class="btn btn-secondary" type="submit">Cancel Filter</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

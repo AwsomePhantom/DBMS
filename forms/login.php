@@ -56,7 +56,6 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
     <link rel="stylesheet" href="<?php echo relativePath(ABSOLUTE_PATHS['GLOBAL_STYLESHEET']); ?>">
     <script src="<?php echo relativePath(ABSOLUTE_PATHS['GLOBAL_SCRIPT']); ?>"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap')
         body {
             font-family: "Rubik", sans-serif;
             background-color: #f5f5f5;
@@ -80,13 +79,11 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
 
         .form-signin input[type="text"] {
             margin-bottom: -1px;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0;
+            border-radius: 10px 10px 0 0;
         }
         .form-signin input[type="password"] {
             margin-bottom: 10px;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
+            border-radius: 0 0 10px 10px;
         }
 
     </style>
@@ -101,7 +98,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
         registerButton
 -->
 <body>
-<div class="container-fluid vh-100">
+<div class="container-fluid">
     <div class="row" style="justify-content: center;">
         <div class="card shadow-lg m-5" style="border-radius: 25px; width: 400px">
             <form method="POST" class="form-signin">
@@ -109,11 +106,10 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
                 <div class="card-header bg-dark text-light" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background: linear-gradient(180deg, dimgray, black)">
                     <legend class="my-2 text-center"><strong>Login</strong></legend>
                 </div>
-                <div class="card-body p-5">
+                <div class="card-body  px-5">
+                    <p class="lead">Enter Credentials</p>
                     <div>
-                        <label for="usernameField">Enter Credentials</label>
                         <input name="usernameField" tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
-
                     </div>
                     <div class="mb-3">
                         <input name="passwordField" tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
@@ -127,8 +123,8 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3 px-2 justify-content-start">
-                            <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
+                    <div class="row mb-3 px-2 justify-content-center">
+                            <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-block btn-primary" value="Login">
                     </div>
                     <hr style="margin-left: -20px; margin-right: -20px">
                     <div class="row justify-content-center">
