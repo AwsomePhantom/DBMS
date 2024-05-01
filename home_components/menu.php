@@ -41,15 +41,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     </ul>
 </nav>
 
-<div class="m-0 p-5 bg-body-tertiary text-body" id="jumbotron">
+<div class="m-0 p-5 bg-light text-dark shadow-lg" id="jumbotron">
     <h1 class="pt-5">Auto Repair Services</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat..</p>
+    <span>Welcome to our site, your one-stop solution for all your automotive repair and maintenance needs</span>
+    <br>
+    <span>Our online mechanic workshop is designed to provide you with convenient and reliable services, right at your doorstep.</span>
 </div>
 
 <nav class="navbar navbar-expand-lg bg-light sticky-top shadow-sm">
     <div class="container-fluid">
         <i class="fa-solid fa-blog d-sm-block d-lg-none d-xl-block"></i>
-        <a class="navbar-brand px-2 d-sm-block d-lg-none d-xl-block" href="#">Navbar</a>
+        <a class="navbar-brand px-2 d-sm-block d-lg-none d-xl-block" href="#">Navigation Menu</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fa-solid fa-bars"></i>
         </button>
@@ -80,7 +82,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <a class="nav-link" href="#"><i class="fa-solid fa-star"></i> Special</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fa-solid fa-gears"></i> Parts Store</a>
+                    <a class="nav-link" href="<?php echo relativePath(ABSOLUTE_PATHS['PARTS_STORE']); ?>"><i class="fa-solid fa-gears"></i> Parts Store</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#"><i class="fa-solid fa-warehouse"></i> Find Nearby Garage</a>
@@ -108,13 +110,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="container-fluid">
                                 <form method="POST" class="form-signin">
                                     <input type="hidden" name="request_method" value="POST">
-                                    <div class="form-floating">
+                                    <div>
+                                        <label for="usernameField">Enter Username</label>
                                         <input tabindex="1" type="text" class="form-control" name="usernameField" placeholder="Username" autofocus>
-                                        <label for="usernameField">Username</label>
                                     </div>
-                                    <div class="form-floating mb-3">
+                                    <div class="mb-3">
+                                        <label for="passwordField">Enter Password</label>
                                         <input tabindex="2" type="password" class="form-control" name="passwordField" placeholder="Password">
-                                        <label for="passwordField">Password</label>
                                     </div>
 
                                     <div class="row mb-3">
@@ -132,7 +134,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         </div>
                                     </div>
                                     <div class="row mb-3 m-1">
-                                        <input tabindex="4" type="submit" id="loginButton" class="mb-1 btn btn-lg bg-primary" value="Login">
+                                        <input tabindex="4" type="submit" id="loginButton" class="mb-1 btn btn-lg bg-primary text-light" value="Login">
                                     </div>
                                 </form>
                             </div>

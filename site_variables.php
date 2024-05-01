@@ -13,7 +13,7 @@ const USER_THEMES = array(
     'sandstone', 'simplex', 'sketchy', 'slate', 'solar', 'spacelab', 'superhero', 'united', 'vibrant-sea', 'wizardry',
     'yeti');
 
-$GLOBALS['USER_THEME'] = USER_THEMES[31];                           // Global user theme name form array
+$GLOBALS['USER_THEME'] = USER_THEMES[35];                           // Global user theme name form array
 
 const ABSOLUTE_PATHS = array(
     "HOME_PAGE"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'index.php',
@@ -29,7 +29,8 @@ const ABSOLUTE_PATHS = array(
     "GLOBAL_SCRIPT"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'main.js',
     "CONNECTION"                    => ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php',
     "COUNTRIES"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'countries.php',
-    "DASHBOARD"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'index.php'
+    "DASHBOARD"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'index.php',
+    "PARTS_STORE"                   => ROOT_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'partsstore.php'
 );
 
 if(!file_exists(ABSOLUTE_PATHS['HOME_PAGE'])) die("Menu file not found.");

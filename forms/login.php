@@ -78,25 +78,6 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
             background-color: #f5f5f5;
         }
 
-        .form-signin {
-            width: 100%;
-            max-width: 330px;
-            padding: 15px;
-            margin: 0 auto;
-        }
-        .form-signin .checkbox {
-            font-weight: 400;
-        }
-        .form-signin .form-control {
-            position: relative;
-            box-sizing: border-box;
-            height: auto;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .form-signin .form-control:focus {
-            z-index: 2;
-        }
         .form-signin input[type="text"] {
             margin-bottom: -1px;
             border-bottom-right-radius: 0;
@@ -122,44 +103,53 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
 <body>
 <div class="container-fluid vh-100">
     <div class="row" style="justify-content: center;">
-        <div class="card shadow-sm" style="width: 400px">
+        <div class="card shadow-lg m-5" style="border-radius: 25px; width: 400px">
             <form method="POST" class="form-signin">
                 <input type="hidden" name="request_method" value="POST">
-                <legend class="mb-3 text-center"><strong>Login</strong></legend>
-                    <div class="form-floating">
+                <div class="card-header bg-dark text-light" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background: linear-gradient(180deg, dimgray, black)">
+                    <legend class="mb-3 text-center"><strong>Login</strong></legend>
+                </div>
+                <div class="card-body p-5">
+                    <div>
+                        <label for="usernameField">Enter Credentials</label>
                         <input name="usernameField" tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
-                        <label for="usernameField">Username</label>
-                    </div>
-                <div class="form-floating mb-3">
-                    <input name="passwordField" tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
-                    <label for="passwordField">Password</label>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="text-muted bg-warning-subtle card">
-                        <?php if(isset($errorMsg)) echo $errorMsg; ?>
                     </div>
-                </div>
+                    <div class="mb-3">
+                        <input name="passwordField" tabindex="2" type="password" class="form-control" id="passwordField" placeholder="Password">
+                    </div>
 
-                <div class="row mb-3">
-                    <div class="col">
-                        <div class="form-check form-switch">
-                            <input name="rememberUser" value="true" tabindex="3" class="form-check-input" type="checkbox" role="switch" id="stayLoggedSwitch">
-                            <label class="form-check-label" for="stayLoggedSwitch">Stay logged in</label>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <div class="form-check form-switch">
+                                <input name="rememberUser" value="true" tabindex="3" class="form-check-input" type="checkbox" role="switch" id="stayLoggedSwitch">
+                                <label class="form-check-label" for="stayLoggedSwitch">Stay logged in</label>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row mb-3 m-1">
-                        <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
-                </div>
-                <hr>
-                <div class="row text-center">
-                    <h6>Not a member yet? <a class="link-primary" href="#">Sign up</a></h6>
+                    <div class="row mb-3 px-2 justify-content-start">
+                            <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-lg btn-primary" value="Login">
+                    </div>
+                    <hr style="margin-left: -20px; margin-right: -20px">
+                    <div class="row justify-content-center">
+                        <h6>Not a member yet? <a class="link-primary" href="<?php echo relativePath(ABSOLUTE_PATHS['CUSTOMER_REGISTRATION_FORM']); ?>">Sign up</a></h6>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
+    <?php if(isset($errorMsg)) {
+        echo <<< ENDL_
+    <div class="col-md-8 mx-auto my-2 fixed-top alert alert-warning alert-dismissible fadein show" role="alert" style="z-index: 99999; position: fixed;">
+        <strong>Error:</strong> {$errorMsg}
+        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 </div>
+ENDL_;
+        }
+    ?>
 
 
 </body>

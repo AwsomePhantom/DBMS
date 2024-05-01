@@ -99,7 +99,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $registering_user = unserialize($_SESSION['REGISTERING_USER']);
             if(!($registering_user instanceof user)) {
                 unset($_SESSION['REGISTERING_USER']);
-                $errorMsg = "<div class=\"m-3 p-3 card bg-body-tertiary\"><h3><strong>Error, try again from the start!</strong></h3></div>";
+                $errorMsg = "<h3>Error, try again from the start!</h3>";
             }
 
         $days = array();
@@ -131,7 +131,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
             }
             else {
-                $errorMsg = "<div class=\"m-3 p-3 card bg-body-tertiary\"><h3><strong>Error, please try again!</strong></h3></div>";
+                $errorMsg = "<h3>Error, please try again!</h3>";
             }
 
         }
@@ -196,27 +196,36 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php
 (include_once(relativePathSystem(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
 (include_once(relativePathSystem(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
+
+    echo "<div class=\"container alert alert-warning mx-auto mt-5 p-3\">";
+    if(isset($_SESSION['REGISTERING_USER'])) {
+        echo "<h3>Enter business related details</h3>";
+    }
+    else {
+        echo "<h3><i>Enter personal details</i></h3>";
+    }
+    if(isset($errorMsg)) echo "Error: " . $errorMsg;
+    echo "</div>";
 ?>
 
-<div id="top" class="container my-5 mx-auto p-0 lato-bold" style="padding-top: 70px">
-    <?php if(isset($errorMsg)) echo $errorMsg; ?>
+<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-bold" style="padding-top: 70px;">
+    <div class="card-header"><h3>Business Account Registration</h3></div>
+    <div class="card-body p-5">
 
+        <form method="POST" id="mainForm">
+            <input type="hidden" name="request_method" value="POST">
+            <?php
+                if(!isset($_SESSION['REGISTERING_USER'])) {
+                    (include_once ('registrationBusinessSectionOne.php')) or die("Failed to load component");
+                }
+                else {
+                    (include_once ('registrationBusinessSectionTwo.php')) or die("Failed to load component");
+                }
 
-    <form method="POST" id="mainForm">
-        <input type="hidden" name="request_method" value="POST">
-        <?php
-            if(!isset($_SESSION['REGISTERING_USER'])) {
-                echo "<div class=\"my-5 p-3 card bg-body-tertiary shadow-sm\"><h3>Enter personal details</h3></div>";
-                (include_once ('registrationBusinessSectionOne.php')) or die("Failed to load component");
-            }
-            else {
-                echo "<div class=\"my-5 p-3 card bg-body-tertiary shadow-sm\"><h3>Enter business related details</h3></div>";
-                (include_once ('registrationBusinessSectionTwo.php')) or die("Failed to load component");
-            }
+            ?>
 
-        ?>
-
-    </form>
+        </form>
+    </div>
 </div>
 
 <?php (include_once(relativePathSystem(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>

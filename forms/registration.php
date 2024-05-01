@@ -42,10 +42,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             try {
                 $res = CONNECTION->is_username_available($_POST['usernameField']);
                 if (!$res) {
-                    $errorMsg = "<div class=\"m-3 p-3 card bg-danger\"><h3><strong>Username not available!</strong></h3></div>";
+                    $errorMsg = "<h3>Username not available!</h3>";
                 }
                 else if ($_POST['passwordField'] !== $_POST['repeatPasswordField']) {
-                    $errorMsg = "<div class=\"m-3 p-3 card bg-danger\"><h3><strong>Passwords do not match!</strong></h3></div>";
+                    $errorMsg = "<h3>Passwords do not match!</h3>";
                 }
                 else {
                     $unique_id = CONNECTION->generateID();
@@ -121,10 +121,17 @@ On successful registration, ask for business account
 <?php
 (include_once(relativePathSystem(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
 (include_once(relativePathSystem(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
+
+
+if (isset($errorMsg)) {
+    echo "<div class=\"container alert alert-warning mx-auto mt-5 p-3\">";
+    echo "Error: " . $errorMsg;
+    echo "</div>";
+}
+
 ?>
 
 <div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-bold" style="padding-top: 70px;">
-    <?php if(isset($errorMsg)) echo $errorMsg; ?>
     <div class="card-header"><h3>Customer Account Registration</h3></div>
     <div class="card-body p-5">
     <form method="POST">

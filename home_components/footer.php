@@ -1,5 +1,5 @@
 
-<footer class="vw-100 p-5 bg-body-tertiary border-top" id="footer">
+<footer class="vw-100 p-5 mt-5 bg-white text-dark border-top" id="footer">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12 col-lg-2 mb-3">
