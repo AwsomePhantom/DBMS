@@ -131,12 +131,13 @@ if (isset($errorMsg)) {
 
 ?>
 
-<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-bold" style="padding-top: 70px;">
-    <div class="card-header"><h3>Customer Account Registration</h3></div>
+<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-regular" style="padding-top: 70px;">
+    <div class="card-header"><span class="card-title">Customer Account Registration</span></div>
     <div class="card-body p-5">
     <form method="POST">
             <fieldset>
-                <legend>User Account Info</legend>
+                <p class="lead">User Account Info</p>
+                <hr class="border border-secondary">
                 <div class="row mb-3">
                     <div class="col">
                         <label for="usernameField">Username</label>
@@ -167,7 +168,8 @@ if (isset($errorMsg)) {
             </fieldset>
 
             <fieldset>
-                <legend>Customer Info</legend>
+                <p class="lead">Customer Info</p>
+                <hr class="border border-secondary">
                 <div class="row mb-3">
                     <div class="col">
                         <label for="firstNameField">First Name</label>
@@ -203,7 +205,8 @@ if (isset($errorMsg)) {
             </fieldset>
 
         <fieldset>
-            <legend>Contacts</legend>
+            <p class="lead">Contacts</p>
+            <hr class="border border-secondary">
             <div class="row mb-3">
                 <div class="col">
                     <label for="numberField1">Phone</label>
@@ -217,7 +220,8 @@ if (isset($errorMsg)) {
         </fieldset>
 
         <fieldset>
-        <legend>Address</legend>
+        <p class="lead">Address</p>
+            <hr class="border border-secondary">
             <div class="row mb-3">
                 <div class="col">
                     <label for="countryField">Country</label>

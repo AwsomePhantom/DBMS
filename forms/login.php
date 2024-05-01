@@ -107,7 +107,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
             <form method="POST" class="form-signin">
                 <input type="hidden" name="request_method" value="POST">
                 <div class="card-header bg-dark text-light" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background: linear-gradient(180deg, dimgray, black)">
-                    <legend class="mb-3 text-center"><strong>Login</strong></legend>
+                    <legend class="my-2 text-center"><strong>Login</strong></legend>
                 </div>
                 <div class="card-body p-5">
                     <div>

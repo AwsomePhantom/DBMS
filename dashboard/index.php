@@ -52,7 +52,7 @@ else {
     session_destroy();
     header("Location: " . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
 }
-
+$errorMsg = null;
 ?>
 
 <!DOCTYPE html>
@@ -63,20 +63,51 @@ else {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="<?php echo b5_theme_link(); ?>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="/styles/styles.css">
-    <script src="/scripts/main.js"></script>
+    <link rel="stylesheet" href="<?php echo b5_theme_link(); ?>">
+    <link rel="stylesheet" href="styles.css">
 
 </head>
 <body>
-<h1 class="col-6"><span class="bi-person"></span> User DashBoard</h1>
-<div><?php if(isset($output)) echo $output; ?></div>
-<form method="POST">
-    <input type="hidden" name="request_method" value="POST">
-    <button name="logoutButton" class="btn btn-lg btn-primary" type="submit" value="exit">Logout</button>
-</form>
+<?php
+    (include_once ('pages/menu.php')) or die("Failed to load component");
+?>
+
+<div class="container-fluid">
+    <div class="row h-100">
+        <div id="filterMenu" class="col-sm-12 col-md-4 col-lg-3 h-100">
+            <div class="h-100 card">
+                <div class="card-header">
+                    <span class="card-title">Filter Menu</span>
+                </div>
+                <div class="card-body">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-8 col-lg-9">
+            <?php (include_once ('pages/posts.php')) or die("Failed to load component"); ?>
+        </div>
+    </div>
+</div>
+
+<?php if(isset($errorMsg)) {
+    echo <<< ENDL_
+    <div class="col-md-8 mx-auto my-2 fixed-bottom alert alert-info alert-dismissible fadein show" role="alert" style="z-index: 99999; position: fixed;">
+        <strong>Error:</strong> {$errorMsg}
+        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+ENDL_;
+}
+?>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 <!-- Office information -->
 
 <fieldset>
-    <legend>Company Info</legend>
+    <p class="lead">Company Info</p>
+    <hr class="border border-secondary">
     <div class="row mb-3">
         <div class="col">
             <label for="companyNameField">Company Name</label>
@@ -22,7 +23,8 @@
 </fieldset>
 
 <fieldset>
-    <legend>Contacts</legend>
+    <p class="lead">Contacts</p>
+    <hr class="border border-secondary">
     <div class="row mb-3">
         <div class="col">
             <label for="businessNumberField1">Phone</label>
@@ -36,7 +38,8 @@
 </fieldset>
 
 <fieldset>
-    <legend>Company Address</legend>
+    <p class="lead">Company Address</p>
+    <hr class="border border-secondary">
     <div class="row mb-3">
         <div class="col">
             <label for="businessCountryField">Country</label>
@@ -87,7 +90,8 @@
 </fieldset>
 
 <fieldset>
-    <legend>Office Hours</legend>
+    <p class="lead">Office Hours</p>
+    <hr class="border border-secondary">
     <div class="row mb-3">
         <div class="col">
             <label>Office Weekdays</label>

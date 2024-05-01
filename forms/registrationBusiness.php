@@ -197,19 +197,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 (include_once(relativePathSystem(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
 (include_once(relativePathSystem(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
 
-    echo "<div class=\"container alert alert-warning mx-auto mt-5 p-3\">";
+    echo "<div class=\"container alert alert-warning mx-auto m-5 p-2\">";
     if(isset($_SESSION['REGISTERING_USER'])) {
-        echo "<h3>Enter business related details</h3>";
+        echo "<span>Enter business related details</span>";
     }
     else {
-        echo "<h3><i>Enter personal details</i></h3>";
+        echo "<span class='text-accent-1'>Enter personal details</span>";
     }
     if(isset($errorMsg)) echo "Error: " . $errorMsg;
     echo "</div>";
 ?>
 
-<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-bold" style="padding-top: 70px;">
-    <div class="card-header"><h3>Business Account Registration</h3></div>
+<div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-regular" style="padding-top: 70px;">
+    <div class="card-header"><span class="card-title">Business Account Registration</span></div>
     <div class="card-body p-5">
 
         <form method="POST" id="mainForm">

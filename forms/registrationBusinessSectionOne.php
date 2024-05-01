@@ -1,6 +1,7 @@
     <!-- Personal details -->
 <fieldset>
-    <legend>User Account Info</legend>
+    <p class="lead">User Account Info</p>
+    <hr class="border border-secondary">
     <div class="row mb-3">
         <div class="col">
             <label for="usernameField">Username</label>
@@ -31,7 +32,8 @@
 </fieldset>
 
 <fieldset>
-    <legend>Customer Info</legend>
+    <p class="lead">Customer Info</p>
+    <hr class="border border-secondary">
     <div class="row mb-3">
         <div class="col">
             <label for="firstNameField">First Name</label>
@@ -67,7 +69,8 @@
 </fieldset>
 
 <fieldset>
-    <legend>Contacts</legend>
+    <p class="lead">Contacts</p>
+    <hr class="border border-secondary">
     <div class="row mb-3">
         <div class="col">
             <label for="customerNumberField1">Phone</label>
