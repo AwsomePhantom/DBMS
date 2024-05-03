@@ -9,11 +9,6 @@ if(!defined('ROOT_DIR')) {
 
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
-    $GLOBALS['WEBSITE_VARS'] = true;
-}
-if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php')) or die("Connection related file not found");
-    $GLOBALS['CONNECTION_VARS'] = true;
 }
 //////////////////////////////////////////////////////////////////////////////////////////
     if(isset($_COOKIE['USER_TOKEN'])) {
@@ -103,11 +98,11 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
         <div class="card shadow-lg m-5" style="border-radius: 25px; width: 400px">
             <form method="POST" class="form-signin">
                 <input type="hidden" name="request_method" value="POST">
-                <div class="card-header bg-dark text-light" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background: linear-gradient(180deg, dimgray, black)">
+                <div class="card-header bg-dark text-light" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background: linear-gradient(180deg, darkslategray, black)">
                     <legend class="my-2 text-center"><strong>Login</strong></legend>
                 </div>
                 <div class="card-body  px-5">
-                    <p class="lead">Enter Credentials</p>
+                    <p class="lead text-center">Enter Credentials</p>
                     <div>
                         <input name="usernameField" tabindex="1" type="text" class="form-control" id="usernameField" placeholder="Username" autofocus>
                     </div>
@@ -124,7 +119,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
                         </div>
                     </div>
                     <div class="row mb-3 px-2 justify-content-center">
-                            <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-block btn-primary" value="Login">
+                            <input type="submit" tabindex="4" id="loginButton" class="mb-1 btn btn-block bg-primary text-white shadow-sm" value="Login">
                     </div>
                     <hr style="margin-left: -20px; margin-right: -20px">
                     <div class="row justify-content-center">

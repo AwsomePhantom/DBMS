@@ -1,58 +1,18 @@
 <?php
 session_start();
-use classes\user;
 if(!defined('ROOT_DIR')) {
     $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
     $arr = array_slice($arr, 0, count($arr) - 1);
     define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
 }
-
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
-    $GLOBALS['WEBSITE_VARS'] = true;
 }
-if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    (require_once (relativePath(ABSOLUTE_PATHS['CONNECTION']))) or die("Connection related file not found");
-    $GLOBALS['CONNECTION_VARS'] = true;
-}
+(include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_AUTH'])) or die("Connection related file not found");   // Check for user credentials
 
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if(isset($_POST['logoutButton'])) {
-        unset($_POST['logoutButton']);
-        $user_obj = unserialize($_SESSION['USER_OBJ']);
-        if($user_obj instanceof user) {
-            try {
-                CONNECTION->logout($user_obj);
-            }
-            catch (Exception $e) {
-                throw new Exception($e->getMessage(), $e->getCode());
-            }
-        }
-        setcookie('USER_TOKEN', '', time() - (3600 * 24 * 30), '/');
-        session_unset();
-        session_destroy();
-        header('Location: ' . relativePath(ABSOLUTE_PATHS['HOME_PAGE']));
-    }
-}
-
-if(isset($_COOKIE['USER_TOKEN'])) {
-    $user_obj = unserialize($_SESSION['USER_OBJ']);
-    if(!($user_obj instanceof user) || $user_obj->session_id !== $_COOKIE['USER_TOKEN']) {
-        setcookie('USER_TOKEN', '', time() - (3600 * 24 * 30), '/');
-        session_unset();
-        session_destroy();
-        header('Location: ' . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
-    }
-    else {
-        $output = (string)$user_obj;
-    }
-}
-else {
-    session_unset();
-    session_destroy();
-    header("Location: " . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
-}
+global $user_obj;
 $errorMsg = null;
+$searchPage = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'search.php');
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +32,7 @@ $errorMsg = null;
 </head>
 <body>
 <?php
-    (include_once ('pages/menu.php')) or die("Failed to load component");
+    (include_once (relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR']) . 'pages' . DIRECTORY_SEPARATOR . 'menu.php')) or die("Failed to load component");
 ?>
 
 <div class="container-fluid">
@@ -84,12 +44,12 @@ $errorMsg = null;
                 </div>
                 <div class="card-body">
 
-                    <form method="POST">
+                    <form method="GET" action="<?php echo $searchPage; ?>">
                         <div class="form-group border border-light p-3">
                             <div class="row">
                                 <div class="col">
                                     <label for="searchField">Search Post
-                                        <input name="searchField" class="form-control" type="text">
+                                        <input name="search" class="form-control" type="text">
                                     </label>
                                 </div>
                             </div>
@@ -169,7 +129,7 @@ ENDL_;
 }
 ?>
 
-
+<script src="scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

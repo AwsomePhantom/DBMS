@@ -6,18 +6,18 @@
     <div class="row mb-3">
         <div class="col">
             <label for="companyNameField">Company Name</label>
-            <input id="companyNameField" name="companyNameField" type="text" class="form-control" placeholder="Company Name">
+            <input id="companyNameField" name="companyNameField" type="text" class="form-control" placeholder="Company Name" required>
         </div>
         <div class="col">
             <label for="companyTypeField">Company Type</label>
-            <input id="companyTypeField" name="companyTypeField" type="text" class="form-control" placeholder="Types">
+            <input id="companyTypeField" name="companyTypeField" type="text" class="form-control" placeholder="Types" required>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col">
             <label for="licenceNumberField">Licence Number</label>
-            <input id="licenceNumberField" name="licenceNumberField" type="text" class="form-control" placeholder="TIN 1415-6514-4448-XXXX">
+            <input id="licenceNumberField" name="licenceNumberField" type="text" class="form-control" placeholder="TIN 1415-6514-4448-XXXX" required>
         </div>
     </div>
 </fieldset>
@@ -28,7 +28,7 @@
     <div class="row mb-3">
         <div class="col">
             <label for="businessNumberField1">Phone</label>
-            <input id="businessNumberField1" name="businessNumberField1" class="form-control" type="text" placeholder="533-444-652-8686">
+            <input id="businessNumberField1" name="businessNumberField1" class="form-control" type="text" placeholder="533-444-652-8686" required>
         </div>
         <div class="col">
             <label for="businessNumberField2">Mobile</label>
@@ -44,7 +44,7 @@
         <div class="col">
             <label for="businessCountryField">Country</label>
             <!-- <input id="countryField" name="countryField" type="text" class="form-control"> -->
-            <select id="businessCountryField" name="businessCountryField" class="form-control form-select form-select-lg mb-3" aria-label="Countries">
+            <select id="businessCountryField" name="businessCountryField" class="form-control form-select form-select-lg mb-3" aria-label="Countries" required>
                 <option selected>Select a country</option>
                 <?php
                     $countries = CONNECTION->getCountries();
@@ -57,29 +57,29 @@
         <div class="col">
             <label for="businessCityField">City</label>
             <!-- <input id="cityField" name="cityField" type="text" class="form-control"> -->
-            <select id="businessCityField" name="businessCityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities">
+            <select id="businessCityField" name="businessCityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities" required>
                 <option selected>Select a city</option>
                 <option value="0" selected>Select a country first</option>
             </select>
         </div>
         <div class="col">
             <label for="businessStateField">State/District</label>
-            <input id="businessStateField" name="businessStateField" type="text" class="form-control">
+            <input id="businessStateField" name="businessStateField" type="text" class="form-control" required>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col-4">
             <label for="businessZipCodeField">Zip Code</label>
-            <input id="businessZipCodeField" name="businessZipCodeField" type="number" class="form-control" placeholder="120XXX">
+            <input id="businessZipCodeField" name="businessZipCodeField" type="number" class="form-control" placeholder="120XXX" required>
         </div>
         <div class="col-6">
             <label for="businessAddressField">Address</label>
-            <input id="businessAddressField" name="businessAddressField" type="text" class="form-control" placeholder="Street">
+            <input id="businessAddressField" name="businessAddressField" type="text" class="form-control" placeholder="Street" required>
         </div>
         <div class="col-2">
             <label for="businessHoldingNumberField">Number</label>
-            <input id="businessHoldingNumberField" name="businessHoldingNumberField" type="text" class="form-control" placeholder="13 INT A">
+            <input id="businessHoldingNumberField" name="businessHoldingNumberField" type="text" class="form-control" placeholder="13 INT A" required>
         </div>
     </div>
 
@@ -142,12 +142,12 @@
     </div>
 </fieldset>
 <hr>
-<div class="row mb-3 align-items-center">
+<div class="row mb-3">
     <div class="col-6 text-start">
         <button class="btn btn-lg btn-dark" type="button"><i class="bi bi-shuffle"> Sample Data</i></button>
+        <button name="cancelButton" class="btn btn-lg btn-dark" type="submit"><i class="bi bi-x-square-fill"> Cancel Registration</i></button>
     </div>
-    <div class="col-6 justify-content-end align-items-end">
-        <button value="true" name="cancelButton" class="btn btn-lg btn-outline-primary" type="submit"><i class="bi bi-x-square-fill"> Cancel</i></button>
+    <div class="col-6 d-flex justify-content-end">
         <button value="true" name="businessInfoSubmitButton" class="btn btn-lg btn-primary" type="submit"><i class="bi bi-arrow-right-circle-fill"> Proceed</i></button>
     </div>
 </div>

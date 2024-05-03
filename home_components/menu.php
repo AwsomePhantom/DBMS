@@ -7,26 +7,35 @@ if(!defined('ROOT_DIR')) {
 
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
-    $GLOBALS['WEBSITE_VARS'] = true;
 }
-if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php')) or die("Connection related file not found");
-    $GLOBALS['CONNECTION_VARS'] = true;
+
+    use classes\user;
+
+if(isset($_SESSION['USER_OBJ']) || isset($_COOKIE['USER_TOKEN'])) {
+    global $user_obj;
+    var_dump($user_obj);
+    if($user_obj instanceof user && $_COOKIE['USER_TOKEN'] === $user_obj->session_id) {
+        header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
+    }
+    else {
+        $user_obj = null;
+        deleteSessionCookies();
+    }
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if(isset($_POST['usernameField']) && isset($_POST['passwordField'])) {
+    if(isset($_POST['loginUsernameField']) && isset($_POST['loginPasswordField'])) {
         try {
             $user_obj = CONNECTION->login($_POST['usernameField'], $_POST['passwordField']);
             if($user_obj !== null) {
                 $_SESSION['USER_OBJ'] = serialize($user_obj);
                 setcookie('USER_TOKEN', (string)$user_obj->session_id, time() + (3600 * 24), '/');
-                header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
+                header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
             }
             else {
-                $errorMsg = "Invalid username or password";
-                unset($_POST['usernameField']);
-                unset($_POST['passwordField']);
+                $errorMsg = "Login attempt: Invalid username or password";
+                unset($_POST['loginUsernameField']);
+                unset($_POST['loginPasswordField']);
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage(), $e->getCode());
@@ -111,18 +120,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <form method="POST" class="form-signin">
                                     <input type="hidden" name="request_method" value="POST">
                                     <div>
-                                        <label for="usernameField">Enter Username</label>
+                                        <label for="loginUsernameField">Enter Username</label>
                                         <input tabindex="1" type="text" class="form-control" name="usernameField" placeholder="Username" autofocus>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="passwordField">Enter Password</label>
+                                        <label for="loginPasswordField">Enter Password</label>
                                         <input tabindex="2" type="password" class="form-control" name="passwordField" placeholder="Password">
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <div class="text-muted bg-warning-subtle card">
-                                            <?php if(isset($errorMsg)) echo $errorMsg; ?>
-                                        </div>
                                     </div>
 
                                     <div class="row mb-3">

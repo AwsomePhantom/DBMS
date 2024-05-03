@@ -9,11 +9,6 @@ if(!defined('ROOT_DIR')) {
 
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
-    $GLOBALS['WEBSITE_VARS'] = true;
-}
-if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    (require_once (ROOT_DIR . '/database/connection.php')) or die("Connection related file not found");
-    $GLOBALS['CONNECTION_VARS'] = true;
 }
 
 use classes\business;
@@ -47,10 +42,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
             $res = CONNECTION->is_username_available($_POST['usernameField']);
             if (!$res) {
-                $errorMsg = "<div class=\"m-3 p-3 card bg-danger\"><h3><strong>Username not available!</strong></h3></div>";
+                $errorMsg = "Username not available!";
             }
             else if ($_POST['passwordField'] !== $_POST['repeatPasswordField']) {
-                $errorMsg = "<div class=\"m-3 p-3 card bg-danger\"><h3><strong>Passwords do not match!</strong></h3></div>";
+                $errorMsg = "Passwords do not match!";
             }
             else {
 
@@ -66,7 +61,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 CONNECTION->begin();    // begin transaction here
 
                 $res = CONNECTION->create_user($registering_user, $_POST['repeatPasswordField']);
-                $errorMsg = "<div class=\"m-3 p-3 card bg-danger\"><h3><strong>Proceed with the business related data tab</strong></h3></div>";
+                $errorMsg = "Proceed with the business related form";
                 $_SESSION['REGISTERING_USER'] = serialize($registering_user);
                 $_SESSION['USER_PWD'] = $_POST['passwordField'];
                 foreach ($_POST as $x) {     // unset POST VARS
@@ -81,6 +76,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     else if($_SESSION['REGISTERING_USER'] && isset($_POST['cancelButton'])) {
         unset($_SESSION['REGISTERING_USER']);
         unset($_SESSION['USER_PWD']);
+        header("Location: " . REGISTRATION_POST_URI);
     }
     else if(isset($_SESSION['REGISTERING_USER']) &&
             isset($_POST['companyNameField']) &&
@@ -95,11 +91,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             isset($_POST['businessAddressField']) &&    // street
             isset($_POST['businessHoldingNumberField']) &&
             isset($_POST['businessNotesField'])) {
-
         $registering_user = unserialize($_SESSION['REGISTERING_USER']);
             if(!($registering_user instanceof user)) {
                 unset($_SESSION['REGISTERING_USER']);
-                $errorMsg = "<h3>Error, try again from the start!</h3>";
+                $errorMsg = "Error, try again from the start!";
             }
 
         $days = array();
@@ -125,20 +120,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if($res) {
                 CONNECTION->commit();
-                unset($_SESSION['REGISTERING_USER']);
-                unset($_SESSION['USER_PWD']);
-                session_destroy();
+                deleteSessionCookies();
                 header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
             }
             else {
-                $errorMsg = "<h3>Error, please try again!</h3>";
+                $errorMsg = "Error, please try again!";
             }
 
         }
         catch (PDOException $e) {
             throw new PDOException($e->getMessage(), (int)$e->getCode());
         }
-
     }
 }
 
@@ -204,7 +196,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     else {
         echo "<span class='text-accent-1'>Enter personal details</span>";
     }
-    if(isset($errorMsg)) echo "Error: " . $errorMsg;
     echo "</div>";
 ?>
 
@@ -227,7 +218,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
     </div>
 </div>
-
+<?php if(isset($errorMsg)) {
+    echo <<< ENDL_
+    <div class="col-md-8 mx-auto my-2 fixed-bottom alert alert-info alert-dismissible fadein show" role="alert" style="z-index: 99999; position: fixed;">
+        <strong>{$errorMsg}</strong>
+        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+ENDL_;
+}
+?>
 <?php (include_once(relativePathSystem(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
 <script>
     document.getElementById('loader').classList.add('fadeout');

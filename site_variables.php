@@ -1,8 +1,10 @@
 <?php
 
+$GLOBALS['WEBSITE_VARS'] = true;
 if(!defined('ROOT_DIR')) {
     define("ROOT_DIR", __DIR__);
 }
+(require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php')) or die("Connection related file not found");
 $relative_root = relativePath(ROOT_DIR);
 
 const USER_THEMES = array(
@@ -30,6 +32,8 @@ const ABSOLUTE_PATHS = array(
     "CONNECTION"                    => ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php',
     "COUNTRIES"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'countries.php',
     "DASHBOARD"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'index.php',
+    "DASHBOARD_DIR"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard',
+    "DASHBOARD_AUTH"                => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'authentication.php',
     "PARTS_STORE"                   => ROOT_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'partsstore.php'
 );
 
@@ -44,6 +48,23 @@ function b5_theme_link() : string {
     return  relativePath(ROOT_DIR . DIRECTORY_SEPARATOR . "precompiled" . DIRECTORY_SEPARATOR . $GLOBALS['USER_THEME'] . DIRECTORY_SEPARATOR . "bootstrap-color.min.css");
 }
 
+/**
+ * Delete session variables and cookies to fully log out the system
+ * @return void
+ */
+function deleteSessionCookies() : void {
+    setcookie('USER_TOKEN', '', time() - (3600 * 24 * 30), '/');
+    session_unset();
+    session_destroy();
+}
+
+/**
+ * Find the path to a file or a directory relative to the current URL
+ * Returns URI format with '/' Directory separator, incompatible with Windows
+ * @param $absolutePath
+ * @param $separator
+ * @return string
+ */
 function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string {
     if($absolutePath === ROOT_DIR) return '';
 
@@ -80,7 +101,10 @@ function relativePath($absolutePath, $separator = DIRECTORY_SEPARATOR) : string 
         }
     }
     array_splice($path, 0, $i - 1);     // URI and Path at the same level
-    if(implode($separator, $path) === implode($separator, $uri)) return $fileName;      // Same sub level
+    if(implode($separator, $path) === implode($separator, $uri)) {  // Same sub level
+        if(!$fileName) return '';
+        else return $fileName;
+    }
 
     // Equalise path and uri level and check if same page as level
     $index = -1;

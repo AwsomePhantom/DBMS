@@ -1,4 +1,5 @@
 <?php
+    $GLOBALS['CONNECTION_VARS'] = true;
 	require_once ROOT_DIR . '/classes/contacts.php';
 	require_once ROOT_DIR . '/classes/address.php';
 	require_once ROOT_DIR . '/classes/customer.php';
@@ -15,31 +16,7 @@
 
 	const CONNECTION = new connection();
 	CONNECTION->connect();
-/*
-	// Sample code for user registration
 
-	$unique_id = CONNECTION->generateID();
-	$phones = new contacts(null, ['888-444-5555', '112-354-9477']);
-	$phones_company = new contacts(null, ['0694-447-9994', '0466-9974-4444']);
-	$house_address = new address(null, 'AJB', 'DOHA', 'Kerala', '1204', 'Crooker\'s Steet', '48', 'Near the plaza');
-	$office_address = new address(null, 'AJB', 'DOHA', 'Village', '1204', 'Flat Steet', '20', 'On the top of the hill, beside the supermarket');
-
-	$person = new customer($unique_id, 'rabinul', 'islam', '1992-11-10', 'M', $phones, $house_address);
-	$unique_id = CONNECTION->generateID();
-	$company = new business($unique_id, $person, 'Fast Tyres', 'Auto Mechanic', 'VXPT-CBBPO-AV1566',
-		$phones_company, $office_address, new DateTime('08:30:00'), new DateTime('20:00:00'),
-		'SUN,MON,TUE,WED,THU,FRI', null, true);
-	$unique_id = CONNECTION->generateID();
-	$user = new user($unique_id, 'rabinul', $person, $company, null, null, null);
-
-	$result = CONNECTION->create_user($user, '1234');
-	if(!$result) {
-		echo 'Failed to create new user.<br>';
-	}
-	else {
-		echo 'New user successfully created.<br>';
-	}
-*/
 
 /**
  * Get the current browser URI http or https
@@ -96,7 +73,12 @@
 				return null;
 			}
 			$user_row = $stmt->fetch();     // get user account's row
+            $stmt->closeCursor();
+            $sql = 'DELETE FROM active_session WHERE username = ?';
             $customer_id = $user_row['customer_id'];
+            $stmt_delete_old_sessions = $this->pdo->prepare($sql);
+            $stmt_delete_old_sessions->execute([$username]);
+            $stmt_delete_old_sessions->closeCursor();
             $business_id = is_null($user_row['business_id']) ? null : $user_row['business_id'];
 
 			$this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_NUM);
@@ -175,12 +157,12 @@
         /**
          * Delete active sessions and user token from the database
          * @param string $username
-         * @return void
+         * @return bool
          */
-        function logout(string $username) : void {
+        function logout(string $username) : bool {
             $sql = 'DELETE FROM active_session WHERE username = ?';
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$username]);
+            return $stmt->execute([$username]);
         }
 
         /**
@@ -197,6 +179,14 @@
          */
         function commit() : void {
             $this->pdo->commit();
+        }
+
+        /**
+         * Rollback the database to its previous state since beginTransaction
+         * @return void
+         */
+        function rollback() : void {
+            $this->pdo->rollBack();
         }
 
 
@@ -580,7 +570,7 @@
 		}
 
         /**
-         * Generate an unique ID by checking the database
+         * Generate a unique ID by checking the database
          * @return string|null
          */
         function generateID() : ?string {
@@ -602,6 +592,10 @@
             return $unique_id;
         }
 
+        /**
+         * Returns the list of all counties in the database
+         * @return array|null
+         */
         function getCountries() : ?array {
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $sql = 'SELECT code, name FROM countries ORDER BY name ASC';
@@ -611,6 +605,11 @@
             return $stmt->fetchAll();
         }
 
+        /**
+         * Returns a list of cities associated with a country code
+         * @param string $countryCode
+         * @return array|null
+         */
         function getCities(string $countryCode) : ?array {
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $sql = "SELECT id, name FROM cities WHERE country_code = ? ORDER BY name ASC";
@@ -621,7 +620,210 @@
             return $stmt->fetchAll();
         }
 
-		// destructor
+        /**
+         * Returns all the social posts published by users
+         * Country code [optional] is a three-letter code
+         * @param string|null $country_code
+         * @param int|null $limit
+         * @return array|null
+         */
+        function getAllPosts(?string $country_code, ?int $limit) : ?array {
+            $sql = 'SELECT A.id as post_id, A.user_id AS user_id, A.post_title AS title, A.post_content AS content, A.address AS address, B.name AS city, B.country_code AS country_code, A.date_time AS date FROM post_issues AS A JOIN cities AS B ON A.city_id = B.id';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            if($country_code) {
+                $sql .=  " WHERE B.country_code = \'" . $country_code .  "\'";
+            }
+            $sql .= " ORDER BY A.date_time DESC";
+            if($limit) {
+                $sql .= " LIMIT " . $limit;
+            }
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute();
+            if(!$res) {
+                return null;
+            }
+            $arr = $stmt->fetchAll();
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return $arr;
+        }
+
+        /**
+         * Returns a single user post
+         * Used for social post replies
+         * @param int $post_id
+         * @return array|null
+         */
+        function getSinglePost(int $post_id) : ?array {
+            $sql = 'SELECT A.id, A.user_id, A.post_title AS title, A.post_content AS content, B.name AS city, A.address, B.country_code, A.date_time AS date_time FROM post_issues AS A JOIN cities AS B ON A.city_id = B.id WHERE A.id = ? LIMIT 1';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$post_id]);
+            if(!$res) return null;
+            $arr = $stmt->fetchAll();
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return reset($arr);
+        }
+
+        /**
+         * Returns the posts shared by a single user
+         * Used for user profile
+         * @param string $user_id
+         * @param int|null $limit
+         * @return array|null
+         */
+        function getUserPosts(string $user_id, ?int $limit) : ?array {
+            $sql = 'SELECT id, user_id, post_title, post_content, city_id, address, date_time from post_issues WHERE user_id = ? ORDER BY date_time DESC';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            if($limit) {
+                $sql .=  " LIMIT " . $limit;
+            }
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$user_id]);
+            return $stmt->fetchAll();
+        }
+
+        /**
+         * Returns the name and last name in a single string
+         * of a user_id, in case the user is associated with a business
+         * returns the company name. Used to find social post author's name
+         * @param string $user_id
+         * @return string|null
+         */
+        function getUserNameTitle(string $user_id) : ?string {
+            $sql = 'SELECT customer_id, business_id FROM user_accounts WHERE id = ? LIMIT 1';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_NUM);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$user_id]);
+            $row = $stmt->fetch();
+            if(!$row) return null;
+            $stmt->closeCursor();
+            if(is_null($row[1])) {
+                $sql = 'SELECT name, lastname FROM customers_info WHERE id = ? LIMIT 1';
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute([$row[0]]);
+                $res = $stmt->fetch();
+                if(!$res) return null;
+                return $res[0] . " " . $res[1];
+            }
+            else {
+                $sql = 'SELECT company_name FROM businesses_info WHERE id = ? LIMIT 1';
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute([$row[1]]);
+                $arr = $stmt->fetch();
+                return reset($arr);
+            }
+        }
+
+        /**
+         * Returns all the replies to a post
+         * @param int $post_id
+         * @return array|null
+         */
+        function getPostReplies(int $post_id) : ?array{
+            $sql = 'SELECT id, post_id, user_id, content, datetime AS date_time FROM post_answers WHERE post_id = ?';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$post_id]);
+            if(!$res) return null;
+            $arr = $stmt->fetchAll();
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return $arr;
+        }
+
+        /**
+         * Add reply message to a social post
+         * @param int $post_id
+         * @param string $user_id
+         * @param string $content
+         * @return bool
+         */
+        function addPostReply(int $post_id, string $user_id, string $content) : bool
+        {
+            $sql = 'INSERT INTO post_answers (post_id, user_id, content) VALUES (?, ?, ?)';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$post_id, $user_id, $content]);
+        }
+
+        /**
+         * Get the number of replies on post, returns null
+         * in case none
+         * @param int $id
+         * @return int|null
+         */
+        function getPostRepliesCount(int $id) : ?int {
+            $sql = 'SELECT COUNT(*) FROM post_answers WHERE post_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_NUM);
+            if($row[0] === 0) return null;
+            else return $row[0];
+        }
+
+        /**
+         * Delete social post's message reply
+         * @param string $user_id
+         * @param int $reply_id
+         * @return bool
+         */
+        function deletePostReply(int $reply_id, int $post_id, string $user_id) : bool {
+            $sql = 'DELETE FROM post_answers WHERE id = ? AND post_id = ? AND user_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$reply_id, $post_id, $user_id]);
+        }
+
+        function addNewPost(string $user_id, string $title, string $content, string $city_id, string $address) : bool {
+            $sql = 'INSERT INTO post_issues (user_id, post_title, post_content, city_id, address) VALUES (?, ?, ?, ?, ?)';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$user_id, $title, $content, $city_id, $address]);
+        }
+
+        /**
+         * Deletes a social post and all the replies associated with it
+         * Accessible only from the author of the post
+         * @param int $post_id
+         * @param string $user_id
+         * @return void
+         */
+        function deletePost(int $post_id, string $user_id) : void {
+            $sql = 'DELETE FROM post_answers WHERE post_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$post_id]);
+            $sql = 'DELETE FROM post_issues WHERE id = ? AND user_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$post_id, $user_id]);
+
+        }
+
+        function searchPost(string $keyword) : ? array {
+            $sql = "SELECT * FROM post_issues WHERE post_title LIKE '%" . htmlentities($keyword) . "%' OR post_content LIKE '%" . htmlentities($keyword) . "%'";
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute();
+            if(!$res) return null;
+            $arr = $stmt->fetchAll();
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return reset($arr);
+        }
+
+        /**
+         * Destructor
+         */
 		function __destruct() {
 			$this->pdo = null;
 		}

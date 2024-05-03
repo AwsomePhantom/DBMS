@@ -1,5 +1,5 @@
 
-<div id="loader" class="bg-white">
+<div id="loader">
     <div class="col-1">
         <h4>Loading...</h4>
     </div>

@@ -5,18 +5,18 @@
     <div class="row mb-3">
         <div class="col">
             <label for="usernameField">Username</label>
-            <input id="usernameField" name="usernameField" type="text" class="form-control" placeholder="Username">
+            <input id="usernameField" name="usernameField" type="text" class="form-control" placeholder="Username" required>
         </div>
         <div class="col">
             <label for="passwordField">Password</label>
-            <input id="passwordField" name="passwordField" type="password" class="form-control" placeholder="Password">
+            <input id="passwordField" name="passwordField" type="password" class="form-control" placeholder="Password" required>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col-6">
             <label for="repeatPasswordField">Repeat Password</label>
-            <input id="repeatPasswordField" name="repeatPasswordField" type="password" class="form-control" placeholder="Password">
+            <input id="repeatPasswordField" name="repeatPasswordField" type="password" class="form-control" placeholder="Password" required>
         </div>
     </div>
 
@@ -24,7 +24,7 @@
         <div class="col-6">
             <label for="emailField">Email Address</label>
             <div class="input-group mb-3">
-                <input id="emailField" name="emailField" type="text" class="form-control" placeholder="user@domain.com" aria-label="Username" aria-describedby="basic-addon1">
+                <input id="emailField" name="emailField" type="text" class="form-control" placeholder="user@domain.com" aria-label="Username" aria-describedby="basic-addon1" required>
                 <span class="input-group-text" id="basic-addon1">@</span>
             </div>
         </div>
@@ -37,18 +37,18 @@
     <div class="row mb-3">
         <div class="col">
             <label for="firstNameField">First Name</label>
-            <input id="firstNameField" name="firstNameField" type="text" class="form-control" placeholder="First Name">
+            <input id="firstNameField" name="firstNameField" type="text" class="form-control" placeholder="First Name" required>
         </div>
         <div class="col">
             <label for="lastNameField">Last Name</label>
-            <input id="lastNameField" name="lastNameField" type="text" class="form-control" placeholder="Last Name">
+            <input id="lastNameField" name="lastNameField" type="text" class="form-control" placeholder="Last Name" required>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col">
             <label for="birthDateField">Birth Date</label>
-            <input id="birthDateField" name="birthDateField" type="date" class="form-control">
+            <input id="birthDateField" name="birthDateField" type="date" class="form-control" required>
         </div>
         <div class="col">
             <label>Gender</label>
@@ -74,7 +74,7 @@
     <div class="row mb-3">
         <div class="col">
             <label for="customerNumberField1">Phone</label>
-            <input id="customerNumberField1" name="customerNumberField1" class="form-control" type="text" placeholder="533-444-652-8686">
+            <input id="customerNumberField1" name="customerNumberField1" class="form-control" type="text" placeholder="533-444-652-8686" required>
         </div>
         <div class="col">
             <label for="customerNumberField2">Mobile</label>
@@ -89,7 +89,7 @@
         <div class="col">
             <label for="customerCountryField">Country</label>
             <!-- <input id="countryField" name="countryField" type="text" class="form-control"> -->
-            <select id="customerCountryField" name="customerCountryField" class="form-control form-select form-select-lg mb-3" aria-label="Countries">
+            <select id="customerCountryField" name="customerCountryField" class="form-control form-select form-select-lg mb-3" aria-label="Countries" required>
                 <option selected>Select a country</option>
                 <?php
                         $countries = CONNECTION->getCountries();
@@ -103,29 +103,29 @@
         <div class="col">
             <label for="customerCityField">City</label>
             <!-- <input id="cityField" name="cityField" type="text" class="form-control"> -->
-            <select id="customerCityField" name="customerCityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities">
+            <select id="customerCityField" name="customerCityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities" required>
                 <option selected>Select a city</option>
                 <option value="0" selected>Select a country first</option>
             </select>
         </div>
         <div class="col">
             <label for="customerStateField">State / District</label>
-            <input id="customerStateField" name="customerStateField" type="text" class="form-control">
+            <input id="customerStateField" name="customerStateField" type="text" class="form-control" required>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col-4">
             <label for="customerZipCodeField">Zip Code</label>
-            <input id="customerZipCodeField" name="customerZipCodeField" type="number" class="form-control" placeholder="120XXX">
+            <input id="customerZipCodeField" name="customerZipCodeField" type="number" class="form-control" placeholder="120XXX" required>
         </div>
         <div class="col-6">
             <label for="customerAddressField">Address</label>
-            <input id="customerAddressField" name="customerAddressField" type="text" class="form-control" placeholder="Street">
+            <input id="customerAddressField" name="customerAddressField" type="text" class="form-control" placeholder="Street" required>
         </div>
         <div class="col-2">
             <label for="customerHoldingNumberField">Number</label>
-            <input id="customerHoldingNumberField" name="customerHoldingNumberField" type="text" class="form-control" placeholder="13 INT A">
+            <input id="customerHoldingNumberField" name="customerHoldingNumberField" type="text" class="form-control" placeholder="13 INT A" required>
         </div>
     </div>
 

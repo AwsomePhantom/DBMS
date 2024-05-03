@@ -8,11 +8,6 @@ if(!defined('ROOT_DIR')) {
 
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
-    $GLOBALS['WEBSITE_VARS'] = true;
-}
-if(!isset($GLOBALS['CONNECTION_VARS'])) {
-    (require_once (ROOT_DIR . '/database/connection.php')) or die("Connection related file not found");
-    $GLOBALS['CONNECTION_VARS'] = true;
 }
 
     use classes\contacts;
@@ -21,6 +16,7 @@ if(!isset($GLOBALS['CONNECTION_VARS'])) {
     use classes\user;
 
 define("REGISTRATION_POST_URI", getURI());  // to clean the url from variables
+
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if( isset($_POST['usernameField']) &&
         isset($_POST['passwordField']) &&
@@ -65,7 +61,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
                     else {
                         //throw new Exception("User Registration failed");
-                        echo "Registration failed";
+                        $errorMsg = "Registration failed";
                     }
                 }
             }
@@ -89,9 +85,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="<?php echo b5_theme_link(); ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="<?php echo relativePath(ABSOLUTE_PATHS['GLOBAL_STYLESHEET']); ?>">
-    <script src="<?php echo relativePath(ABSOLUTE_PATHS['GLOBAL_SCRIPT']); ?>"></script>
 </head>
 <!--
 On successful registration, ask for business account
@@ -122,13 +116,6 @@ On successful registration, ask for business account
 (include_once(relativePathSystem(ABSOLUTE_PATHS['LOADING_PAGE']))) or die("Failed to load component");
 (include_once(relativePathSystem(ABSOLUTE_PATHS['MENU_PAGE'])))  or die("Failed to load component");
 
-
-if (isset($errorMsg)) {
-    echo "<div class=\"container alert alert-warning mx-auto mt-5 p-3\">";
-    echo "Error: " . $errorMsg;
-    echo "</div>";
-}
-
 ?>
 
 <div id="top" class="container bg-body my-5 mx-auto p-0 card shadow-sm lato-regular" style="padding-top: 70px;">
@@ -141,18 +128,18 @@ if (isset($errorMsg)) {
                 <div class="row mb-3">
                     <div class="col">
                         <label for="usernameField">Username</label>
-                        <input id="usernameField" name="usernameField" type="text" class="form-control" placeholder="Username">
+                        <input id="usernameField" name="usernameField" type="text" class="form-control" placeholder="Username" required>
                     </div>
                     <div class="col">
                         <label for="passwordField">Password</label>
-                        <input id="passwordField" name="passwordField" type="password" class="form-control" placeholder="Password">
+                        <input id="passwordField" name="passwordField" type="password" class="form-control" placeholder="Password" required>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-6">
                         <label for="repeatPasswordField">Repeat Password</label>
-                        <input id="repeatPasswordField" name="repeatPasswordField" type="password" class="form-control" placeholder="Password">
+                        <input id="repeatPasswordField" name="repeatPasswordField" type="password" class="form-control" placeholder="Password" required>
                     </div>
                 </div>
 
@@ -160,7 +147,7 @@ if (isset($errorMsg)) {
                     <div class="col-6">
                         <label for="emailField">Email Address</label>
                         <div class="input-group mb-3">
-                            <input id="emailField" name="emailField" type="text" class="form-control" placeholder="user@domain.com" aria-label="Username" aria-describedby="basic-addon1">
+                            <input id="emailField" name="emailField" type="text" class="form-control" placeholder="user@domain.com" aria-label="Username" aria-describedby="basic-addon1" required>
                             <span class="input-group-text" id="basic-addon1">@</span>
                         </div>
                     </div>
@@ -173,18 +160,18 @@ if (isset($errorMsg)) {
                 <div class="row mb-3">
                     <div class="col">
                         <label for="firstNameField">First Name</label>
-                        <input id="firstNameField" name="firstNameField" type="text" class="form-control" placeholder="First Name">
+                        <input id="firstNameField" name="firstNameField" type="text" class="form-control" placeholder="First Name" required>
                     </div>
                     <div class="col">
                         <label for="lastNameField">Last Name</label>
-                        <input id="lastNameField" name="lastNameField" type="text" class="form-control" placeholder="Last Name">
+                        <input id="lastNameField" name="lastNameField" type="text" class="form-control" placeholder="Last Name" required>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col">
                         <label for="birthDateField">Birth Date</label>
-                        <input id="birthDateField" name="birthDateField" type="date" class="form-control">
+                        <input id="birthDateField" name="birthDateField" type="date" class="form-control" required>
                     </div>
                     <div class="col">
                         <label>Gender</label>
@@ -210,7 +197,7 @@ if (isset($errorMsg)) {
             <div class="row mb-3">
                 <div class="col">
                     <label for="numberField1">Phone</label>
-                    <input id="numberField1" name="numberField1" class="form-control" type="text" placeholder="533-444-652-8686">
+                    <input id="numberField1" name="numberField1" class="form-control" type="text" placeholder="533-444-652-8686" required>
                 </div>
                 <div class="col">
                     <label for="numberField2">Mobile</label>
@@ -226,7 +213,7 @@ if (isset($errorMsg)) {
                 <div class="col">
                     <label for="countryField">Country</label>
                     <!-- <input id="countryField" name="countryField" type="text" class="form-control"> -->
-                    <select id="countryField" name="countryField" class="form-control form-select form-select-lg mb-3" aria-label="Countries">
+                    <select id="countryField" name="countryField" class="form-control form-select form-select-lg mb-3" aria-label="Countries" required>
                         <option selected>Select a country</option>
                         <?php
                                 $countries = CONNECTION->getCountries();
@@ -240,29 +227,29 @@ if (isset($errorMsg)) {
                 <div class="col">
                     <label for="cityField">City</label>
                     <!-- <input id="cityField" name="cityField" type="text" class="form-control"> -->
-                    <select id="cityField" name="cityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities">
+                    <select id="cityField" name="cityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities" required>
                         <option selected>Select a city</option>
                         <option value="" selected>Select a country first</option>
                     </select>
                 </div>
                 <div class="col">
                     <label for="stateField">State / District</label>
-                    <input id="stateField" name="stateField" type="text" class="form-control">
+                    <input id="stateField" name="stateField" type="text" class="form-control" required>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-4">
                     <label for="zipCodeField">Zip Code</label>
-                    <input id="zipCodeField" name="zipCodeField" type="number" class="form-control" placeholder="120XXX">
+                    <input id="zipCodeField" name="zipCodeField" type="number" class="form-control" placeholder="120XXX" required>
                 </div>
                 <div class="col-6">
                     <label for="addressField">Address</label>
-                    <input id="addressField" name="addressField" type="text" class="form-control" placeholder="Street">
+                    <input id="addressField" name="addressField" type="text" class="form-control" placeholder="Street" required>
                 </div>
                 <div class="col-2">
                     <label for="holdingNumberField">Number</label>
-                    <input id="holdingNumberField" name="holdingNumberField" type="text" class="form-control" placeholder="13 INT A">
+                    <input id="holdingNumberField" name="holdingNumberField" type="text" class="form-control" placeholder="13 INT A" required>
                 </div>
             </div>
 
@@ -284,6 +271,18 @@ if (isset($errorMsg)) {
     </div>
 </div>
 
+<?php if(isset($errorMsg)) {
+    echo <<< ENDL_
+    <div class="col-md-8 mx-auto my-2 fixed-bottom alert alert-info alert-dismissible fadein show" role="alert" style="z-index: 99999; position: fixed;">
+        <strong>{$errorMsg}</strong> 
+        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+ENDL_;
+}
+?>
 <?php (include_once(relativePathSystem(ABSOLUTE_PATHS['FOOTER_PAGE']))) or die("Failed to load component"); ?>
 <script>
     document.getElementById('loader').classList.add('fadeout');
@@ -319,5 +318,7 @@ if (isset($errorMsg)) {
         xmlhttp.send();
     });
 </script>
+<script src="<?php echo relativePath(ABSOLUTE_PATHS['GLOBAL_SCRIPT']); ?>"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

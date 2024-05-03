@@ -9,7 +9,6 @@ if(!defined('ROOT_DIR')) {
 
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
-    $GLOBALS['WEBSITE_VARS'] = true;
 }
 ?>
 <!DOCTYPE html>
