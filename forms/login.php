@@ -10,6 +10,7 @@ if(!defined('ROOT_DIR')) {
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
+// No need to include header.php as this page does not contain the home page menu bar
 //////////////////////////////////////////////////////////////////////////////////////////
     if(isset($_COOKIE['USER_TOKEN'])) {
         header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
@@ -22,6 +23,10 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
                 if($user_obj !== null) {
                     $_SESSION['USER_OBJ'] = serialize($user_obj);
                     setcookie('USER_TOKEN', (string)$user_obj->session_id, time() + (3600 * 24), '/');
+                    $theme = CONNECTION->getTheme($user_obj);
+                    if($theme) {
+                        $GLOBALS['USER_THEME'] = $theme;
+                    }
                     header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
                 }
                 else {

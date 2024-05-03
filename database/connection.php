@@ -906,6 +906,24 @@
             return $arr;
         }
 
+        function getTheme(string $user_id) : ?string {
+            $sql = 'SELECT theme FROM user_accounts WHERE id = ? LIMIT 1';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_NUM);
+            $stmt = $this->pdo->prepare($sql);
+            if(!$stmt->execute([$user_id])) {
+                return null;
+            }
+            $row = $stmt->fetch();
+            if(is_null($row)) return null;
+            return $row;
+        }
+
+        function setTheme(string $user_id, string $theme) : bool {
+            $sql = 'UPDATE user_accounts SET theme = ? WHERE id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$theme, $user_id]);
+        }
+
         /**
          * Destructor
          */

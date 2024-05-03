@@ -1,6 +1,5 @@
 <?php
 use classes\user;
-$temp = $_SERVER['REQUEST_METHOD'];
 if(!defined('ROOT_DIR')) {
     $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
     $arr = array_slice($arr, 0, count($arr) - 2);

@@ -6,6 +6,7 @@ if(!defined('ROOT_DIR')) {
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
+(include (relativePathSystem(ABSOLUTE_PATHS['SITE_HEADERS']))) or die("Headers file not found");    // Needed to update COOKIES for the menu bar
 ?>
 
 <!DOCTYPE HTML>

@@ -1,5 +1,5 @@
 <?php
-session_start();
+// no need session_start() for imported sub-level pages
 if(!defined('ROOT_DIR')) {
     $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
     $arr = array_slice($arr, 0, count($arr) - 2);
@@ -10,7 +10,7 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
 
-(include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_AUTH'])) or die("Connection related file not found");   // Check for user credentials
+// authentication and headers cannot be added on imported sub-pages
 
     use classes\user;
 ///////////////////////////////////////////////////////////////////////////////////////

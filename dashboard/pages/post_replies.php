@@ -9,7 +9,7 @@ if(!defined('ROOT_DIR')) {
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
-(include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_AUTH']));
+(include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_HEADERS'])) or die("Header related file not found");
 
 use classes\user;
 global $user_obj;

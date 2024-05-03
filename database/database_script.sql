@@ -161,6 +161,7 @@ CREATE TABLE user_accounts (
                               last_modified timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                               last_logged timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                               registration_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                              theme varchar(100) DEFAULT NULL,
                               CONSTRAINT user_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

@@ -18,13 +18,15 @@ if(isset($_COOKIE['USER_TOKEN']) || isset($_SESSION['USER_OBJ'])) {
     $user_obj = empty($_SESSION['USER_OBJ']) ? null : unserialize($_SESSION['USER_OBJ']);
     if(!($user_obj instanceof user && $user_obj->session_id === $_COOKIE['USER_TOKEN'])) {
         deleteSessionCookies();
-        header('Location: ' . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
+        header('Location: ' . relativePathSystem(ABSOLUTE_PATHS['LOGIN_PAGE']));
     }
     else {
         // valid login
     }
 }
 else {
-    $user_obj = null;
-    header('Location: ' . relativePath(ABSOLUTE_PATHS['HOME_PAGE']));
+    $url = $_SERVER['REQUEST_URI'];
+    if(str_contains($url, 'dashboard')) {
+        header('Location: ' . relativePathSystem(ABSOLUTE_PATHS['HOME_PAGE']));
+    }
 }

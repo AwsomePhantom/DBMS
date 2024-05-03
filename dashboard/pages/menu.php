@@ -8,34 +8,10 @@ if(!defined('ROOT_DIR')) {
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
-(include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_AUTH'])) or die("Connection related file not found");   // Check for user credentials
+// form check in the dashboard_header in the index, profile and other pages...
 
 use classes\user;
 global $user_obj;
-
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if(isset($_POST['logoutButton'])) {
-        unset($_POST['logoutButton']);
-        $user_obj = empty($_SESSION['USER_OBJ']) ? null : unserialize($_SESSION['USER_OBJ']);
-        if($user_obj instanceof user) {
-            try {
-                CONNECTION->logout($user_obj);
-            }
-            catch (Exception $e) {
-                throw new Exception($e->getMessage(), $e->getCode());
-            }
-        }
-        deleteSessionCookies();
-        header('Location: ' . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
-    }
-
-    if(isset($_POST['theme'])) {
-        $val = (int)$_POST['theme'];
-        if($val >= 0 && $val <= 40) {
-            $GLOBALS['USER_THEME'] = USER_THEMES[$val];
-        }
-    }
-}
 
 ?>
 <style>
@@ -64,8 +40,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <form method="POST">
                         <ul class="navbar-nav" style="font-weight: 600;">
-                            <li class="nav-item pe-2"><a class="nav-link active" href="<?php echo relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']); ?>"><i class="bi bi-house"></i> Home</a></li>
-                            <li class="nav-item pe-2"><a class="btn btn-info" href="<?php echo relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'profile.php'); ?>"><i class="bi bi-person-circle"></i> Profile</a></li>
+                            <li class="nav-item pe-2"><a class="nav-link active" href="<?php echo relativePath(ABSOLUTE_PATHS['DASHBOARD']); ?>"><i class="bi bi-house"></i> Home</a></li>
+                            <li class="nav-item pe-2"><a class="btn btn-info" href="<?php echo relativePath(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'profile.php'); ?>"><i class="bi bi-person-circle"></i> Profile</a></li>
                             <li class="nav-item pe-2"><a class="btn btn-success" href="#"><i class="fa-solid fa-money-check-dollar"></i> Invoices <span class="badge bg-secondary">4</span></a></li>
                             <li class="nav-item pe-2"><a class="btn btn-danger" href="#"><i class="fa-solid fa-wrench"></i> Parts Store</a></li>
                             <li class="nav-item pe-2"><a class="btn btn-dark" href="#sidebar" data-bs-toggle="collapse"><i class="bi bi-sliders"></i> Settings</a></li>

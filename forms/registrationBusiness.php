@@ -11,6 +11,8 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
 
+(include (relativePathSystem(ABSOLUTE_PATHS['SITE_HEADERS']))) or die("Headers file not found");    // Needed to update COOKIES for the menu bar
+
 use classes\business;
 use classes\contacts;
 use classes\address;
@@ -123,7 +125,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             if($res) {
                 CONNECTION->commit();
                 deleteSessionCookies();
-                header("Location: " . relativePath(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
+                header("Location: " . relativePathSystem(ABSOLUTE_PATHS['SUCCESSFUL_REGISTRATION']));
             }
             else {
                 $errorMsg = "Error, please try again!";

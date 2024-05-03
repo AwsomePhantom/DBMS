@@ -4,38 +4,8 @@ if(!defined('ROOT_DIR')) {
     $arr = array_slice($arr, 0, count($arr) - 1);
     define("ROOT_DIR", implode(DIRECTORY_SEPARATOR, $arr));
 }
-
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
-}
-    use classes\user;
-
-if(isset($_COOKIE['USER_TOKEN']) && isset($_SESSION['USER_OBJ'])) {
-    $user_obj = unserialize($_SESSION['USER_OBJ']);
-    if(!empty($user_obj) && $user_obj instanceof user && $user_obj->session_id === $_COOKIE['USER_TOKEN']) {
-        header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
-    }
-}
-
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if(isset($_POST['loginUsernameField']) && isset($_POST['loginPasswordField'])) {
-        try {
-            $user_obj = CONNECTION->login($_POST['loginUsernameField'], $_POST['loginPasswordField']);
-            if($user_obj !== null) {
-                $_SESSION['USER_OBJ'] = serialize($user_obj);
-                setcookie('USER_TOKEN', (string)$user_obj->session_id, time() + (3600 * 24), '/');
-                header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
-            }
-            else {
-                global $errorMsg;
-                $errorMsg = "Login attempt: Invalid username or password";
-                unset($_POST['loginUsernameField']);
-                unset($_POST['loginPasswordField']);
-            }
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage(), $e->getCode());
-        }
-    }
 }
 ?>
 <nav class="container-fluid m-0 p-0">
