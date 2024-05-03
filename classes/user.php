@@ -8,6 +8,7 @@
         public ?string $session_id = null;
         public string $id;
         public string $username;
+        public string $email;
         public customer $customer;
         public ?business $business;
         public ?DateTime $modified, $logged, $registered;
@@ -22,10 +23,11 @@
          * @param DateTime|null $logged
          * @param DateTime|null $registered
          */
-        public function __construct(?string $session_id, string $id, string $username, customer $customer, ?business $business, ?DateTime $modified, ?DateTime $logged, ?DateTime $registered) {
+        public function __construct(?string $session_id, string $id, string $username, string $email, customer $customer, ?business $business, ?DateTime $modified, ?DateTime $logged, ?DateTime $registered) {
             $this->session_id = $session_id;
             $this->id = $id;
             $this->username = $username;
+            $this->email = $email;
             $this->customer = $customer;
             $this->business = $business;
             $this->modified = $modified;

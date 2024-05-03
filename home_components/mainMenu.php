@@ -8,31 +8,26 @@ if(!defined('ROOT_DIR')) {
 if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
-
     use classes\user;
 
-if(isset($_SESSION['USER_OBJ']) || isset($_COOKIE['USER_TOKEN'])) {
-    global $user_obj;
-    var_dump($user_obj);
-    if($user_obj instanceof user && $_COOKIE['USER_TOKEN'] === $user_obj->session_id) {
+if(isset($_COOKIE['USER_TOKEN']) && isset($_SESSION['USER_OBJ'])) {
+    $user_obj = unserialize($_SESSION['USER_OBJ']);
+    if(!empty($user_obj) && $user_obj instanceof user && $user_obj->session_id === $_COOKIE['USER_TOKEN']) {
         header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
-    }
-    else {
-        $user_obj = null;
-        deleteSessionCookies();
     }
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(isset($_POST['loginUsernameField']) && isset($_POST['loginPasswordField'])) {
         try {
-            $user_obj = CONNECTION->login($_POST['usernameField'], $_POST['passwordField']);
+            $user_obj = CONNECTION->login($_POST['loginUsernameField'], $_POST['loginPasswordField']);
             if($user_obj !== null) {
                 $_SESSION['USER_OBJ'] = serialize($user_obj);
                 setcookie('USER_TOKEN', (string)$user_obj->session_id, time() + (3600 * 24), '/');
                 header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
             }
             else {
+                global $errorMsg;
                 $errorMsg = "Login attempt: Invalid username or password";
                 unset($_POST['loginUsernameField']);
                 unset($_POST['loginPasswordField']);
@@ -121,11 +116,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <input type="hidden" name="request_method" value="POST">
                                     <div>
                                         <label for="loginUsernameField">Enter Username</label>
-                                        <input tabindex="1" type="text" class="form-control" name="usernameField" placeholder="Username" autofocus>
+                                        <input name="loginUsernameField" tabindex="1" type="text" class="form-control" placeholder="Username" autofocus>
                                     </div>
                                     <div class="mb-3">
                                         <label for="loginPasswordField">Enter Password</label>
-                                        <input tabindex="2" type="password" class="form-control" name="passwordField" placeholder="Password">
+                                        <input name="loginPasswordField" tabindex="2" type="password" class="form-control" placeholder="Password">
                                     </div>
 
                                     <div class="row mb-3">

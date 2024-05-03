@@ -17,9 +17,11 @@ use classes\address;
 use classes\customer;
 use classes\user;
 
+$errorMsg = null;
 define("REGISTRATION_POST_URI", getURI());
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    global $errorMsg;
     if((!isset($_SESSION['REGISTERING_USER'])) &&
         isset($_POST['usernameField']) &&
         isset($_POST['passwordField']) &&
@@ -56,7 +58,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 $person = new customer($owners_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
                 $user_id = CONNECTION->generateID();
-                $registering_user = new user(null, $user_id, $_POST['usernameField'], $person, null, null, null, null);
+                $registering_user = new user(null, $user_id, $_POST['usernameField'], $_POST['emailField'], $person, null, null, null, null);
 
                 CONNECTION->begin();    // begin transaction here
 

@@ -13,6 +13,15 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 global $user_obj;
 $errorMsg = null;
 $searchPage = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'search.php');
+
+$cities = null;
+// Get country code for searching nearby from user_obj
+if(empty($user_obj->business)) {
+    $cities = CONNECTION->getCities($user_obj->customer->address->country_code);
+}
+else {
+    $cities = CONNECTION->getCities($user_obj->business->address->country_code);
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,23 +53,25 @@ $searchPage = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEP
                 </div>
                 <div class="card-body">
 
-                    <form method="GET" action="<?php echo $searchPage; ?>">
+                    <form method="GET" id="searchForm">
                         <div class="form-group border border-light p-3">
                             <div class="row">
                                 <div class="col">
-                                    <label for="searchField">Search Post
-                                        <input name="search" class="form-control" type="text">
+                                    <label for="keyword">Search Post
+                                        <input id="searchField" name="keyword" class="form-control" type="text" value="<?php echo !empty($_GET['keyword']) ? $_GET['keyword'] : null; ?>" placeholder="Keyword">
                                     </label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <button name="searchButton" class="btn btn-primary" type="submit">Submit</button>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button class="btn btn-primary" type="button" onclick="document.getElementById('searchField').value=''; document.getElementById('searchForm').submit()">Reset</button>
                                 </div>
                             </div>
                         </div>
                     </form>
 
+                    <!--
                     <form method="POST">
                         <div class="form-group border border-light p-3">
                             <div class="row">
@@ -78,13 +89,22 @@ $searchPage = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEP
                             </div>
                         </div>
                     </form>
-
-                    <form method="POST">
+                    -->
+                    <form method="GET">
                         <div class="form-group border border-light p-3">
                             <div class="row">
                                 <div class="col">
-                                    <label for="cityField">City
-                                        <input name="cityField" class="form-control" type="text">
+                                    <label for="city_id">City
+                                        <select name="city_id" class="form-control form-select form-select-lg mb-3" aria-label="Cities">
+                                            <option value="">All cities</option>
+                                            <?php
+                                            $temp = 'selected="selected"';
+                                            $city_id = $user_obj->business ? $user_obj->business->address->city_id : $user_obj->customer->address->city_id;
+                                                foreach($cities as $row) {
+                                                    echo '<option value="' . $row['id'] . '"' . ($row['id'] === $city_id ? $temp : null) . '>' . $row['name'] . '</option>';
+                                                }
+                                            ?>
+                                        </select>
                                     </label>
                                 </div>
                             </div>
@@ -92,15 +112,15 @@ $searchPage = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEP
                             <div class="row">
                                 <div class="col">
                                     <label for="dateField">From date
-                                        <input name="dateField" class="form-control" type="date">
+                                        <input name="date" class="form-control" type="date">
                                     </label>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col">
-                                    <button name="applyFilterButton" class="btn btn-primary" type="submit">Apply Filter</button>
-                                    <button name="cancelFilter" class="btn btn-secondary" type="submit">Cancel Filter</button>
+                                    <button class="btn btn-primary" type="submit">Apply Filter</button>
+                                    <button class="btn btn-secondary" type="submit">Cancel Filter</button>
                                 </div>
                             </div>
 
@@ -111,7 +131,17 @@ $searchPage = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEP
         </div>
 
         <div class="col-sm-12 col-md-8 col-lg-9">
-            <?php (include_once ('pages/posts.php')) or die("Failed to load component"); ?>
+            <?php
+                if(!empty($_GET['keyword'])) {
+                    (include_once ('pages/search.php')) or die("Failed to load component");
+                }
+                else if(!empty($_GET['city_id']) || !empty($_GET['date'])) {
+                    (include_once ('pages/filter.php')) or die("Failed to load component");
+                }
+                else {
+                    (include_once ('pages/posts.php')) or die("Failed to load component");
+                }
+            ?>
         </div>
     </div>
 </div>
@@ -119,7 +149,7 @@ $searchPage = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEP
 <?php if(isset($errorMsg)) {
     echo <<< ENDL_
     <div class="col-md-8 mx-auto my-2 fixed-bottom alert alert-info alert-dismissible fadein show" role="alert" style="z-index: 99999; position: fixed;">
-        <strong>Error:</strong> {$errorMsg}
+        <strong>{$errorMsg}</strong> 
         <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>

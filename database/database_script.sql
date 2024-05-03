@@ -154,6 +154,7 @@ CREATE TABLE user_accounts (
                               id char(12) PRIMARY KEY,  -- random php generated id
                               username varchar(255) UNIQUE,
                               password varchar(255) NOT NULL,
+                              email varchar(255) NOT NULL,
                               customer_id char(12) NOT NULL,
                               business_id char(12) DEFAULT NULL, -- add check if business id exists
 

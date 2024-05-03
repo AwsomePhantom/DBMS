@@ -19,7 +19,7 @@ $GLOBALS['USER_THEME'] = USER_THEMES[37];                           // Global us
 
 const ABSOLUTE_PATHS = array(
     "HOME_PAGE"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'index.php',
-    "MENU_PAGE"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'menu.php',
+    "MENU_PAGE"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'mainMenu.php',
     "ARTICLES_PAGE"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'articles.php',
     "FOOTER_PAGE"                   => ROOT_DIR . DIRECTORY_SEPARATOR . 'home_components' . DIRECTORY_SEPARATOR . 'footer.php',
     "CUSTOMER_REGISTRATION_FORM"    => ROOT_DIR . DIRECTORY_SEPARATOR . 'forms' . DIRECTORY_SEPARATOR . 'registration.php',

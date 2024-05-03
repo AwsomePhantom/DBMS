@@ -27,7 +27,7 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 </head>
 <body class="rubik-regular bg-body-secondary">
 
-<div class="vw-100 vh-100 bg-secondary" style="display: flex; align-items: center; justify-content: center;">
+<div class="vw-100 vh-100 bg-white" style="display: flex; align-items: center; justify-content: center;">
     <div class="text-center">
         <div class="col">
             <div class="col mb-3">

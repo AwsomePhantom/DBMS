@@ -12,7 +12,7 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 }
 //////////////////////////////////////////////////////////////////////////////////////////
     if(isset($_COOKIE['USER_TOKEN'])) {
-        header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
+        header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
     }
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -22,7 +22,7 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
                 if($user_obj !== null) {
                     $_SESSION['USER_OBJ'] = serialize($user_obj);
                     setcookie('USER_TOKEN', (string)$user_obj->session_id, time() + (3600 * 24), '/');
-                    header("Location: " . relativePath(ABSOLUTE_PATHS['DASHBOARD']));
+                    header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']));
                 }
                 else {
                     $errorMsg = "Invalid username or password";

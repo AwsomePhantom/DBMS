@@ -77,8 +77,10 @@ echo <<< ENDL_
                                     <label for="cityField">City</label>
                                     <select name="cityField" class="form-control form-select form-select-lg mb-3" aria-label="Cities" required>
 ENDL_;
+    $temp = 'selected="selected"';
+    $city_id = $user_obj->business ? $user_obj->business->address->city_id : $user_obj->customer->address->city_id;
     foreach($cities as $row) {
-        echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+        echo '<option value="' . $row['id'] . '"' . ($row['id'] === $city_id ? $temp : null) . '>' . $row['name'] . '</option>';
     }
 echo <<< ENDL_
                                     </select> 
@@ -149,8 +151,6 @@ echo <<< ENDL_
                 </div>
                 <div class="col text-end">
                     <a class="link-primary" href="{$relative_to_dashboard}post_replies.php?post_id={$row['post_id']}"><i class="fa-regular fa-comment-dots"></i> Replay <span class="badge bg-secondary">{$replies_count}</span></a>
-                    <span class="px-1 text-muted">|</span>
-                    <a class="link-secondary" href="#">Secondary Link</a>
                 </div>
             </div>
         </div>

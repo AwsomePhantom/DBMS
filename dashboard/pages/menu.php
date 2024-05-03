@@ -12,6 +12,31 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 
 use classes\user;
 global $user_obj;
+
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if(isset($_POST['logoutButton'])) {
+        unset($_POST['logoutButton']);
+        $user_obj = empty($_SESSION['USER_OBJ']) ? null : unserialize($_SESSION['USER_OBJ']);
+        if($user_obj instanceof user) {
+            try {
+                CONNECTION->logout($user_obj);
+            }
+            catch (Exception $e) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            }
+        }
+        deleteSessionCookies();
+        header('Location: ' . relativePath(ABSOLUTE_PATHS['LOGIN_PAGE']));
+    }
+
+    if(isset($_POST['theme'])) {
+        $val = (int)$_POST['theme'];
+        if($val >= 0 && $val <= 40) {
+            $GLOBALS['USER_THEME'] = USER_THEMES[$val];
+        }
+    }
+}
+
 ?>
 <style>
     #navbarSupportedContent .nav-link {
@@ -40,7 +65,7 @@ global $user_obj;
                     <form method="POST">
                         <ul class="navbar-nav" style="font-weight: 600;">
                             <li class="nav-item pe-2"><a class="nav-link active" href="<?php echo relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']); ?>"><i class="bi bi-house"></i> Home</a></li>
-                            <li class="nav-item pe-2"><a class="btn btn-info" href="#"><i class="bi bi-person-circle"></i> Profile</a></li>
+                            <li class="nav-item pe-2"><a class="btn btn-info" href="<?php echo relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'profile.php'); ?>"><i class="bi bi-person-circle"></i> Profile</a></li>
                             <li class="nav-item pe-2"><a class="btn btn-success" href="#"><i class="fa-solid fa-money-check-dollar"></i> Invoices <span class="badge bg-secondary">4</span></a></li>
                             <li class="nav-item pe-2"><a class="btn btn-danger" href="#"><i class="fa-solid fa-wrench"></i> Parts Store</a></li>
                             <li class="nav-item pe-2"><a class="btn btn-dark" href="#sidebar" data-bs-toggle="collapse"><i class="bi bi-sliders"></i> Settings</a></li>
@@ -59,13 +84,20 @@ global $user_obj;
                 </div>
                 <div class="row">
                     <div class="navbar navbar-dark bg-dark flex-column">
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link" href="#">Item 1</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Item 2</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Item 3</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Item 4</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Item 5</a></li>
-                        </ul>
+                        <form method="POST">
+                            <label class="bg-secondary border rounded rounded-2 p-2" for="theme">Theme
+                                <select name="theme" class="form-control form-select form-select-lg mb-3" aria-label="Themes">
+                                <?php
+                                    $temp = ' selected="selected"';
+                                    $i = 0;
+                                    foreach (USER_THEMES as $theme) {
+                                        echo "<option value='" . $i++ . "'" . ($GLOBALS['USER_THEME'] === $theme ? $temp : null) . ">" . $theme . "</option>";
+                                    }
+                                ?>
+                                </select>
+                                <button class="btn btn-primary" type="submit">Change</button>
+                            </label>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -73,7 +73,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 (include_once ('menu.php')) or die("Failed to load component");
 echo '<div class="container">';
 
-$date_time = new DateTime($social_posts_array['date_time']);
+$date_time = new DateTime($social_posts_array['date']);
 $home_url = relativePathSystem(ABSOLUTE_PATHS['DASHBOARD']);
 echo <<< ENDL_
 <div class="card shadow-sm m-3">
@@ -95,7 +95,7 @@ echo <<< ENDL_
 ENDL_;
         $replies_array = CONNECTION->getPostReplies($post_id);
         foreach($replies_array as $reply) {
-            $date_time = new DateTime($reply['date_time']);
+            $date_time = new DateTime($reply['date']);
             $delete_reply_link = null;
             if($reply['user_id'] == $user_obj->id) {    // for each reply if the user is the author
                 $delete_reply_link = "<div class='text-end'>" .

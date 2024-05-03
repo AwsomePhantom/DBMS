@@ -1,5 +1,4 @@
 <?php
-session_start();
 if(!defined('ROOT_DIR')) {
     $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
     $arr = array_slice($arr, 0, count($arr) - 2);
@@ -12,20 +11,22 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 
 (include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_AUTH'])) or die("Connection related file not found");   // Check for user credentials
 
-    use classes\user;
+use classes\user;
 ///////////////////////////////////////////////////////////////////////////////////////
 
 global $user_obj;
-$search_keyword = filter_var(htmlentities($_GET['keyword']));
-$search_keyword = $string = preg_replace('/\s+/', '', $search_keyword);
+$city_id = (int)filter_var(htmlentities($_GET['city_id']));
+$date = filter_var(htmlentities($_GET['date']));
+if(empty($city_id)) $city_id = null;
+if(empty($date)) $date = null;
 // Variables and array for social post display
-$social_posts_array = CONNECTION->searchPosts($search_keyword);
+$social_posts_array = CONNECTION->filterPosts($city_id, $date);
 
 echo '<div id="posts">';
 
 // Branch for no existing social posts
 if(empty($social_posts_array)) {
-echo <<< ENDL_
+    echo <<< ENDL_
     <div class="card shadow-sm bg-white p-3 text-center"><span class="lead">No social posts found!</span></div>
 ENDL_;
 }
@@ -43,7 +44,7 @@ else {
             $deleteLink = '<button name="deletePostButton" class="btn btn-danger" type="submit"><i class="fa-solid fa-trash-can"></i> Delete Post</button>';
         }
 
-echo <<< ENDL_
+        echo <<< ENDL_
 <form method="POST"><input type="hidden" name="request_method" value="POST">
 <input type="hidden" name="post_id" value="{$row['post_id']}">
     <div class="card shadow-sm m-3">
@@ -65,6 +66,8 @@ echo <<< ENDL_
                 </div>
                 <div class="col text-end">
                     <a class="link-primary" href="{$relative_to_dashboard}post_replies.php?post_id={$row['post_id']}"><i class="fa-regular fa-comment-dots"></i> Replay <span class="badge bg-secondary">{$replies_count}</span></a>
+                    <!--<span class="px-1 text-muted">|</span>
+                    <a class="link-secondary" href="#">Secondary Link</a>-->
                 </div>
             </div>
         </div>

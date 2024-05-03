@@ -16,8 +16,10 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
     use classes\user;
 
 define("REGISTRATION_POST_URI", getURI());  // to clean the url from variables
+$errorMsg = null;
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    global $errorMsg;
     if( isset($_POST['usernameField']) &&
         isset($_POST['passwordField']) &&
         isset($_POST['repeatPasswordField']) &&
@@ -50,7 +52,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     $person = new customer($unique_id, $_POST['firstNameField'], $_POST['lastNameField'], new DateTime($_POST['birthDateField']), $_POST['genderRadio'], $phones, $house_address);
                     $unique_id = CONNECTION->generateID();
-                    $user = new user(null, $unique_id, $_POST['usernameField'], $person, null, null, null, null);
+                    $user = new user(null, $unique_id, $_POST['usernameField'], $_POST['emailField'], $person, null, null, null, null);
 
                     CONNECTION->begin();
                     $res = CONNECTION->create_user($user, $_POST['repeatPasswordField']);

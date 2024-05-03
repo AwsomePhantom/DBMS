@@ -45,7 +45,7 @@
 			$str = 'mysql:host='.CONN_INFO['HOST'].';dbname='.CONN_INFO['DBNAME'].';charset=utf8mb4;';
 			$opts = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_BOTH];
 			try {
-				$this->pdo = new PDO($str, CONN_INFO['USERNAME'], CONN_INFO['PASSWORD']);
+				$this->pdo = new PDO($str, CONN_INFO['USERNAME'], CONN_INFO['PASSWORD'], $opts);
 				// connected
 			}
 			catch (PDOException $e) {
@@ -65,10 +65,10 @@
 			$this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 			/*    Find Username in the database    */
-			$sql = 'SELECT id, username, customer_id, business_id, last_modified, last_logged, registration_date FROM user_accounts WHERE username = ? AND password = ? LIMIT 1;';
+			$sql = 'SELECT id, username, email, customer_id, business_id, last_modified, last_logged, registration_date FROM user_accounts WHERE username = ? AND password = ? LIMIT 1;';
 			$stmt = $this->pdo->prepare($sql);
 			$result = $stmt->execute([$username, $password]);
-			if($stmt->rowCount() == 0) {
+			if(!$result || $stmt->rowCount() == 0) {
                 //echo "<script>console.log(\"No username/password found\")</script>";
 				return null;
 			}
@@ -146,6 +146,7 @@
                 $session_id,
 				$user_row['id'],                                    // id
 				$user_row['username'],                              // username
+                $user_row['email'],                                 // email
 				$person,                                            // customer obj
 				$company,                                           // company obj
 				new DateTime($user_row['last_modified']),           // last modified
@@ -205,12 +206,13 @@
 				$res = $this->register_business($user->business);   // insert business details into the db
 				if(!$res) return false;
 
-				$sql = 'INSERT INTO user_accounts (id, username, password, customer_id, business_id) VALUES (?, ?, ?, ?, ?)';
+				$sql = 'INSERT INTO user_accounts (id, username, password, email, customer_id, business_id) VALUES (?, ?, ?, ?, ?, ?)';
 				$stmt = $this->pdo->prepare($sql);
 				$res = $stmt->execute([
 					$user->id,
 					$user->username,
 					$password,
+                    $user->email,
 					$user->customer->id,
 					$user->business->id
 				]);
@@ -219,11 +221,12 @@
 				$res = $this->register_customer($user->customer);   // insert customer details into the db
 				if(!$res) return false;
 
-				$sql = 'INSERT INTO user_accounts (id, username, password, customer_id) VALUES (?, ?, ?, ?)';
+				$sql = 'INSERT INTO user_accounts (id, username, email, password, customer_id) VALUES (?, ?, ?, ?, ?)';
 				$stmt = $this->pdo->prepare($sql);
 				$res = $stmt->execute([
 					$user->id,
 					$user->username,
+                    $user->email,
 					$password,
 					$user->customer->id,
 				]);
@@ -371,7 +374,7 @@
                 // first param of address is customer id, no need to load address id
 				return new address($row[1], $row[2], $row[3], $row[4], $row[5], $row[6], $row[7], $row[8]);
 			}
-			return false;
+			return null;
 		}
 
         /**
@@ -388,7 +391,7 @@
                 // first param of address is customer id, no need to load address id
                 return new address($row[1], $row[2], $row[3], $row[4], $row[5], $row[6], $row[7], $row[8]);
 			}
-			return false;
+			return null;
 		}
 
         /**
@@ -450,15 +453,15 @@
          * @return bool
          */
         function update_user_account(user $user, ?string $password) : bool {
-			if($password != null) {     // update only password
-				$sql = 'UPDATE user_accounts SET password = ?, last_logged = NOW() WHERE id = ?;';
+			if($password !== null) {     // update only password
+				$sql = 'UPDATE user_accounts SET password = ?, last_logged = NOW() WHERE id = ?';
 				$stmt = $this->pdo->prepare($sql);
 				$result = $stmt->execute([$password, $user->id]);
 			}
 			else {      // for now, update only the username
-				$sql = 'UPDATE user_accounts SET username = ?, last_modified = NOW();';
+				$sql = 'UPDATE user_accounts SET username = ?, last_modified = NOW() WHERE id = ?';
 				$stmt = $this->pdo->prepare($sql);
-				$result = $stmt->execute([$user->username]);
+				$result = $stmt->execute([$user->username, $user->id]);
 			}
 			return $result;
 		}
@@ -490,7 +493,7 @@
         function update_business_info(business $b) : bool {
 			$sql = 'UPDATE businesses_info SET company_name = ?, company_type = ?, licence_number = ?, office_hour_start = ?, office_hour_end = ?, office_weekdays = ? WHERE id = ?;';
 			$stmt = $this->pdo->prepare($sql);
-			return $stmt->execute([$b->company_name, $b->company_type, $b->licence_number, $b->start.format('H:i:s'), $b->end.format('H:i:s'), $b->weekdays, $b->id]);
+			return $stmt->execute([$b->company_name, $b->company_type, $b->licence_number, $b->start->format('H:i:s'), $b->end->format('H:i:s'), $b->weekdays, $b->id]);
 		}
 
         /**
@@ -621,6 +624,33 @@
         }
 
         /**
+         * Return the name of the city from the city_id
+         * @param int $city_id
+         * @return string|null
+         */
+        function getCityName(int $city_id) : ?string {
+            $sql = 'SELECT name FROM cities WHERE id = ? LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            if(!$stmt->execute([$city_id])) return null;
+            $arr = $stmt->fetch();
+            return reset($arr);
+        }
+
+
+        /**
+         * Return the name of the contries associated with the 3 letter code
+         * @param string $country_code
+         * @return string|null
+         */
+        function getCountryName(string $country_code) : ?string {
+            if(strlen($country_code) > 3) return null;
+            $sql = 'SELECT name FROM countries WHERE countries.code = ? LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            if(!$stmt->execute([$country_code])) return null;
+            return $stmt->fetch()[0];
+        }
+
+        /**
          * Returns all the social posts published by users
          * Country code [optional] is a three-letter code
          * @param string|null $country_code
@@ -658,7 +688,7 @@
          * @return array|null
          */
         function getSinglePost(int $post_id) : ?array {
-            $sql = 'SELECT A.id, A.user_id, A.post_title AS title, A.post_content AS content, B.name AS city, A.address, B.country_code, A.date_time AS date_time FROM post_issues AS A JOIN cities AS B ON A.city_id = B.id WHERE A.id = ? LIMIT 1';
+            $sql = 'SELECT A.id as post_id, A.user_id AS user_id, A.post_title AS title, A.post_content AS content, A.address AS address, B.name AS city, B.country_code AS country_code, A.date_time AS date FROM post_issues AS A JOIN cities AS B ON A.city_id = B.id WHERE A.id = ? LIMIT 1';
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $stmt = $this->pdo->prepare($sql);
             $res = $stmt->execute([$post_id]);
@@ -670,6 +700,27 @@
                 $arr[$key]['author'] = $author;
             }
             return reset($arr);
+        }
+
+        /**
+         * Returns all the posts shared by a single user
+         * Used in the profile page
+         * @param string $user_id
+         * @return array|null
+         */
+        function getSingleUserPosts(string $user_id) : ?array {
+            $sql = 'SELECT A.id as post_id, A.user_id AS user_id, A.post_title AS title, A.post_content AS content, A.address AS address, B.name AS city, B.country_code AS country_code, A.date_time AS date FROM post_issues AS A JOIN cities AS B ON A.city_id = B.id WHERE A.user_id = ? ORDER BY A.date_time DESC';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$user_id]);
+            if(empty($res) || $stmt->rowCount() <= 0) return null;
+            $arr = $stmt->fetchAll();
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return $arr;
         }
 
         /**
@@ -728,11 +779,12 @@
          * @return array|null
          */
         function getPostReplies(int $post_id) : ?array{
-            $sql = 'SELECT id, post_id, user_id, content, datetime AS date_time FROM post_answers WHERE post_id = ?';
+            $sql = 'SELECT id, post_id, user_id, content, datetime AS date FROM post_answers WHERE post_id = ?';
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $stmt = $this->pdo->prepare($sql);
-            $res = $stmt->execute([$post_id]);
-            if(!$res) return null;
+            if(!$stmt->execute([$post_id])) {
+                return null;
+            }
             $arr = $stmt->fetchAll();
             $stmt->closeCursor();
             foreach ($arr as $key => $row) {
@@ -759,13 +811,13 @@
         /**
          * Get the number of replies on post, returns null
          * in case none
-         * @param int $id
+         * @param int $post_id
          * @return int|null
          */
-        function getPostRepliesCount(int $id) : ?int {
+        function getPostRepliesCount(int $post_id) : ?int {
             $sql = 'SELECT COUNT(*) FROM post_answers WHERE post_id = ?';
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$id]);
+            $stmt->execute([$post_id]);
             $row = $stmt->fetch(PDO::FETCH_NUM);
             if($row[0] === 0) return null;
             else return $row[0];
@@ -773,8 +825,9 @@
 
         /**
          * Delete social post's message reply
-         * @param string $user_id
          * @param int $reply_id
+         * @param int $post_id
+         * @param string $user_id
          * @return bool
          */
         function deletePostReply(int $reply_id, int $post_id, string $user_id) : bool {
@@ -806,19 +859,51 @@
 
         }
 
-        function searchPost(string $keyword) : ? array {
-            $sql = "SELECT * FROM post_issues WHERE post_title LIKE '%" . htmlentities($keyword) . "%' OR post_content LIKE '%" . htmlentities($keyword) . "%'";
+        /**
+         * Search a post based on a keyword
+         * @param string $keyword
+         * @return array|null
+         */
+        function searchPosts(string $keyword) : ? array {
+            $sql = "SELECT A.id as post_id, A.user_id AS user_id, A.post_title AS title, A.post_content AS content, A.address AS address, B.name AS city, B.country_code AS country_code, A.date_time AS date FROM post_issues AS A JOIN cities AS B ON A.city_id = B.id WHERE post_title LIKE '%" . htmlentities($keyword) . "%' OR post_content LIKE '%" . htmlentities($keyword) . "%' ORDER BY date DESC";
+
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $stmt = $this->pdo->prepare($sql);
-            $res = $stmt->execute();
-            if(!$res) return null;
+            if(!$stmt->execute()) {
+                return null;
+            }
             $arr = $stmt->fetchAll();
             $stmt->closeCursor();
             foreach ($arr as $key => $row) {
                 $author = $this->getUserNameTitle($row['user_id']);
                 $arr[$key]['author'] = $author;
             }
-            return reset($arr);
+            return $arr;
+        }
+
+        function filterPosts(?int $city_id, ?string $dateTime) : ?array {
+            $sql = "SELECT A.id as post_id, A.user_id AS user_id, A.post_title AS title, " .
+                "A.post_content AS content, A.address AS address, B.name AS city, B.country_code AS country_code, " .
+                "A.date_time AS date FROM post_issues AS A JOIN cities AS B ON A.city_id = B.id ";
+            $temp_a = "WHERE A.city_id = " . $city_id . " ";
+            $temp_b = "WHERE DATE(A.date_time) >= DATE(" . $dateTime . ") ";
+            if(!is_null($city_id) && !is_null($dateTime)) $sql .= $temp_a . "AND " . $temp_b;
+            else if(!is_null($city_id)) $sql .= $temp_a;
+            else if(!is_null($dateTime)) $sql .= $temp_b;
+            $sql .= "ORDER BY A.date_time DESC";
+
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            if(!$stmt->execute()) {
+                return null;
+            }
+            $arr = $stmt->fetchAll();
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return $arr;
         }
 
         /**
