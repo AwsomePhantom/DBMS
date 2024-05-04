@@ -108,18 +108,19 @@ echo <<< ENDL_
                 </tbody>
             </table>
             <form method="POST">
-                <table class='table table-striped table-bordered'>
+                <table class='table table-striped table-bordered mb-5'>
                 <tr>
                     <td colspan="3">Options</td>
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <button name="interruptButton" class="btn btn-warning">Interrupt Repairs</button>
-                        <button name="paymentButton" class="btn btn-success">Pay Now</button>
+                        <button name="interruptButton" class="btn btn-warning"><i class="fa-solid fa-hand"></i> Interrupt Repairs</button>
+                        <button name="paymentButton" class="btn btn-success"><i class="fa-regular fa-credit-card"></i> Pay Now</button>
                     </td>
                 </tr>
                 </table>
             </form>
+            <hr class="m-5">
 ENDL_;
                         }   // end of statements' foreach loop
                     }
