@@ -15,9 +15,9 @@ $form_url = getURI();
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // open account
-    if(isset($_POST['report_id']) && isset($_POST['company_name'])) {
+    if(isset($_POST['report_id']) && isset($_POST['company_name']) && isset($_POST['rescue_address'])) {
         // accept contract
-        $res = CONNECTION->acceptRepairRequest($_POST['report_id'], $user_obj->id, $user_obj->customer->id, $_POST['company_name']);
+        $res = CONNECTION->acceptRepairRequest($_POST['report_id'], $user_obj->id, $user_obj->customer->id, $_POST['company_name'], $_POST['rescue_address']);
         if($res) {
             header("Location: " . relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_INVOICES']));
         }
@@ -70,6 +70,7 @@ ENDL_;
                         $repair_requests = CONNECTION->listRepairRequests($incident['id']);
                         echo "<form method='POST' class='mb-5'>";
                         echo "<input type='hidden' name='report_id' value='{$incident['id']}'>";
+                        echo "<input type='hidden' name='rescue_address' value='{$incident['address']}'>";
                         echo "<h3>{$i}# Rescue</h3>";
                         echo "<table class='table table-striped table-bordered'>" .
                         "<tr><td><strong>Author:</strong> {$incident['author']}</td><td><strong>Date:</strong> {$incident['date']}</td><td colspan='2'><strong>GPS:</strong> [{$incident['gpsx']}, {$incident['gpsy']}]</td></tr>" .

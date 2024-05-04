@@ -118,11 +118,13 @@ CREATE TABLE financial_statements (
                                  business_id char(12) NOT NULL,
 
                                  location_addr varchar(255) DEFAULT NULL,
-                                 advance_payment numeric(10, 2) DEFAULT NULL,
+                                 advance_payment float(10, 2) DEFAULT NULL,
+                                 total_payment float(10, 2) DEFAULT NULL,
                                  discount float(5, 2) DEFAULT NULL,
                                  total_expense float(10, 2) DEFAULT NULL,
-                                 total_revenue float(10, 2) DEFAULT NULL,
-                                 net_income float(10, 2) DEFAULT NULL,
+                                 net_product float(10, 2) DEFAULT NULL,
+                                 gross_income float(10, 2) DEFAULT NULL,
+                                 status varchar(5) DEFAULT 'OPEN',
                                  CONSTRAINT statement_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id),
                                  CONSTRAINT statement_business FOREIGN KEY(business_id) REFERENCES businesses_info(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

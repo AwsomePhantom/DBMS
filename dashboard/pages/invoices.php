@@ -38,14 +38,98 @@ $social_posts_array = CONNECTION->getSingleUserPosts($user_obj->id);
 <body style="background-image: none">
 <?php
 (include_once (relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR']) . 'pages' . DIRECTORY_SEPARATOR . 'menu.php')) or die("Failed to load component");
+try {
+    $invoices_list = CONNECTION->getUserInvoices($user_obj->customer->id);
+} catch (Exception $e) {
+}
 ?>
 
 <div class="card m-3 p-3">
     <div class="row h-100">
         <div class="col">
-            <table class='table table-striped table-bordered'>
-
+                    <?php
+                    if(!empty($invoices_list)) {
+                        $i = 0;
+                        foreach ($invoices_list as $invoice) {
+                            $i++;//discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE customer_id = ? ORDER BY start';
+echo <<< ENDL_
+            <h3>{$i}# Statement</h3>
+            <table class="table table-borderless table-striped">
+                <tr>
+                    <td colspan="1"><strong>Progress: </strong> {$invoice['status']}</td>
+                    <td colspan="2"><strong>Payment $: </strong> {$invoice['payment']}</td>
+                </tr>
+                <tr>
+                    <td><strong>Start Date: </strong>{$invoice['start']}</td>
+                    <td><strong>End Date: </strong>{$invoice['end']}</td>
+                    <td><strong>Delivery: </strong>{$invoice['issued']}</td>
+                </tr>
+                <tr>
+                    <td colspan="3"><strong>Rescue Address: </strong>{$invoice['rescue_address']}</td>
+                </tr>
+                <tr>
+                    <td><strong>Advance Payment: </strong>{$invoice['advance']}</td>
+                    <td><strong>Discount %: </strong>{$invoice['discount']}</td>
+                    <td><strong>Delivery Date: </strong>{$invoice['issued']}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Expenses: </strong>{$invoice['expenses']}</td>
+                    <td><strong>Net: </strong>{$invoice['net']}</td>
+                    <td><strong>Gross: </strong>{$invoice['gross']}</td>
+                </tr>
+                <tr>
+                    <td colspan="3"><strong>Total Account: </strong>{$invoice['rescue_address']}</td>
+                </tr>
             </table>
+            
+            
+            <table class='table table-striped table-bordered'>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Part Description</th>
+                    <th>Part Expense</th>
+                    <th>Work Description</th>
+                    <th>Additional Info</th>
+                    <th>Sub Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{$i}</td>
+                        <td>{$invoice['accounts']['date']}</td>
+                        <td>{$invoice['accounts']['vehicle_parts_desc']}</td>
+                        <td>{$invoice['accounts']['parts_expense']}</td>
+                        <td>{$invoice['accounts']['vehicle_service_desc']}</td>
+                        <td>{$invoice['accounts']['notes']}</td>
+                        <td>{$invoice['accounts']['sub_total']}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <form method="POST">
+                <table class='table table-striped table-bordered'>
+                <tr>
+                    <td colspan="3">Options</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <button name="interruptButton" class="btn btn-warning">Interrupt Repairs</button>
+                        <button name="paymentButton" class="btn btn-success">Pay Now</button>
+                    </td>
+                </tr>
+                </table>
+            </form>
+ENDL_;
+                        }   // end of statements' foreach loop
+                    }
+                    else {
+                        echo "<h3>No Invoices found</h3>";
+                    }
+echo <<< ENDL_
+
+ENDL_;
+?>
         </div>
     </div>
 </div>

@@ -1087,12 +1087,12 @@
             if(!$stmt->execute([$company_name])) return false;
             $business_id = $stmt->fetchColumn();
             $stmt->closeCursor();
-            $sql = 'INSERT INTO financial_statements (customer_id, business_id) VALUES (?, ?)';
+            $sql = 'INSERT INTO financial_statements (customer_id, business_id, location_addr, advance_payment, total_payment, discount) VALUES (?, ?, ?, 0, 0, 0)';
             $stmt = $this->pdo->prepare($sql);
-            $res = $stmt->execute([$customer_id, $business_id]);
+            $res = $stmt->execute([$customer_id, $business_id, $rescue_address]);
             if(!$res) return false;
             $statement_id = $this->pdo->lastInsertId();
-            $sql = "INSERT INTO financial_accounts (statement_id, date, customer_id, business_id, vehicle_service_desc, sub_total) VALUES (NOW(), ?, ?, 'START', 0)";
+            $sql = "INSERT INTO financial_accounts (statement_id, date, customer_id, business_id, vehicle_service_desc, sub_total) VALUES (?, NOW(), ?, ?, 'START', 0)";
             $stmt = $this->pdo->prepare($sql);
             $res = $stmt->execute([$statement_id, $customer_id, $business_id]);
             if(!$res) return false;
@@ -1129,6 +1129,26 @@
             $stmt = $this->pdo->prepare($sql);
             $res = $stmt->execute();
             return $stmt->fetchColumn();
+        }
+
+        function getUserInvoices(string $customer_id) : ?array {
+            $sql = 'SELECT id as statement_id, start_date AS start, end_date AS end, issue_date AS issued, location_addr as rescue_address, advance_payment AS advance, total_payment AS payment, discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE customer_id = ? ORDER BY start';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$customer_id]);
+            $statements = $stmt->fetchAll();
+            if(empty($statements)) return null;
+            $stmt->closeCursor();
+            foreach ($statements as $key => $statement) {
+                $sql = 'SELECT id, date, customer_id, business_id, parts_expense, vehicle_parts_desc, vehicle_service_desc, service_revenue, notes, sub_total FROM financial_accounts WHERE statement_id = ? ORDER BY date';
+                $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute([$statement['statement_id']]);
+                $accounts = $stmt->fetchAll();
+                if(empty($accounts)) throw new Exception("Financial accounts not found, but Financial statement present");
+                $statements[$key]['accounts'] = reset($accounts);
+            }
+            return $statements;
         }
 
         function getTheme(string $user_id) : ?string {
