@@ -36,6 +36,10 @@ const ABSOLUTE_PATHS = array(
     "DASHBOARD"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'index.php',
     "DASHBOARD_DIR"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard',
     "DASHBOARD_AUTH"                => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'authentication.php',
+    "DASHBOARD_INVOICES"            => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'invoices.php',
+    "DASHBOARD_INVOICES_BUSINESS"   => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'invoices_business.php',
+    "DASHBOARD_RESCUE"              => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'rescue.php',
+    "DASHBOARD_RESCUE_BUSINESS"     => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'rescue_business.php',
     "PARTS_STORE"                   => ROOT_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'partsstore.php'
 );
 

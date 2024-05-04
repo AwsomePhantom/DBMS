@@ -38,13 +38,11 @@ else {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="<?php echo b5_theme_link(); ?>">
     <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
 <?php
     (include_once (relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR']) . 'pages' . DIRECTORY_SEPARATOR . 'menu.php')) or die("Failed to load component");
 ?>
-
 <div class="container-fluid">
     <div class="row h-100">
         <div id="filterMenu" class="col-sm-12 col-md-4 col-lg-3 h-100">
@@ -66,7 +64,7 @@ else {
                             <div class="row">
                                 <div class="col">
                                     <button class="btn btn-primary" type="submit">Submit</button>
-                                    <button class="btn btn-primary" type="button" onclick="document.getElementById('searchField').value=''; document.getElementById('searchForm').submit()">Reset</button>
+                                    <button class="btn btn-secondary" type="button" onclick="document.getElementById('searchField').value=''; document.getElementById('searchForm').submit()">Reset</button>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +122,31 @@ else {
                                     <button class="btn btn-secondary" type="submit">Cancel Filter</button>
                                 </div>
                             </div>
+                        </div>
+                    </form>
 
+                    <form method="POST">
+                        <input type="hidden" name="gpsx" id="gpsx">
+                        <input type="hidden" name="gpsy" id="gpsy">
+                        <div class="form-group border border-light p-3">
+                            <label for="emergencyMessage">Emergency Rescue</label>
+                            <div class="row mb-1 px-3">
+                                <input name="emergencyTitle" class="form-control" type="text" placeholder="Title" required>
+                            </div>
+                            <div class="row mb-1 px-3">
+                                <input name="emergencyAddress" class="form-control" type="text" placeholder="Address" required>
+                            </div>
+                            <div class="row mb-1 px-3">
+                                <textarea name="emergencyMessage" class="form-control" rows="4" cols="50" placeholder="Need towing..." required></textarea>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col">
+                                    <button class="btn btn-block btn-dark" type="button" onclick="getLocation()"><i class="fa-solid fa-magnifying-glass-location"></i> Find GPS</button>
+                                </div>
+                                <div class="col">
+                                    <button id="submitEmergencyButton" class="btn btn-block btn-primary" type="submit" disabled><i class="fa-solid fa-location-crosshairs"></i> Send with GPS</button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

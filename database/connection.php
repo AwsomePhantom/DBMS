@@ -636,6 +636,13 @@
             return reset($arr);
         }
 
+        function getCountryCode(string $countryName) : ?string {
+            $sql = 'SELECT code FROM countries WHERE name = ? LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            if(!$stmt->execute([$countryName])) return null;
+            return $stmt->fetch()[0];
+        }
+
 
         /**
          * Return the name of the contries associated with the 3 letter code
@@ -904,6 +911,224 @@
                 $arr[$key]['author'] = $author;
             }
             return $arr;
+        }
+
+        /**
+         * @param string $user_id
+         * @param string $title
+         * @param string $country_code
+         * @param string $district
+         * @param string $address
+         * @param string $message
+         * @param string $gps_x
+         * @param string $gps_y
+         * @return bool
+         */
+        function reportIncident(string $user_id, string $title, string $country_code, string $district, string $address, string $message, string $gps_x, string $gps_y) : bool {
+            $sql = 'INSERT INTO incident_reports (user_id, GPSX, GPSY, country_code, district, street, message_title, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+            $stmt = $this->pdo->prepare($sql);
+            if(!$stmt->execute([$user_id, $gps_x, $gps_y, $country_code, $district, $address, $title, $message])) {
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * Get all the incident reports of a single user
+         * @param string $user_id
+         * @return array|null
+         */
+        function getIncidentReports(string $user_id) : ?array {
+            $sql = 'SELECT id, user_id, GPSX AS gpsx, GPSY AS gpsy, country_code, district, street AS address, message_title AS title, message, datetime AS date FROM incident_reports WHERE user_id = ? ORDER BY date DESC';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$user_id]);
+            if(empty($res) || $stmt->rowCount() <= 0) return null;
+            $arr = $stmt->fetchAll();
+            if(empty($arr)) return null;
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return $arr;
+        }
+
+        /**
+         * Return the count of incidents report of a single user
+         * @param string $user_id
+         * @return int|null
+         */
+        function getUserIncidentsReportsCount(string $user_id) : ? int {
+            $sql = 'SELECT COUNT(*) FROM incident_reports WHERE user_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$user_id]);
+            if(empty($res) || $stmt->rowCount() <= 0) return null;
+            return $stmt->fetchColumn();
+        }
+
+        /**
+         * List all incidents reports for businesses
+         * @return array|null
+         */
+        function getAllIncidentsReports() : ?array {
+            $sql = 'SELECT id, user_id, GPSX AS gpsx, GPSY AS gpsy, country_code, district, street AS address, message_title AS title, message, datetime AS date FROM incident_reports ORDER BY date DESC';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute();
+            if(empty($res) || $stmt->rowCount() <= 0) return null;
+            $arr = $stmt->fetchAll();
+            if(empty($arr)) return null;
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $author = $this->getUserNameTitle($row['user_id']);
+                $arr[$key]['author'] = $author;
+            }
+            return $arr;
+        }
+
+        /**
+         *  Return the count of incidents report of all users
+         * @return int|null
+         */
+        function getAllIncidentsReportsCount() : ? int {
+            $sql = 'SELECT COUNT(*) FROM incident_reports';
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute();
+            if(empty($res) || $stmt->rowCount() <= 0) return null;
+            $arr = $stmt->fetch();
+            return reset($arr);
+        }
+
+        /**
+         * Deletes an incident report
+         * @param string $user_id
+         * @param int $report_id
+         * @return bool
+         */
+        function deleteIncidentReport(string $user_id, int $report_id) : bool {
+            $sql = 'DELETE FROM incident_reports WHERE user_id = ? AND id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$user_id, $report_id]);
+        }
+
+        /**
+         * Add a repair request for a business owner
+         * @param int $incident_id
+         * @param string $company_user_id
+         * @return bool
+         */
+        function addRepairRequest(int $incident_id, string $company_user_id) : bool {
+            $sql = 'INSERT INTO list_repair_requests (incident_id, user_id) VALUES (?, ?)';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$incident_id, $company_user_id]);
+        }
+
+        /**
+         * Cancel a repair offer
+         * @param int $incident_id
+         * @param string $company_user_id
+         * @return bool
+         */
+        function cancelRepairRequest(int $incident_id, string $company_user_id) : bool {
+            $sql = 'DELETE FROM list_repair_requests WHERE incident_id = ? AND user_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$incident_id, $company_user_id]);
+        }
+
+        function isRepairRequested(int $incident_id, string $company_user_id) : bool {
+            $sql = 'SELECT COUNT(*) FROM list_repair_requests WHERE incident_id = ? AND user_id = ? LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$incident_id, $company_user_id]);
+            $row = $stmt->fetch();
+            $row = reset($row);
+            return (bool)$row;
+        }
+
+        /**
+         * List all the businesses that offered repair service
+         * @param string $incident_id
+         * @return array|null
+         */
+        function listRepairRequests(string $incident_id) : ?array {
+            $sql = 'SELECT id, incident_id, user_id, datetime AS date from list_repair_requests WHERE incident_id = ? ORDER BY date DESC';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$incident_id]);
+            $arr = $stmt->fetchAll();
+            if(empty($arr)) return null;
+            $stmt->closeCursor();
+            foreach ($arr as $key => $row) {
+                $sql = "SELECT A.id, A.company_name, A.company_type, B.email, C.street AS address, C.district AS city, C.country_code FROM businesses_info A JOIN user_accounts B JOIN businesses_addresses C ON A.id = B.business_id AND A.id = C.business_id WHERE B.id = '" . $row['user_id'] . "' LIMIT 1";
+                $stmt = $this->pdo->prepare($sql);
+                if(!$stmt->execute()) return null;
+                $temp = $stmt->fetch();
+                $arr[$key]['company_name'] = $temp['company_name'];
+                $arr[$key]['company_type'] = $temp['company_type'];
+                $arr[$key]['email'] = $temp['email'];
+                $arr[$key]['address'] = $temp['address'];
+                $arr[$key]['city'] = $temp['city'];
+                $arr[$key]['country_code'] = $temp['country_code'];
+            }
+            return $arr;
+        }
+
+        /**
+         * Accept repair service from a business
+         * @param string $request_id
+         * @param string $customer_id
+         * @param string $company_name
+         * @return bool
+         */
+        function acceptRepairRequest(string $request_id, string $user_id, string $customer_id, string $company_name, string $rescue_address) : bool {
+            $this->pdo->beginTransaction();
+            $sql = 'SELECT id FROM businesses_info WHERE company_name = ? LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            if(!$stmt->execute([$company_name])) return false;
+            $business_id = $stmt->fetchColumn();
+            $stmt->closeCursor();
+            $sql = 'INSERT INTO financial_statements (customer_id, business_id) VALUES (?, ?)';
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$customer_id, $business_id]);
+            if(!$res) return false;
+            $statement_id = $this->pdo->lastInsertId();
+            $sql = "INSERT INTO financial_accounts (statement_id, date, customer_id, business_id, vehicle_service_desc, sub_total) VALUES (NOW(), ?, ?, 'START', 0)";
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$statement_id, $customer_id, $business_id]);
+            if(!$res) return false;
+            $stmt->closeCursor();
+            $sql = 'DELETE FROM list_repair_requests WHERE incident_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$request_id]);
+            $stmt->closeCursor();
+            $sql = 'DELETE FROM incident_reports WHERE id = ? AND user_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$request_id, $user_id]);
+            $this->pdo->commit();
+            return true;
+        }
+
+        /**
+         * Returns the count of the servicing opened of a single customer
+         * @param string $customer_id
+         * @return int
+         */
+        function getUserInvoicesCount(string $customer_id) : int {
+            $sql = 'SELECT DISTINCT COUNT(statement_id) FROM financial_accounts WHERE customer_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$customer_id]);
+            return $stmt->fetchColumn();
+        }
+
+        /**
+         * Returns the count of all servicing opened
+         * @return int
+         */
+        function getTotalInvoicesCount() : int {
+            $sql = 'SELECT DISTINCT COUNT(statement_id) FROM financial_accounts';
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute();
+            return $stmt->fetchColumn();
         }
 
         function getTheme(string $user_id) : ?string {

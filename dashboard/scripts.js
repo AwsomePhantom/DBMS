@@ -26,6 +26,9 @@ function showPosition(position) {
         document.getElementById('currentLocation').innerHTML = "[" + position.coords.latitude +
             ", " + position.coords.longitude + "] " + jsonArray['locality'] + " - " + jsonArray['principalSubdivision'] +
             ", " + jsonArray['countryName'];
+        document.getElementById('gpsx').value = position.coords.latitude;
+        document.getElementById('gpsy').value = position.coords.longitude;
+        document.getElementById('submitEmergencyButton').disabled = false;
     }
     // https://www.bigdatacloud.com/ API
     xhttp.open("GET", 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + position.coords.latitude + '&longitude=' + position.coords.longitude + '&localityLanguage=en');
