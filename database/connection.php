@@ -1030,7 +1030,7 @@
          * @param string $company_user_id
          * @return bool
          */
-        function cancelRepairRequest(int $incident_id, string $company_user_id) : bool {
+        function cancelRepairRequest(int $izncident_id, string $company_user_id) : bool {
             $sql = 'DELETE FROM list_repair_requests WHERE incident_id = ? AND user_id = ?';
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([$incident_id, $company_user_id]);
