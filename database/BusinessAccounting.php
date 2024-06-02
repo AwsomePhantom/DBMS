@@ -90,11 +90,13 @@ class BusinessAccounting {
      * @param $statement_id
      * @return void
      */
-    public function setDiscount(float $discount, $statement_id) : void {
-        if($discount < 0 || $discount > 1) return;
+    public function setDiscount(float $discount, $statement_id) : bool {
+        if($discount < 0 || $discount > 1) return false;
         $sql = 'UPDATE financial_statements SET discount = ? WHERE id = ?';
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$discount, $statement_id]);
+        $res = $stmt->execute([$discount, $statement_id]);
+        $this->updateBusinessStatement($statement_id);
+        return $res;
     }
 
     /**
@@ -143,20 +145,50 @@ class BusinessAccounting {
 
     /**
      * Returns an array with the lists of works done
-     * @param $business_id
      * @param $statement_id
      * @return array|null
      */
-    function getFinancialAccounts($business_id, $statement_id) : ?array {
+    function getFinancialAccounts($statement_id) : ?array {
         $sql = 'SELECT * FROM financial_accounts WHERE business_id = ? AND statement_id = ? ORDER BY date';
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$business_id, $statement_id]);
+        $stmt->execute([$this->business_id, $statement_id]);
         $accounts = $stmt->fetchAll();
         if(!empty($accounts)) return $accounts;
         return null;
     }
 
+    /**
+     * Remove unwanted account entries
+     * @param $statement_id
+     * @param $account_id
+     * @return bool
+     */
+    function removeFinancialAccount($statement_id, $account_id) : bool {
+        $sql = 'DELETE FROM financial_accounts WHERE business_id = ? AND statement_id = ? AND id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $res = $stmt->execute([$this->business_id, $statement_id, $account_id]);
+        $this->updateBusinessStatement($statement_id);
+        return $res;
+    }
+
+    /**
+     * Set delivery date
+     * @param $statement_id
+     * @param DateTime $date
+     * @return bool
+     */
+    function setEstimateDeliveryDate($statement_id, DateTime $date) : bool {
+        $sql = 'UPDATE financial_statements SET delivery_date = ? WHERE id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$date->format("Y-m-d"), $statement_id]);
+    }
+
+    /**
+     * Updates changes to the final statement by recalculating all the accounts
+     * @param $statement_id
+     * @return int[]|null
+     */
     function updateBusinessStatement($statement_id) : ?array {
         $sql = 'SELECT parts_expense, service_revenue, sub_total FROM financial_accounts WHERE business_id = ? AND statement_id = ?';
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -173,6 +205,7 @@ class BusinessAccounting {
         $arr['discount'] = $this->getDiscount($statement_id);
         $arr['discount_amount'] = $this->getDiscountAmount($statement_id);
         $arr['tax'] = $this->getTax($statement_id);
+        $arr['sub_total'] -= $arr['discount_amount'];
         $arr['tax_amount'] = $arr['sub_total'] * $arr['tax'];
         $arr['gross_amount'] = $arr['sub_total'] + $arr['tax_amount'];
         $stmt->closeCursor();
@@ -190,5 +223,23 @@ class BusinessAccounting {
         $res = $stmt->execute([$arr['total_expense'], $arr['sub_total'], $arr['gross_amount'], $statement_id, $this->business_id]);
         if($res) return $arr;
         return null;
+    }
+
+    function endRepairsAndDelivery($statement_id) : bool {
+        $this->pdo->beginTransaction();
+        $sql = 'UPDATE financial_statements SET status = "DONE", end_date = NOW() WHERE id = ? AND business_id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $res = $stmt->execute([$statement_id, $this->business_id]);
+        $sql = 'SELECT customer_id from financial_statements WHERE id = ? AND business_id = ? LIMIT 1';
+        $stmt = $this->pdo->prepare($sql);
+        $res &= $stmt->execute([$statement_id, $this->business_id]);
+        $customer_id = $stmt->fetchColumn();
+        $sql = 'INSERT INTO financial_accounts(statement_id, date, customer_id, business_id, vehicle_service_desc) VALUES(?, NOW(), ?, ?, "END")';
+        $stmt = $this->pdo->prepare($sql);
+        $res &= $stmt->execute([$statement_id, $customer_id, $this->business_id]);
+        if($res) {
+            $this->pdo->commit();
+        }
+        return $res;
     }
 }

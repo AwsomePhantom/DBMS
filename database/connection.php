@@ -645,10 +645,11 @@ require_once (ROOT_DIR . '/database/variables.php');
         }
 
         function getCountryCode(string $countryName) : ?string {
-            $sql = 'SELECT code FROM countries WHERE name = ? LIMIT 1';
+            $sql = 'SELECT code FROM countries WHERE name = ? OR name LIKE "?%"  LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
-            if(!$stmt->execute([$countryName])) return null;
-            return $stmt->fetch()[0];
+            $str = substr($countryName, 0, 7);
+            if(!$stmt->execute([$countryName, $str])) return null;
+            return $stmt->fetchColumn();
         }
 
 
@@ -1122,7 +1123,7 @@ require_once (ROOT_DIR . '/database/variables.php');
          * @return int
          */
         function getUserInvoicesCount(string $customer_id) : int {
-            $sql = 'SELECT DISTINCT COUNT(statement_id) FROM financial_accounts WHERE customer_id = ?';
+            $sql = 'SELECT COUNT(*) FROM financial_statements WHERE customer_id = ?';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$customer_id]);
             return $stmt->fetchColumn();
@@ -1133,14 +1134,14 @@ require_once (ROOT_DIR . '/database/variables.php');
          * @return int
          */
         function getTotalInvoicesCount() : int {
-            $sql = 'SELECT DISTINCT COUNT(statement_id) FROM financial_accounts';
+            $sql = 'SELECT COUNT(*) FROM financial_statements';
             $stmt = $this->pdo->prepare($sql);
             $res = $stmt->execute();
             return $stmt->fetchColumn();
         }
 
         function getUserInvoices(string $customer_id) : ?array {
-            $sql = 'SELECT id as statement_id, start_date AS start, end_date AS end, issue_date AS issued, location_addr as rescue_address, advance_payment AS advance, total_payment AS payment, discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE customer_id = ? ORDER BY start DESC';
+            $sql = 'SELECT id as statement_id, start_date AS start, end_date AS end, delivery_date AS delivery, location_addr as rescue_address, advance_payment AS advance, total_payment AS payment, discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE customer_id = ? ORDER BY start DESC';
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$customer_id]);

@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 if(!defined('ROOT_DIR')) {
     $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
     $arr = array_slice($arr, 0, count($arr) - 2);
@@ -12,8 +13,8 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 (include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_HEADERS'])) or die("Header related file not found");
 global $user_obj;
 $errorMsg = null;
-$ACCOUNTS = new BusinessAccounting(CONNECTION->getPDOObject(), $user_obj->business->id);
-
+$ACCOUNTS = new BusinessAccounting(CONNECTION->getPDOObject(), $user_obj->business->id); // money account settings
+$fmt = new NumberFormatter( 'en_US', NumberFormatter::CURRENCY );   // money formatter
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(isset($_POST['statementSelectField']) && $_POST['statementSelectField'] > 0) {
@@ -39,8 +40,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'sub_total'             => $sub_total
         ]);
     }
+    else if(isset($_POST['statement_id']) && isset($_POST['deletingEntryID'])) {
+        $ACCOUNTS->removeFinancialAccount($_POST['statement_id'], $_POST['deletingEntryID']);
+    }
+    else if(isset($_POST['statement_id']) && isset($_POST['discountField'])) {
+        $ACCOUNTS->setDiscount($_POST['discountField'], $_POST['statement_id']);
+    }
+    else if(isset($_POST['statement_id']) && isset($_POST['deliveryDateField'])) {
+        $ACCOUNTS->setEstimateDeliveryDate($_POST['statement_id'], new DateTime($_POST['deliveryDateField']));
+        if(isset($_POST['endRepairButton']) && $_POST['endRepairButton'] === 'true') {
+            $ACCOUNTS->endRepairsAndDelivery($_POST['statement_id']);
+        }
+    }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -62,7 +74,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php
 (include_once (relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR']) . 'pages' . DIRECTORY_SEPARATOR . 'menu.php')) or die("Failed to load component");
 try {
-    $invoices_list = $ACCOUNTS->getBusinessStatementsCount();
+    $invoices_list = $ACCOUNTS->getBusinessStatementsCount();   // returns an array
 }
 catch (Exception $e) {
     $invoices_list = null;
@@ -74,7 +86,7 @@ catch (Exception $e) {
     <div class="row">
         <div class="col">
             <form method="POST">
-                <strong>Statements: </strong>
+                <strong>Interventions: </strong>
                 <?php echo count($invoices_list); ?>
                 <br>
                     <select id="statementSelectField" name="statementSelectField" class="form-control form-select form-select-lg mb-3" style="width: 400px">
@@ -100,36 +112,37 @@ catch (Exception $e) {
     <div class="row h-100">
         <div class="col">
             <?php
-            $i = $GLOBALS['STATEMENT_ID'];
+            $i = $GLOBALS['STATEMENT_ID'] ?? 0;
             if($i > 0) {
                     $statement = $ACCOUNTS->getBusinessStatement($i);
+                    $statement['discount'] *= 100;
 echo <<< ENDL_
             <h3>{$i}# Statement</h3>
-            <table class="table table-borderless table-striped">
+            <table class="table table-striped">
                 <tr>
                     <td colspan="1"><strong>Progress: </strong> {$statement['status']}</td>
-                    <td colspan="2"><strong>Payment $: </strong> {$statement['payment']}</td>
+                    <td colspan="2"><strong>Payment: </strong> {$fmt->formatCurrency($statement['payment'], 'USD')}</td>
                 </tr>
                 <tr>
                     <td><strong>Start Date: </strong>{$statement['start']}</td>
                     <td><strong>End Date: </strong>{$statement['end']}</td>
-                    <td><strong>Delivery: </strong>{$statement['d']}</td>
+                    <td><strong>Delivery Date: </strong>{$statement['delivery']}</td>
                 </tr>
                 <tr>
                     <td colspan="3"><strong>Rescue Address: </strong>{$statement['rescue_address']}</td>
                 </tr>
                 <tr>
-                    <td><strong>Advance Payment: </strong>{$statement['advance']}</td>
-                    <td><strong>Discount %: </strong>{$statement['discount']}</td>
-                    <td><strong>Delivery Date: </strong>{$statement['delivery']}</td>
+                    <td><strong>Advance Payment: </strong>{$fmt->formatCurrency($statement['advance'], 'USD')}</td>
+                    <td><strong>Discount: </strong>{$statement['discount']}%</td>
+                    <td></td>
                 </tr>
                 <tr>
-                    <td><strong>Total Expenses: </strong>{$statement['expenses']}</td>
-                    <td><strong>Net: </strong>{$statement['net']}</td>
-                    <td><strong>Gross: </strong>{$statement['gross']}</td>
+                    <td><strong>Total Expenses: </strong>{$fmt->formatCurrency($statement['expenses'], 'USD')}</td>
+                    <td><strong>Net: </strong>{$fmt->formatCurrency($statement['net'], 'USD')}</td>
+                    <td><strong>Gross: </strong>{$fmt->formatCurrency($statement['gross'], 'USD')}</td>
                 </tr>
                 <tr>
-                    <td colspan="3"><strong>Total Account: </strong>{$statement['gross']}</td>
+                    <td colspan="3"><strong>Total Account: </strong>{$fmt->formatCurrency($statement['gross'], 'USD')}</td>
                 </tr>
             </table>
             
@@ -144,12 +157,14 @@ echo <<< ENDL_
                     <th>Service Revenue</th>
                     <th>Additional Info</th>
                     <th>Sub Total</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
 ENDL_;
-                    $list_accounts = $ACCOUNTS->getFinancialAccounts($user_obj->business->id, $i);
+                    $list_accounts = $ACCOUNTS->getFinancialAccounts($i);
                     $count = 0;
+                    if(!empty($list_accounts))  // single line conditional
                     foreach($list_accounts as $entry) {
                         $count++;
 echo <<< ENDL_
@@ -157,45 +172,64 @@ echo <<< ENDL_
                         <td>{$count}</td>
                         <td>{$entry['date']}</td>
                         <td>{$entry['vehicle_parts_desc']}</td>
-                        <td>{$entry['parts_expense']}</td>
+                        <td>{$fmt->formatCurrency($entry['parts_expense'], 'USD')}</td>
                         <td>{$entry['vehicle_service_desc']}</td>
-                        <td>{$entry['service_revenue']}</td>
+                        <td>{$fmt->formatCurrency($entry['service_revenue'], 'USD')}</td>
                         <td>{$entry['notes']}</td>
-                        <td>{$entry['sub_total']}</td>
+                        <td>{$fmt->formatCurrency($entry['sub_total'], 'USD')}</td>
+ENDL_;
+                    if($statement['status'] === 'OPEN' && $entry['vehicle_service_desc'] !== 'START') {
+                        echo '<td><input id="' . $entry['id'] . '" class="btn btn-outline-danger" onclick="deleteEntry(' . $i . '}, this.id);" data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" value="Cancel"></td>';
+                    }
+                    else {
+                        echo "<td></td>";
+                    }
+echo <<< ENDL_
                     </tr>
 ENDL_;
                     }
                     if($statement['status'] === 'OPEN') {
 echo <<< ENDL_
-                    <tr>
+                    <tr class="table-info">
                         <form method="POST">
                             <input type="hidden" name="statement_id" value="{$i}">
                             <input type="hidden" name="customer_id" value="{$statement['customer_id']}">
                             <td><h4><span class="badge bg-secondary">New...</span></h4></td>
                             <td>Now</td>
-                            <td><textarea name="vehicle_parts_desc" class="form-control" rows="1"></textarea></td>
+                            <td><textarea name="vehicle_parts_desc" class="form-control" rows="1" placeholder="Wheel, Gears, Lights, ..."></textarea></td>
                             <td><input name="parts_expense" class="form-control" type="number" step="0.01" value="0.00" required></td>
-                            <td><textarea name="vehicle_service_desc" class="form-control" type="text" rows="1" required></textarea></td>
+                            <td><textarea name="vehicle_service_desc" class="form-control" type="text" rows="1" placeholder="Change, Fix, Turn, ..." required></textarea></td>
                             <td><input name="service_revenue" class="form-control" type="number" step="0.01" value="0.00" required></td>
-                            <td><textarea name="notes" class="form-control" rows="1"></textarea></td>
-                            <td><input name="addNewAccountButton" class="btn btn-block btn-primary" type="submit" value="Add Entry"></td>
+                            <td><textarea name="notes" class="form-control" rows="1" placeholder="Additional notes..."></textarea></td>
+                            <td colspan="2"><input name="addNewAccountButton" class="btn btn-block btn-primary" type="submit" value="Add Entry"></td>
                         </form>
                     </tr>
                 </tbody>
             </table>
-            <form method="POST">
-                <table class='table table-striped table-bordered mb-5'>
+            
+            <table class='table table-striped table-borderless mb-5'>
                 <tr>
                     <td colspan="3">Options</td>
                 </tr>
                 <tr>
-                    <td colspan="3">
-                        <button name="interruptButton" class="btn btn-warning"><i class="fa-solid fa-hand"></i> Interrupt Repairs</button>
-                        <button name="closeAccountButton" class="btn btn-info"><i class="fa-regular fa-credit-card"></i> Close Accounts</button>
+                    <td>
+                        <form method="POST">
+                            <input type="hidden" name="statement_id" value="{$i}">
+                            <label for="discountField">Apply discount {0.05 for 5%}<input name="discountField" class="form-control" type="number" step="0.01" min="0" max="1" value="0.00"></label>
+                            <input type="submit" class="btn btn-info" value="Apply Discount">
+                        </form>
+                    </td>
+                    <td colspan="2">
+                        <form method="POST">
+                            <input type="hidden" name="statement_id" value="{$i}">
+                            <label for="deliveryDateField">Estimated Delivery: <input name="deliveryDateField" class="form-control" type="date" required></label>
+                            <input type="submit" class="btn btn-info" value="Set Date">
+                            <!--<button name="interruptButton" class="btn btn-warning"><i class="fa-solid fa-hand"></i> Interrupt Repairs</button>-->
+                            <label for="endRepairButton">Close accounts<br><button name="endRepairButton" class="btn btn-lg btn-dark" value="true"><i class="fa-regular fa-credit-card"></i> End Repair</button></label>
+                        </form>
                     </td>
                 </tr>
-                </table>
-            </form>
+            </table>
             <hr class="m-5">
 ENDL_;
                 }
@@ -224,6 +258,30 @@ echo <<< ENDL_
 ENDL_;
 }
 ?>
+
+<!-- Modal for deleting entries -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="mdalMsg">Are you sure you want to delete this entry?</p>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" name="modalForm">
+                    <input type="hidden" id="deletingEntryID" name="deletingEntryID" value="">
+                    <input type="hidden" id="statement_id" name="statement_id" value="">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     let i = <?php echo $GLOBALS['STATEMENT_ID'] ?? 0; ?>;
     let x = document.getElementById('statementSelectField');
@@ -232,6 +290,12 @@ ENDL_;
         y.disabled = e.target.index <= 0 || e.target.index === i;
     });
     <?php if(isset($_POST['statementSelectField'])) echo "x.selectedIndex = " . $_POST['statementSelectField']; ?>
+
+    function deleteEntry(statement_id, id) {
+        if(statement_id <= 0) return;
+        document.getElementById('statement_id').setAttribute('value', statement_id);
+        document.getElementById('deletingEntryID').setAttribute('value', id);
+    }
 
 </script>
 <script href="<?php echo relativePath(ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'scripts.js'); ?>"></script>

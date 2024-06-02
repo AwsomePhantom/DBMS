@@ -25,7 +25,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if(isset($_POST['deleteIncidentButton']) && isset($_POST['report_id'])) {
         CONNECTION->deleteIncidentReport($user_obj->id, $_POST['report_id']);
-        header("Location: " . $form_url);;
+        header("Location: " . $form_url);
     }
 }
 
