@@ -10,7 +10,6 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 }
 // form check in the dashboard_header in the index, profile and other pages...
 
-use classes\user;
 global $user_obj;
 
 ?>

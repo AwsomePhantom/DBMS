@@ -14,7 +14,7 @@ $errorMsg = null;
 $form_url = getURI();
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-
+    // pay now or interrupt
 }
 
 $social_posts_array = CONNECTION->getSingleUserPosts($user_obj->id);
@@ -40,6 +40,7 @@ $social_posts_array = CONNECTION->getSingleUserPosts($user_obj->id);
 (include_once (relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_DIR']) . 'pages' . DIRECTORY_SEPARATOR . 'menu.php')) or die("Failed to load component");
 try {
     $invoices_list = CONNECTION->getUserInvoices($user_obj->customer->id);
+
 } catch (Exception $e) {
 }
 ?>
@@ -52,6 +53,8 @@ try {
                         $i = 0;
                         foreach ($invoices_list as $invoice) {
                             $i++;//discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE customer_id = ? ORDER BY start';
+                            $discount = $invoice['discount'] > 0 ? $invoice['discount'] * $invoice['gross'] : 0;
+                            $total_gross = $invoice['gross'] - $invoice['payment'] - $discount;
 echo <<< ENDL_
             <h3>{$i}# Statement</h3>
             <table class="table table-borderless table-striped">
@@ -78,7 +81,7 @@ echo <<< ENDL_
                     <td><strong>Gross: </strong>{$invoice['gross']}</td>
                 </tr>
                 <tr>
-                    <td colspan="3"><strong>Total Account: </strong>{$invoice['rescue_address']}</td>
+                    <td colspan="3"><strong>Total Account: </strong>{$total_gross}</td>
                 </tr>
             </table>
             
@@ -125,7 +128,7 @@ ENDL_;
                         }   // end of statements' foreach loop
                     }
                     else {
-                        echo "<h3>No Invoices found</h3>";
+                        echo "<h3>No Invoice found</h3>";
                     }
 echo <<< ENDL_
 

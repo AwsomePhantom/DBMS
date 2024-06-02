@@ -12,7 +12,6 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 
 // authentication and headers cannot be added on imported sub-pages
 
-    use classes\user;
 ///////////////////////////////////////////////////////////////////////////////////////
 
 global $user_obj;

@@ -30,6 +30,7 @@ const ABSOLUTE_PATHS = array(
     "GLOBAL_STYLESHEET"             => ROOT_DIR . DIRECTORY_SEPARATOR . 'styles' . DIRECTORY_SEPARATOR . 'styles.css',
     "GLOBAL_SCRIPT"                 => ROOT_DIR . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'main.js',
     "CONNECTION"                    => ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'connection.php',
+    "BUSINESS_ACCOUNTING"           => ROOT_DIR . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'BusinessAccounting.php',
     "COUNTRIES"                     => ROOT_DIR . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'countries.php',
     "SITE_HEADERS"                  => ROOT_DIR . DIRECTORY_SEPARATOR . 'headers.php',
     "DASHBOARD_HEADERS"             => ROOT_DIR . DIRECTORY_SEPARATOR . 'dashboard' . DIRECTORY_SEPARATOR . 'dashboard_headers.php',

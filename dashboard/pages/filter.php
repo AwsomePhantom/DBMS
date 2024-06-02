@@ -11,7 +11,6 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 
 (include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_AUTH'])) or die("Connection related file not found");   // Check for user credentials
 
-use classes\user;
 ///////////////////////////////////////////////////////////////////////////////////////
 
 global $user_obj;

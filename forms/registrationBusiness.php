@@ -13,9 +13,9 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 
 (include (relativePathSystem(ABSOLUTE_PATHS['SITE_HEADERS']))) or die("Headers file not found");    // Needed to update COOKIES for the menu bar
 
+use classes\address;
 use classes\business;
 use classes\contacts;
-use classes\address;
 use classes\customer;
 use classes\user;
 

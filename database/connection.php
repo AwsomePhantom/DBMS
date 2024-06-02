@@ -6,13 +6,13 @@
 	require_once ROOT_DIR . '/classes/business.php';
 	require_once ROOT_DIR . '/classes/user.php';
 
-	use classes\contacts;
-	use classes\address;
-	use classes\customer;
-	use classes\business;
-	use classes\user;
+use classes\address;
+use classes\business;
+use classes\contacts;
+use classes\customer;
+use classes\user;
 
-	require_once (ROOT_DIR . '/database/variables.php');
+require_once (ROOT_DIR . '/database/variables.php');
 
 	const CONNECTION = new connection();
 	CONNECTION->connect();
@@ -52,6 +52,14 @@
 				throw new PDOException($e->getMessage(), $e->getCode());
 			}
 		}
+
+        /**
+         * Returns the PDO object
+         * @return PDO
+         */
+        function getPDOObject() : PDO {
+            return $this->pdo;
+        }
 
         /**
          * Function used to log in into the webpage
@@ -1132,7 +1140,7 @@
         }
 
         function getUserInvoices(string $customer_id) : ?array {
-            $sql = 'SELECT id as statement_id, start_date AS start, end_date AS end, issue_date AS issued, location_addr as rescue_address, advance_payment AS advance, total_payment AS payment, discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE customer_id = ? ORDER BY start';
+            $sql = 'SELECT id as statement_id, start_date AS start, end_date AS end, issue_date AS issued, location_addr as rescue_address, advance_payment AS advance, total_payment AS payment, discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE customer_id = ? ORDER BY start DESC';
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$customer_id]);
@@ -1149,6 +1157,69 @@
                 $statements[$key]['accounts'] = reset($accounts);
             }
             return $statements;
+        }
+
+        /**
+         * Returns the numbers of financial statements opened with some basic data
+         * Returns array with attributes id, date and name
+         * @param string $business_id
+         * @return array|null
+         */
+        function getBusinessInvoicesCount(string $business_id) : ?array {
+            $sql = 'SELECT A.id AS statement_id, DATE(A.start_date) AS date, CONCAT(B.name, " ", B.lastname) AS name, A.status AS status FROM financial_statements A JOIN customers_info B ON A.customer_id = B.id WHERE business_id = ? ORDER BY date DESC';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$business_id]);
+            return $stmt->fetchAll();
+        }
+
+        function getBusinessInvoices(string $business_id, int $index) : ?array {
+            $sql = 'SELECT id as statement_id, start_date AS start, end_date AS end, issue_date AS issued, location_addr as rescue_address, advance_payment AS advance, total_payment AS payment, discount, total_expense AS expenses, net_product AS net, gross_income AS gross, status FROM financial_statements WHERE business_id = ? AND id = ? LIMIT 1';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$business_id, $index]);
+            $statements = $stmt->fetchAll();
+            $statements = reset($statements);
+            if(empty($statements)) return null;
+            return $statements;
+        }
+
+        /**
+         * Add Financial account with works done
+         * Input param assoc array([customer_id], [business_id], [parts_expense], [vehicle_parts_desc], [vehicle_service_desc], [service_revenue], [notes], [sub_total], [tax])
+         * @param array $desc
+         * @return bool
+         */
+        function addFinancialAccount(array $desc) : bool {
+            $sql = 'INSERT INTO financial_accounts(statement_id, date, customer_id, business_id, parts_expense, vehicle_parts_desc, vehicle_service_desc, service_revenue, notes, sub_total) VALUES(?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
+            $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$desc['statement_id'], $desc['customer_id'], $desc['business_id'], $desc['parts_expense'], $desc['vehicle_parts_desc'], $desc['vehicle_service_desc'], $desc['service_revenue'], $desc['notes'], $desc['sub_total']]);
+            if(!$res) return $res;
+            $sql = 'UPDATE financial_statements SET total_expense = total_expense + ?, net_product = net_product + ?, gross_income = net_product * ? WHERE id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $res = $stmt->execute([$desc['parts_expense'], $desc['sub_total'], $desc['sub_total'] * $desc['tax'], $desc['statement_id']]);
+            if($res) {
+                $this->pdo->commit();
+            }
+            return $res;
+
+        }
+
+        /**
+         * Returns an array with the lists of works done
+         * @param $business_id
+         * @param $statement_id
+         * @return array|null
+         */
+        function getFinancialAccounts($business_id, $statement_id) : ?array {
+            $sql = 'SELECT * FROM financial_accounts WHERE business_id = ? AND statement_id = ? ORDER BY date';
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$business_id, $statement_id]);
+            $accounts = $stmt->fetchAll();
+            if(!empty($accounts)) return $accounts;
+            return null;
         }
 
         function getTheme(string $user_id) : ?string {

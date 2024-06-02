@@ -11,7 +11,6 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
 }
 (include relativePathSystem(ABSOLUTE_PATHS['DASHBOARD_HEADERS'])) or die("Header related file not found");
 
-use classes\user;
 global $user_obj;
 $errorMsg = null;
 $page_uri = getURI();

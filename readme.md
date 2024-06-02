@@ -3,13 +3,21 @@
 
 <h2>Todo:</h2>
 <ol>
-    <li>Design PHP classes for database handling</li>
-    <li>Design PHP classes for user data structures</li>
-    <li>Build admin panel to analyse the data</li>
-    <li>Design necessary interactive pages</li>
+    <li><s>Design PHP classes for database handling</s></li>
+    <li><s>Design PHP classes for user data structures</s></li>
+    <li>Add separate Invoice option for mechanics</li>
+    <li>Add buy from parts store in the mechanics Invoice option</li>
+    <li>Add Interrupt and Pay Now implementations</li>
+    <li>Fix Go back button in the post page</li>
+    <li><s>Design necessary interactive pages</s></li>
     <li>Build necessary PHP class tools to perform advanced queries</li>
     <li>Design small chat system</li>
-    <li>Design small social network</li>
+    <li><s>Design small social network</s></li>
+    <li>Redesign the home page</li>
+    <li>Build admin panel to analyse the data</li>
+    <li>[Invoice] Add lateral column similar to dashboard home with Select component to choose the statement</li>
+    <li>[Invoice] Change progress to status and the text to Delivered, Unfixable and In progress</li>
+    <li>Try to redesign border by keeping elements with less inline styling as possible</li>
 </ol>
 
 <h4><i>Schema Diagram</i></h4>

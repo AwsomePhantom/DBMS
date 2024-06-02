@@ -9,7 +9,8 @@ if(!isset($GLOBALS['WEBSITE_VARS'])) {
     (require_once (ROOT_DIR . DIRECTORY_SEPARATOR . 'site_variables.php')) or die("Variables file not found");
 }
 
-    use classes\user;
+use classes\user;
+
 ///////////////////////////////////////////////////////
 global $user_obj;
 

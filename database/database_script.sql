@@ -112,18 +112,19 @@ CREATE TABLE financial_statements (
                                  id int PRIMARY KEY AUTO_INCREMENT, -- auto generated id
                                  start_date datetime NOT NULL DEFAULT NOW(),
                                  end_date datetime DEFAULT NULL,
-                                 issue_date datetime DEFAULT NULL ON UPDATE NOW(),
+                                 delivery_date datetime DEFAULT NULL,
 
                                  customer_id char(12) NOT NULL,
                                  business_id char(12) NOT NULL,
 
                                  location_addr varchar(255) DEFAULT NULL,
-                                 advance_payment float(10, 2) DEFAULT NULL,
-                                 total_payment float(10, 2) DEFAULT NULL,
-                                 discount float(5, 2) DEFAULT NULL,
-                                 total_expense float(10, 2) DEFAULT NULL,
-                                 net_product float(10, 2) DEFAULT NULL,
-                                 gross_income float(10, 2) DEFAULT NULL,
+                                 advance_payment float(10, 2) DEFAULT 0.00,
+                                 total_payment float(10, 2) DEFAULT 0.00,
+                                 discount float(5, 2) DEFAULT 0.00,
+                                 total_expense float(10, 2) DEFAULT 0.00,
+                                 net_product float(10, 2) DEFAULT 0.00,
+                                 tax float(3, 2) DEFAULT 0.15,
+                                 gross_income float(10, 2) DEFAULT 0.00,
                                  status varchar(5) DEFAULT 'OPEN',
                                  CONSTRAINT statement_customer FOREIGN KEY(customer_id) REFERENCES customers_info(id),
                                  CONSTRAINT statement_business FOREIGN KEY(business_id) REFERENCES businesses_info(id)
@@ -132,21 +133,21 @@ CREATE TABLE financial_statements (
 -- Base class account, single elementary entries and jobs, on new entries update history_revenue
 CREATE TABLE financial_accounts (
                          id int NOT NULL PRIMARY KEY AUTO_INCREMENT,    -- auto generated id
-                         statement_id int NOT NULL UNIQUE,
+                         statement_id int NOT NULL,
                          date datetime NOT NULL,
 
                          customer_id char(12) NOT NULL,
                          business_id char(12) NOT NULL,
 
-                         parts_expense float(10, 2) DEFAULT NULL,  -- price of the replacement component
+                         parts_expense float(10, 2) DEFAULT 0.00,  -- price of the replacement component
                          vehicle_parts_desc varchar(255) DEFAULT NULL,   -- replacement of vehicle part description
 
                          vehicle_service_desc varchar(255) DEFAULT NULL, -- description of works to be done or doing
-                         service_revenue float(10, 2) DEFAULT NULL,    -- estimation for the work
+                         service_revenue float(10, 2) DEFAULT 0.00,    -- estimation for the work
 
 
                          notes longtext DEFAULT NULL,
-                         sub_total float(10, 2),
+                         sub_total float(10, 2) DEFAULT 0.00,
                          CONSTRAINT account_client FOREIGN KEY(customer_id) REFERENCES customers_info(id),
                          CONSTRAINT account_business FOREIGN KEY(business_id) REFERENCES businesses_info(id),
                          CONSTRAINT account_statement FOREIGN KEY(statement_id) REFERENCES financial_statements(id)
